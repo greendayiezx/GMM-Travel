@@ -3,19 +3,17 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * ShouldQueue: email dikirim lewat antrean (background), tidak memblokir
- * response webhook. Di production set QUEUE_CONNECTION=database/redis +
- * jalankan `php artisan queue:work`. Di local (QUEUE_CONNECTION=sync) tetap
- * terkirim langsung.
+ * Dikirim SINKRON (tanpa ShouldQueue). Railway tidak menjalankan queue worker,
+ * jadi kalau di-queue email tidak akan pernah terkirim. Resend memakai HTTP API
+ * yang cepat, jadi mengirim langsung di dalam request webhook aman.
  */
-class WelcomeMail extends Mailable implements ShouldQueue
+class WelcomeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
