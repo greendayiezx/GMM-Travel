@@ -6,6 +6,7 @@ cmds = ["composer install --no-dev --optimize-autoloader"]
 
 [phases.build]
 cmds = [
+  "mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions bootstrap/cache",
   "php artisan config:cache",
   "php artisan route:cache"
 ]
