@@ -120,6 +120,50 @@
         <p class="auth-terms">Dengan mendaftar, Anda menyetujui <a href="#">Kebijakan Privasi</a> dan <a href="#">Syarat & Ketentuan</a>.</p>
       </ng-container>
 
+      <!-- ── STEP: verify email (OTP) ──────────────────────────── -->
+      <ng-container *ngIf="step === 'verify-email'">
+        <button class="auth-back-btn" (click)="backToEmailForm()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Kembali
+        </button>
+
+        <div class="verify-icon-wrap">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </div>
+
+        <h1 class="auth-heading">Verifikasi Email Anda</h1>
+        <p class="auth-sub">Kami mengirim kode 6 digit ke<br><strong>{{ maskedEmail }}</strong></p>
+
+        <!-- OTP boxes -->
+        <div class="otp-row" (paste)="onOtpPaste($event)">
+          <input *ngFor="let d of otp; let i = index"
+                 [id]="'otp-' + i"
+                 class="otp-box"
+                 type="text"
+                 inputmode="numeric"
+                 maxlength="1"
+                 autocomplete="one-time-code"
+                 [value]="otp[i]"
+                 (input)="onOtpInput(i, $event)"
+                 (keydown)="onOtpKeydown(i, $event)">
+        </div>
+
+        <p class="auth-error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+        <button class="btn-submit" (click)="submitVerification()" [disabled]="verifying || otpCode.length !== 6">
+          <span *ngIf="!verifying">Verifikasi & Masuk</span>
+          <span *ngIf="verifying" class="btn-spinner"></span>
+        </button>
+
+        <p class="resend-text">
+          Tidak menerima kode?
+          <button class="resend-btn" [disabled]="resendCooldown > 0" (click)="resendCode()">
+            {{ resendCooldown > 0 ? 'Kirim ulang (' + resendCooldown + 's)' : 'Kirim ulang' }}
+          </button>
+        </p>
+        <p class="auth-hint-muted">Cek folder Spam/Promosi jika email tidak muncul.</p>
+      </ng-container>
+
       <!-- ── STEP: complete google ─────────────────────────────── -->
       <ng-container *ngIf="step === 'complete-google'">
         <div class="google-complete-badge">

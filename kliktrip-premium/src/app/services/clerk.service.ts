@@ -164,6 +164,38 @@ export class ClerkService {
     return result;
   }
 
+  /**
+   * Kirim kode verifikasi 6 digit ke email pada sign-up yang sedang berjalan.
+   * Dipanggil setelah createSignUp() mengembalikan status != 'complete'
+   * (artinya Clerk mewajibkan verifikasi email).
+   */
+  async prepareEmailVerification(): Promise<void> {
+    const signUp = this._clerk?.client?.signUp;
+    if (!signUp) throw new Error('Clerk not ready');
+    await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+  }
+
+  /**
+   * Verifikasi kode 6 digit yang dimasukkan user. Bila cocok, sesi diaktifkan
+   * dan user langsung login. Clerk lalu memicu webhook user.created → backend
+   * mengirim email selamat datang.
+   */
+  async attemptEmailVerification(code: string): Promise<any> {
+    const signUp = this._clerk?.client?.signUp;
+    if (!signUp) throw new Error('Clerk not ready');
+    const result = await signUp.attemptEmailAddressVerification({ code });
+    if (result.status === 'complete') {
+      await this._clerk.setActive({ session: result.createdSessionId });
+      this.zone.run(() => this.syncState());
+    }
+    return result;
+  }
+
+  /** Email dari sign-up yang sedang berjalan (untuk ditampilkan di layar verifikasi). */
+  pendingSignUpEmail(): string | null {
+    return this._clerk?.client?.signUp?.emailAddress ?? null;
+  }
+
   /** Update a pending sign-up (e.g. after Google OAuth needs extra fields) */
   async updateSignUp(params: {
     firstName?: string;
