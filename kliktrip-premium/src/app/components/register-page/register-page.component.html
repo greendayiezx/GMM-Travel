@@ -136,21 +136,20 @@
 
         <!-- OTP boxes -->
         <div class="otp-row" (paste)="onOtpPaste($event)">
-          <input *ngFor="let d of otp; let i = index"
+          <input *ngFor="let d of otp; let i = index; trackBy: trackByIndex"
                  [id]="'otp-' + i"
                  class="otp-box"
                  type="text"
                  inputmode="numeric"
                  maxlength="1"
                  autocomplete="one-time-code"
-                 [value]="otp[i]"
                  (input)="onOtpInput(i, $event)"
                  (keydown)="onOtpKeydown(i, $event)">
         </div>
 
         <p class="auth-error" *ngIf="errorMsg">{{ errorMsg }}</p>
 
-        <button class="btn-submit" (click)="submitVerification()" [disabled]="verifying || otpCode.length !== 6">
+        <button class="btn-submit" (click)="submitVerification()" [disabled]="!otpReady">
           <span *ngIf="!verifying">Verifikasi & Masuk</span>
           <span *ngIf="verifying" class="btn-spinner"></span>
         </button>

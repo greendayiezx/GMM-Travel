@@ -150,36 +150,95 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   // ── Verifikasi email (OTP) ───────────────────────────────────
   get otpCode(): string { return this.otp.join(''); }
 
-  /** Input 1 digit → auto pindah ke kotak berikutnya. */
+  /**
+   * KUNCI perbaikan: track kotak OTP berdasarkan INDEX, bukan nilai.
+   * Tanpa ini, array berisi string kosong duplikat ('') membuat Angular
+   * membuat ulang & menggeser elemen DOM saat satu kotak berubah — itulah
+   * penyebab digit pertama "loncat" ke kotak kedua dan sulit dihapus.
+   */
+  trackByIndex(index: number): number { return index; }
+
+  /**
+   * Input 1 digit → auto pindah ke kotak berikutnya.
+   * DOM adalah sumber tampilan (tidak ada binding [value] yang "berkelahi"),
+   * model `otp[]` hanya untuk hitung kode & status tombol.
+   */
   onOtpInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
-    const val = input.value.replace(/\D/g, '');
-    this.otp[index] = val.slice(-1);
-    input.value = this.otp[index];
-    if (this.otp[index] && index < 5) this.focusOtp(index + 1);
-    if (this.otpCode.length === 6) this.submitVerification();
+    const digits = input.value.replace(/\D/g, '');
+
+    // Jika user paste banyak digit ke satu kotak → sebar ke kotak-kotak.
+    if (digits.length > 1) {
+      this.fillOtpFrom(index, digits);
+      return;
+    }
+
+    const digit = digits.slice(-1);
+    this.otp[index] = digit;
+    input.value = digit;
+
+    if (digit && index < 5) this.focusOtp(index + 1);
+    this.maybeAutoSubmit();
   }
 
-  /** Backspace pada kotak kosong → mundur ke kotak sebelumnya. */
+  /** Backspace: hapus kotak ini; jika sudah kosong, mundur & hapus kotak sebelumnya. */
   onOtpKeydown(index: number, event: KeyboardEvent): void {
-    if (event.key === 'Backspace' && !this.otp[index] && index > 0) {
+    if (event.key === 'Backspace') {
+      if (this.otp[index]) {
+        this.otp[index] = '';
+        this.setBoxValue(index, '');
+      } else if (index > 0) {
+        event.preventDefault();
+        this.otp[index - 1] = '';
+        this.setBoxValue(index - 1, '');
+        this.focusOtp(index - 1);
+      }
+    } else if (event.key === 'ArrowLeft' && index > 0) {
       this.focusOtp(index - 1);
+    } else if (event.key === 'ArrowRight' && index < 5) {
+      this.focusOtp(index + 1);
     }
   }
 
   /** Paste kode 6 digit sekaligus. */
   onOtpPaste(event: ClipboardEvent): void {
     event.preventDefault();
-    const text = (event.clipboardData?.getData('text') ?? '').replace(/\D/g, '').slice(0, 6);
-    for (let i = 0; i < 6; i++) this.otp[i] = text[i] ?? '';
-    if (this.otpCode.length === 6) this.submitVerification();
-    else this.focusOtp(Math.min(text.length, 5));
+    const text = (event.clipboardData?.getData('text') ?? '').replace(/\D/g, '');
+    this.fillOtpFrom(0, text);
+  }
+
+  /** Isi kotak mulai dari `start` dengan deretan digit. */
+  private fillOtpFrom(start: number, digits: string): void {
+    let i = start;
+    for (const ch of digits) {
+      if (i > 5) break;
+      this.otp[i] = ch;
+      this.setBoxValue(i, ch);
+      i++;
+    }
+    this.focusOtp(Math.min(i, 5));
+    this.maybeAutoSubmit();
+  }
+
+  private maybeAutoSubmit(): void {
+    if (this.otp.every(d => d !== '') && !this.verifying) {
+      this.submitVerification();
+    }
+  }
+
+  private setBoxValue(index: number, val: string): void {
+    const el = document.getElementById('otp-' + index) as HTMLInputElement | null;
+    if (el) el.value = val;
+  }
+
+  private clearOtpBoxes(): void {
+    this.otp = ['', '', '', '', '', ''];
+    for (let i = 0; i < 6; i++) this.setBoxValue(i, '');
   }
 
   private focusOtp(index: number): void {
     const el = document.getElementById('otp-' + index) as HTMLInputElement | null;
     el?.focus();
-    el?.select();
   }
 
   async submitVerification(): Promise<void> {
@@ -194,7 +253,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       }
     } catch (e: any) {
       this.errorMsg = e?.errors?.[0]?.longMessage ?? 'Kode salah atau kedaluwarsa. Coba lagi.';
-      this.otp = ['', '', '', '', '', ''];
+      this.clearOtpBoxes();
       this.focusOtp(0);
     } finally {
       this.verifying = false;
@@ -226,6 +285,11 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     this.otp = ['', '', '', '', '', ''];
     this.errorMsg = '';
     clearInterval(this.resendTimer);
+  }
+
+  /** Kode terisi penuh & tidak sedang memverifikasi. */
+  get otpReady(): boolean {
+    return this.otp.every(d => d !== '') && !this.verifying;
   }
 
   // ── Complete Google sign-up ───────────────────────────────────
