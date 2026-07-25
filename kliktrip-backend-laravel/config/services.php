@@ -38,4 +38,10 @@ return [
     'package' => [
         'min_amount' => (int) env('PACKAGE_MIN_AMOUNT', 50000),
     ],
+
+    // Resend (email via HTTPS API). Dipakai karena Railway memblokir port SMTP
+    // keluar (465/587 timeout). Set MAIL_MAILER=resend + RESEND_API_KEY di env.
+    'resend' => [
+        'key' => env('RESEND_API_KEY'),
+    ],
 ];

@@ -7,7 +7,8 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.0",
-        "midtrans/midtrans-php": "^2.6"
+        "midtrans/midtrans-php": "^2.6",
+        "resend/resend-php": "^1.6"
     },
     "autoload": {
         "psr-4": {
