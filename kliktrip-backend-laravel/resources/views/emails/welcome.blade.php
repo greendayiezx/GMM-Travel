@@ -119,23 +119,44 @@
       </p>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
+    <!-- Footer (mengikuti footer website) -->
+    <div class="footer" style="background:#1a1a2e; padding:32px 32px 24px; text-align:center;">
       <img src="https://www.globalexplore.web.id/assets/gmm-tour-logo.png"
-           alt="GMM Global Explore" width="40" height="40"
-           style="display:block; margin:0 auto 10px; border-radius:10px; background:#fff; padding:4px;">
-      <div class="footer-logo">GMM Global <span>Explore</span></div>
-      <div class="footer-text">
-        © {{ date('Y') }} GMM Global Explore. All rights reserved.<br>
-        Jl. Boulevard Raya No. 45, Manado, Sulawesi Utara<br>
-        Email: gmm@globalexplore.web.id &nbsp;·&nbsp; Telp: +62 812-3456-7890
+           alt="GMM Global Explore" width="52" height="52"
+           style="display:block; margin:0 auto 12px; border-radius:12px; background:#fff; padding:5px;">
+      <div style="font-size:18px; font-weight:800; color:#ffffff; letter-spacing:-0.3px;">
+        GMM Global <span style="color:#FFD600;">Explore</span>
       </div>
-      <div class="footer-links">
-        <a href="https://globalexplore.web.id">Beranda</a>
-        <a href="https://globalexplore.web.id/tour">Paket Tour</a>
-        <a href="mailto:gmm@globalexplore.web.id">Hubungi Kami</a>
+      <div style="font-size:12px; color:#8a8aa0; margin:4px 0 16px;">Your Trusted Travel Partner</div>
+
+      <div style="font-size:12.5px; color:#a5a5bd; line-height:1.7; max-width:420px; margin:0 auto 20px;">
+        Kami hadir untuk memberikan pengalaman perjalanan terbaik untuk Anda dan keluarga.
+        Aman, nyaman, dan terpercaya.
+      </div>
+
+      <!-- Kontak (sama seperti website) -->
+      <div style="font-size:12.5px; color:#c3c3d6; line-height:2; margin-bottom:18px;">
+        📍 Jl. Pingkan Matindas No.60, Manado, Sulawesi Utara<br>
+        💬 WhatsApp: <a href="https://wa.me/6282293217200" style="color:#1E9BF0; text-decoration:none;">+62 822-9321-7200</a><br>
+        ✉️ <a href="mailto:yantisyamn@gmail.com" style="color:#1E9BF0; text-decoration:none;">yantisyamn@gmail.com</a><br>
+        🕐 Setiap Hari &middot; 07.00 - 22.00 WITA
+      </div>
+
+      <!-- Sosial media -->
+      <div style="margin-bottom:18px;">
+        <a href="#" style="color:#1E9BF0; text-decoration:none; margin:0 7px; font-size:12px; font-weight:600;">Facebook</a>
+        <a href="#" style="color:#1E9BF0; text-decoration:none; margin:0 7px; font-size:12px; font-weight:600;">Instagram</a>
+        <a href="#" style="color:#1E9BF0; text-decoration:none; margin:0 7px; font-size:12px; font-weight:600;">TikTok</a>
+        <a href="#" style="color:#1E9BF0; text-decoration:none; margin:0 7px; font-size:12px; font-weight:600;">YouTube</a>
+      </div>
+
+      <div style="font-size:11.5px; color:#6f6f88; line-height:1.7; border-top:1px solid #2c2c46; padding-top:16px;">
+        © {{ date('Y') }} GMM Global Explore. All rights reserved.<br>
+        Made with <span style="color:#22c55e;">💚</span> in Indonesia
       </div>
     </div>
+    <!-- Aksen gelombang tiga warna (echo dari website) -->
+    <div style="height:6px; line-height:6px; font-size:0; background:linear-gradient(90deg,#1E9BF0 0%,#a8eb12 50%,#FFD600 100%);">&nbsp;</div>
   </div>
 </body>
 </html>
