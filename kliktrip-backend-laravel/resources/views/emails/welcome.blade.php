@@ -50,6 +50,9 @@
   <div class="wrapper">
     <!-- Header -->
     <div class="header">
+      <img src="https://www.globalexplore.web.id/assets/gmm-tour-logo.png"
+           alt="GMM Global Explore" width="64" height="64"
+           style="display:block; margin:0 auto 14px; border-radius:14px; background:#fff; padding:6px;">
       <div class="header-logo">
         <div class="header-logo-text">GMM Global <span>Explore</span></div>
       </div>
@@ -93,7 +96,7 @@
 
       <!-- CTA -->
       <div class="cta-section">
-        <a href="{{ config('app.frontend_url', 'http://localhost:4200') }}" class="cta-btn">
+        <a href="{{ config('app.frontend_url', 'https://globalexplore.web.id') }}" class="cta-btn">
           Mulai Jelajahi Sekarang 🚀
         </a>
       </div>
@@ -118,15 +121,19 @@
 
     <!-- Footer -->
     <div class="footer">
+      <img src="https://www.globalexplore.web.id/assets/gmm-tour-logo.png"
+           alt="GMM Global Explore" width="40" height="40"
+           style="display:block; margin:0 auto 10px; border-radius:10px; background:#fff; padding:4px;">
       <div class="footer-logo">GMM Global <span>Explore</span></div>
       <div class="footer-text">
         © {{ date('Y') }} GMM Global Explore. All rights reserved.<br>
-        Jl. Contoh Alamat No. 123, Jakarta, Indonesia
+        Jl. Boulevard Raya No. 45, Manado, Sulawesi Utara<br>
+        Email: gmm@globalexplore.web.id &nbsp;·&nbsp; Telp: +62 812-3456-7890
       </div>
       <div class="footer-links">
-        <a href="#">Kebijakan Privasi</a>
-        <a href="#">Syarat & Ketentuan</a>
-        <a href="#">Hubungi Kami</a>
+        <a href="https://globalexplore.web.id">Beranda</a>
+        <a href="https://globalexplore.web.id/tour">Paket Tour</a>
+        <a href="mailto:gmm@globalexplore.web.id">Hubungi Kami</a>
       </div>
     </div>
   </div>

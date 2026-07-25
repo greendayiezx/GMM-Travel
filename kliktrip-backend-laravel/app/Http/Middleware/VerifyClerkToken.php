@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Role;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -52,10 +53,18 @@ class VerifyClerkToken
             }
 
             $user = User::where('clerk_id', $claims['sub'])->first();
+
+            // Lazy-sync: bila user lokal belum ada (mis. webhook user.created
+            // pernah gagal), ambil datanya langsung dari Clerk API & buat di DB.
+            // Ini membuat sistem tahan terhadap webhook yang terlewat.
             if (!$user) {
-                Log::warning('Clerk user belum tertaut di DB', ['clerk_id' => $claims['sub']]);
+                $user = $this->syncUserFromClerk($claims['sub']);
+            }
+
+            if (!$user) {
+                Log::warning('Clerk user belum tertaut & gagal lazy-sync', ['clerk_id' => $claims['sub']]);
                 return response()->json([
-                    'message' => 'Akun belum tersinkron. Silakan hubungi admin.',
+                    'message' => 'Akun belum tersinkron. Silakan muat ulang halaman.',
                 ], 401);
             }
 
@@ -64,6 +73,60 @@ class VerifyClerkToken
         } catch (\Throwable $e) {
             Log::error('VerifyClerkToken gagal', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Unauthorized'], 401);
+        }
+    }
+
+    /**
+     * Ambil data user dari Clerk Backend API berdasarkan clerk_id, lalu buat
+     * (atau perbarui) record User lokal. Dipakai sebagai fallback bila webhook
+     * user.created tidak pernah berhasil membuat user ini.
+     */
+    private function syncUserFromClerk(string $clerkId): ?User
+    {
+        try {
+            $secret = config('services.clerk.secret_key');
+            if (empty($secret)) {
+                $this->lastReason = 'CLERK_SECRET_KEY tidak diset';
+                return null;
+            }
+
+            $resp = Http::withToken($secret)
+                ->timeout(10)
+                ->get("https://api.clerk.com/v1/users/{$clerkId}");
+
+            if (!$resp->ok()) {
+                Log::error('Gagal fetch user dari Clerk API', [
+                    'clerk_id' => $clerkId,
+                    'status'   => $resp->status(),
+                ]);
+                return null;
+            }
+
+            $data  = $resp->json();
+            $email = $data['email_addresses'][0]['email_address'] ?? null;
+            if (!$email) return null;
+
+            $first = $data['first_name'] ?? '';
+            $last  = $data['last_name'] ?? '';
+            $name  = trim($first . ' ' . $last) ?: 'Pengguna';
+
+            $userRole = Role::where('slug', 'user')->first();
+
+            $user = User::updateOrCreate(
+                ['clerk_id' => $clerkId],
+                [
+                    'role_id' => $userRole?->id,
+                    'name'    => $name,
+                    'email'   => $email,
+                    'avatar'  => $data['image_url'] ?? null,
+                ]
+            );
+
+            Log::info('User berhasil di-lazy-sync dari Clerk', ['clerk_id' => $clerkId, 'email' => $email]);
+            return $user;
+        } catch (\Throwable $e) {
+            Log::error('syncUserFromClerk gagal', ['clerk_id' => $clerkId, 'error' => $e->getMessage()]);
+            return null;
         }
     }
 
