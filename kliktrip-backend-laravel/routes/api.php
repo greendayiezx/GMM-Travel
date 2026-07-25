@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClerkWebhookController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -8,7 +9,9 @@ use App\Http\Controllers\FlightBookingController;
 use App\Http\Controllers\FlightSearchController;
 use App\Http\Controllers\StaffController;
 use App\Models\TravelSchedule;
-use Illuminate\Support\Facades\Route;
+
+// ── Health Check ──────────────────────────────────────────────
+Route::get('/health', fn() => response()->json(['status' => 'ok']));
 
 // ── Clerk Webhooks ────────────────────────────────────────────
 Route::post('/clerk/webhook', [ClerkWebhookController::class, 'handle']);
