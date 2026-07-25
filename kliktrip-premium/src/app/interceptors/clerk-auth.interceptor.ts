@@ -13,7 +13,7 @@ import { ClerkService } from '../services/clerk.service';
  * Hanya request ke API backend yang diberi token — request ke domain lain
  * (mis. Clerk sendiri, CDN) tidak boleh kebocoran token.
  */
-const API_HOSTS = ['localhost:8000', '127.0.0.1:8000'];
+const API_HOSTS = ['localhost:8000', '127.0.0.1:8000', 'gmm-travel-production.up.railway.app'];
 
 export const clerkAuthInterceptor: HttpInterceptorFn = (req, next) => {
   const isApiCall = API_HOSTS.some(host => req.url.includes(host)) || req.url.startsWith('/api');

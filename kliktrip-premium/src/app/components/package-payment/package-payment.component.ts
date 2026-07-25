@@ -270,7 +270,7 @@ export class PackagePaymentComponent implements OnInit, OnDestroy, AfterViewChec
         qty: t.qty,
       }));
 
-      const res = await fetch('/api/charge', {
+      const res = await fetch('https://gmm-travel-production.up.railway.app/api/charge', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
