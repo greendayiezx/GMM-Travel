@@ -50,7 +50,7 @@
   <div class="wrapper">
     <!-- Header -->
     <div class="header">
-      <img src="https://www.globalexplore.web.id/assets/gmm-logo.png"
+      <img src="{{ $message->embed(resource_path('images/gmm-logo.png')) }}"
            alt="GMM Global Explore" width="64" height="64"
            style="display:block; margin:0 auto 14px; border-radius:14px; background:#fff; padding:6px;">
       <div class="header-logo">
@@ -121,7 +121,7 @@
 
     <!-- Footer (mengikuti footer website, background putih) -->
     <div class="footer" style="background:#ffffff; padding:32px 32px 24px; text-align:center; border-top:1px solid #eef1f5;">
-      <img src="https://www.globalexplore.web.id/assets/gmm-logo.png"
+      <img src="{{ $message->embed(resource_path('images/gmm-logo.png')) }}"
            alt="GMM Global Explore" width="52" height="52"
            style="display:block; margin:0 auto 12px;">
       <div style="font-size:18px; font-weight:800; color:#1a2b4a; letter-spacing:-0.3px;">
