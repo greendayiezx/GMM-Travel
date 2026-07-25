@@ -1,0 +1,186 @@
+<div class="auth-page">
+  <div class="auth-container">
+
+    <!-- Logo -->
+    <a routerLink="/" class="auth-logo-wrap">
+      <img src="assets/gmm-tour-logo.png" alt="GMM Travel" class="auth-logo-img">
+      <div class="auth-logo-text">
+        <span class="auth-logo-title">GMM Global <span class="auth-logo-gradient">Explore</span></span>
+        <span class="auth-logo-sub">Your Trusted Travel Partner</span>
+      </div>
+    </a>
+
+    <div class="auth-card">
+
+      <!-- ── STEP: choose ──────────────────────────────────────── -->
+      <ng-container *ngIf="step === 'choose'">
+        <a routerLink="/" class="auth-back">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Kembali ke Beranda
+        </a>
+
+        <h1 class="auth-heading">Buat Akun Baru</h1>
+        <p class="auth-sub">Bergabung dengan jutaan traveler GMM Global Explore</p>
+
+        <button class="btn-google" (click)="registerWithGoogle()" [disabled]="loading">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Daftar dengan Google
+        </button>
+
+        <button class="btn-email" (click)="showEmailForm()" [disabled]="loading">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Daftar dengan Email
+        </button>
+
+        <div class="auth-divider">
+          <span></span><span class="auth-divider-text">Atau daftar dengan</span><span></span>
+        </div>
+
+        <div class="social-row">
+          <button class="social-btn" title="Apple"     (click)="registerWithSocial('oauth_apple')"     [disabled]="loading"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg></button>
+          <button class="social-btn" title="Facebook"  (click)="registerWithSocial('oauth_facebook')"  [disabled]="loading"><svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></button>
+          <button class="social-btn" title="TikTok"    (click)="registerWithSocial('oauth_tiktok')"    [disabled]="loading"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.78a4.85 4.85 0 01-1.01-.09z"/></svg></button>
+          <button class="social-btn" title="Microsoft" (click)="registerWithSocial('oauth_microsoft')" [disabled]="loading"><svg width="20" height="20" viewBox="0 0 21 21" fill="none"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg></button>
+        </div>
+
+        <p class="auth-error" *ngIf="errorMsg">{{ errorMsg }}</p>
+        <p class="auth-terms">Dengan mendaftar, Anda menyetujui <a href="#">Kebijakan Privasi</a> dan <a href="#">Syarat & Ketentuan</a> GMM Travel.</p>
+        <p class="auth-switch">Sudah punya akun? <a routerLink="/login" class="auth-switch-link">Masuk sekarang</a></p>
+      </ng-container>
+
+      <!-- ── STEP: email form ──────────────────────────────────── -->
+      <ng-container *ngIf="step === 'email-form'">
+        <button class="auth-back-btn" (click)="backToChoose()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Kembali
+        </button>
+
+        <h1 class="auth-heading">Lengkapi Data Anda</h1>
+        <p class="auth-sub">Isi data berikut untuk membuat akun GMM Travel</p>
+
+        <!-- Full name -->
+        <div class="form-field">
+          <label class="form-label">Nama Lengkap <span class="req">*</span></label>
+          <input type="text" class="form-input" [(ngModel)]="fullName"
+                 placeholder="Sesuai KTP/Paspor/SIM" autocomplete="name">
+          <span class="form-hint">Sesuai dengan KTP/Paspor/SIM.</span>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-field">
+          <label class="form-label">Nomor Telepon</label>
+          <div class="phone-wrap">
+            <button class="country-btn" type="button" (click)="showCountryDrop = !showCountryDrop">
+              <span class="country-flag">{{ countries[0].flag }}</span>
+              <span class="country-code">{{ countryCode }}</span>
+              <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="country-dropdown" *ngIf="showCountryDrop">
+              <button *ngFor="let c of countries" class="country-option" type="button" (click)="selectCountry(c)">
+                <span>{{ c.flag }}</span><span>{{ c.name }}</span><span class="co-code">{{ c.code }}</span>
+              </button>
+            </div>
+            <input type="tel" class="form-input phone-input" [(ngModel)]="phone" placeholder="8xx-xxxx-xxxx">
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-field">
+          <label class="form-label">Email <span class="req">*</span></label>
+          <input type="email" class="form-input" [(ngModel)]="email"
+                 placeholder="contoh@email.com" autocomplete="email">
+        </div>
+
+        <!-- Password -->
+        <div class="form-field">
+          <label class="form-label">Password <span class="req">*</span></label>
+          <div class="pass-wrap">
+            <input [type]="showPassword ? 'text' : 'password'" class="form-input pass-input"
+                   [(ngModel)]="password" placeholder="Minimal 8 karakter" autocomplete="new-password">
+            <button type="button" class="pass-toggle" (click)="showPassword = !showPassword">
+              <svg *ngIf="!showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showPassword"  width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <div class="pass-strength" *ngIf="password">
+            <div class="ps-bar" [class.weak]="password.length < 8" [class.medium]="password.length >= 8 && password.length < 12" [class.strong]="password.length >= 12"></div>
+            <span class="ps-label" [class.weak]="password.length < 8" [class.medium]="password.length >= 8 && password.length < 12" [class.strong]="password.length >= 12">
+              {{ password.length < 8 ? 'Lemah' : password.length < 12 ? 'Sedang' : 'Kuat' }}
+            </span>
+          </div>
+        </div>
+
+        <p class="auth-error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+        <button class="btn-submit" (click)="submitEmailForm()" [disabled]="loading || !fullName || !email || !password">
+          <span *ngIf="!loading">Daftar Sekarang</span>
+          <span *ngIf="loading" class="btn-spinner"></span>
+        </button>
+
+        <p class="auth-terms">Dengan mendaftar, Anda menyetujui <a href="#">Kebijakan Privasi</a> dan <a href="#">Syarat & Ketentuan</a>.</p>
+      </ng-container>
+
+      <!-- ── STEP: complete google ─────────────────────────────── -->
+      <ng-container *ngIf="step === 'complete-google'">
+        <div class="google-complete-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Akun Google terhubung
+        </div>
+
+        <h1 class="auth-heading">Lengkapi Data Anda</h1>
+        <p class="auth-sub">Data dari Google sudah terisi otomatis, lengkapi nomor telepon</p>
+
+        <!-- Full name -->
+        <div class="form-field">
+          <label class="form-label">Nama Lengkap <span class="req">*</span></label>
+          <div class="input-verified">
+            <input type="text" class="form-input" [(ngModel)]="fullName" placeholder="Nama lengkap">
+            <svg class="verified-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#22c55e"/><path d="m9 12 2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="form-hint">Sesuai dengan KTP/Paspor/SIM.</span>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-field">
+          <label class="form-label">Nomor Telepon <span class="req">*</span></label>
+          <div class="phone-wrap">
+            <button class="country-btn" type="button" (click)="showCountryDrop = !showCountryDrop">
+              <span class="country-flag">🇮🇩</span>
+              <span class="country-code">{{ countryCode }}</span>
+              <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="country-dropdown" *ngIf="showCountryDrop">
+              <button *ngFor="let c of countries" class="country-option" type="button" (click)="selectCountry(c)">
+                <span>{{ c.flag }}</span><span>{{ c.name }}</span><span class="co-code">{{ c.code }}</span>
+              </button>
+            </div>
+            <input type="tel" class="form-input phone-input" [(ngModel)]="phone" placeholder="8xx-xxxx-xxxx" autofocus>
+          </div>
+        </div>
+
+        <!-- Email (pre-filled, readonly) -->
+        <div class="form-field">
+          <label class="form-label">Email</label>
+          <div class="input-verified">
+            <input type="email" class="form-input" [(ngModel)]="email" readonly>
+            <svg class="verified-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#22c55e"/><path d="m9 12 2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+
+        <p class="auth-error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+        <button class="btn-submit" (click)="submitGoogleComplete()" [disabled]="loading || !phone">
+          <span *ngIf="!loading">Daftar Sekarang</span>
+          <span *ngIf="loading" class="btn-spinner"></span>
+        </button>
+
+        <p class="auth-terms">Dengan mendaftar, Anda menyetujui <a href="#">Kebijakan Privasi</a> dan <a href="#">Syarat & Ketentuan</a>.</p>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <div class="page-loading" *ngIf="loading">
+    <div class="page-spinner"></div>
+  </div>
+</div>

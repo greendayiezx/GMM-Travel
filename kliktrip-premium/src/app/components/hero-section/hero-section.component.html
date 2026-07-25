@@ -1,0 +1,152 @@
+<app-search-toast [type]="toastType" [messages]="toastMessages" [visible]="toastVisible"></app-search-toast>
+
+<section class="relative min-h-screen flex items-center" style="background: transparent">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 pointer-events-none" style="pointer-events:none">
+
+    <div class="absolute top-20 right-10 w-96 h-96 rounded-full blur-3xl"
+      style="background: rgba(30,155,240,0.05); pointer-events:none"></div>
+    <div class="absolute bottom-20 left-10 w-64 h-64 rounded-full blur-3xl"
+      style="background: rgba(170,238,0,0.10); pointer-events:none"></div>
+  </div>
+
+  <div class="container mx-auto px-6 lg:px-16 py-24 lg:py-0 relative z-10">
+    <div class="flex flex-col min-h-screen justify-center items-center gap-8">
+      <!-- Headline -->
+      <div class="space-y-4" style="text-align:center;">
+        <h1 class="text-4xl lg:text-6xl font-extrabold leading-tight font-display" style="color:#FFFF">
+          Jelajahi Dunia, <span style="color:#AAEE00">Tanpa Batas</span>
+        </h1>
+        <p class="text-lg font-semibold" style="color: #000000; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85); margin: 8px auto 0;">
+          GMM Global Explore siap membantu anda kemana saja!
+        </p>
+      </div>
+
+        <!-- Search Widget (tiket.com style) -->
+        <div class="w-full max-w-7xl mx-auto" style="position:relative; padding-top:30px;">
+
+          <!-- Floating Tab Bar (melayang di atas card) -->
+          <div class="hero-tab-container">
+            <!-- Left Scroll Arrow -->
+            <button class="hero-tab-nav-btn left" (click)="scrollTabs('left')" aria-label="Scroll Kiri">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+
+            <div #tabBarRef class="hero-tab-bar">
+
+              <!-- Pesawat (Active) -->
+              <button (click)="activeTab='flight'"
+                      class="hero-tab-btn"
+                      [class.hero-tab-active]="activeTab==='flight'">
+                <div class="hero-tab-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+                </div>
+                <span>Pesawat</span>
+              </button>
+
+              <!-- Shuttle -->
+              <button (click)="activeTab='shuttle'"
+                      class="hero-tab-btn"
+                      [class.hero-tab-active]="activeTab==='shuttle'">
+                <div class="hero-tab-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="15" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/><path d="M5 18v2M12 18v2"/></svg>
+                </div>
+                <span>Shuttle</span>
+              </button>
+
+              <!-- Hotel -->
+              <button class="hero-tab-btn">
+                <div class="hero-tab-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/><path d="M9 10h1"/><path d="M14 10h1"/></svg>
+                </div>
+                <span>Hotel</span>
+                <span class="coming-soon-badge">Coming Soon</span>
+              </button>
+
+              <!-- Paket Wisata -->
+              <button (click)="scrollToDestinations($event)" class="hero-tab-btn">
+                <div class="hero-tab-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg>
+                </div>
+                <span>Paket Wisata</span>
+              </button>
+
+              <!-- Umroh -->
+              <button (click)="navigateToUmrohIbadah($event)" class="hero-tab-btn">
+                <div class="hero-tab-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 4 6 4 10c0 5.4 8 12 8 12s8-6.6 8-12c0-4-4-8-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <span>Umroh</span>
+              </button>
+
+            </div>
+
+            <!-- Right Scroll Arrow -->
+            <button class="hero-tab-nav-btn right" (click)="scrollTabs('right')" aria-label="Scroll Kanan">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Main Card (full rounded) -->
+          <div style="background:#fff; border-radius:24px; padding:52px 28px 28px;
+                      box-shadow:0 20px 60px rgba(0,0,0,0.10); position:relative; z-index:1;">
+
+            <!-- Shuttle form -->
+            <ng-container *ngIf="activeTab === 'shuttle'">
+              <!-- Row 1: Keberangkatan & Tujuan -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(44,62,80,0.60)">Keberangkatan</label>
+                  <app-destination-input
+                    placeholder="Pilih kota asal"
+                    registryId="origin"
+                    [value]="form.state().departure"
+                    [hasError]="form.isFieldInvalid('departure')"
+                    (destinationSelected)="onDepartureSelected($event)">
+                  </app-destination-input>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(44,62,80,0.60)">Tujuan</label>
+                  <app-destination-input
+                    placeholder="Mau ke mana?"
+                    registryId="destination"
+                    [value]="form.state().destination"
+                    [hasError]="form.isFieldInvalid('destination')"
+                    (destinationSelected)="onDestinationSelected($event)">
+                  </app-destination-input>
+                </div>
+              </div>
+              <!-- Row 2: Penumpang & Dates -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" style="margin-top:12px;">
+                <div class="sm:col-span-1">
+                  <app-passenger-selector (passengersChanged)="onPassengersChanged($event)"></app-passenger-selector>
+                </div>
+                <div class="sm:col-span-2">
+                  <app-date-range-picker (rangeSelected)="onRangeSelected($event)"></app-date-range-picker>
+                </div>
+              </div>
+              <app-search-button class="block w-full" style="margin-top:12px;" (searched)="onSearch()"></app-search-button>
+            </ng-container>
+
+            <!-- Flight form -->
+            <ng-container *ngIf="activeTab === 'flight'">
+              <app-flight-search></app-flight-search>
+            </ng-container>
+
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex flex-wrap gap-6 sm:gap-8 justify-center">
+          <div *ngFor="let stat of stats" class="space-y-1">
+            <p class="text-2xl font-bold" [style.color]="stat.color">{{ stat.value }}</p>
+            <p class="text-xs font-semibold" style="color:#FFFFFF">{{ stat.label }}</p>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>

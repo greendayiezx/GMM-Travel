@@ -1,0 +1,161 @@
+.booking-page {
+  min-height: 100vh;
+  width: 100%;
+  background: url('/assets/jalanan-sawah.png') center center / cover no-repeat fixed;
+  padding: 0 16px 80px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.booking-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,10,30,0.62);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.steps-row {
+  position: relative; z-index: 10;
+  display: flex; align-items: center;
+  padding: 76px 24px 14px;
+  width: 100%; box-sizing: border-box;
+}
+
+.step {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.78rem; font-weight: 700;
+  color: rgba(255,255,255,0.45); white-space: nowrap;
+}
+.step.active { color: #fbbf24; }
+.step.done   { color: rgba(255,255,255,0.7); }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem;
+}
+.step.active .step-num { background: #fbbf24; color: #000; }
+.step.done   .step-num { background: rgba(255,255,255,0.3); color: #fff; }
+.step-line {
+  flex: 1; height: 2px;
+  background: rgba(255,255,255,0.15); margin: 0 10px;
+}
+.step-line.active { background: #fbbf24; }
+
+.back-btn {
+  position: relative; z-index: 10;
+  align-self: flex-start; margin: 8px 0 0 4px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; padding: 7px 16px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* Order card (same pattern as payment) */
+.order-card {
+  position: relative; z-index: 10;
+  background: rgba(255,255,255,0.97);
+  border-radius: 16px; padding: 18px 22px;
+  width: 100%; max-width: 620px;
+  margin: 18px 0 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.order-row { display: flex; justify-content: space-between; align-items: center; }
+.order-label { font-size: 0.8rem; color: #6b7280; font-weight: 600; }
+.order-val   { font-size: 0.88rem; color: #111; font-weight: 700; text-align: right; }
+
+.total-row { border-top: 1px solid #f3f4f6; padding-top: 10px; margin-top: 4px; }
+.order-total { font-size: 1.15rem; font-weight: 900; color: #1E9BF0; }
+
+/* Passenger forms */
+.passengers-wrap {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 620px;
+  display: flex; flex-direction: column; gap: 14px;
+  margin-top: 14px;
+}
+
+.pax-form-card {
+  background: rgba(255,255,255,0.97);
+  border-radius: 16px; padding: 20px 22px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.pax-form-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 10px; border-bottom: 1px solid #f3f4f6;
+}
+
+.pax-form-title { font-size: 0.88rem; font-weight: 800; color: #1E9BF0; }
+
+.remove-pax-btn {
+  font-size: 0.75rem; font-weight: 700; color: #ef4444;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 8px; padding: 4px 10px; cursor: pointer;
+}
+
+.form-row { display: flex; gap: 12px; }
+
+.form-group {
+  display: flex; flex-direction: column; gap: 4px; flex: 1;
+}
+
+.form-group--title { flex: 0 0 90px; }
+.form-group--name  { flex: 1; }
+
+.form-label {
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: rgba(44,62,80,0.55);
+}
+
+.required { color: #ef4444; }
+
+.form-input {
+  padding: 10px 12px; border-radius: 10px;
+  border: 1.5px solid #e5e7eb; background: #f9fafb;
+  font-size: 0.88rem; color: #1a1a1a; outline: none;
+  transition: border-color 0.2s; box-sizing: border-box; width: 100%;
+}
+.form-input:focus { border-color: #1E9BF0; background: #fff; }
+.form-input.error { border-color: #ef4444; }
+.form-select { cursor: pointer; }
+
+.field-error {
+  font-size: 0.72rem; color: #ef4444; margin: 0;
+}
+
+.field-hint {
+  font-size: 0.72rem; color: #6b7280; margin: 0;
+}
+
+.add-pax-row { display: flex; justify-content: center; }
+.add-pax-btn {
+  padding: 10px 24px; border-radius: 20px;
+  border: 1.5px dashed rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+  color: #fff; font-size: 0.85rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s;
+}
+.add-pax-btn:hover { background: rgba(255,255,255,0.15); }
+
+.cta-btn {
+  position: relative; z-index: 10;
+  margin-top: 20px; width: 100%; max-width: 620px;
+  padding: 15px; border-radius: 14px;
+  background: linear-gradient(135deg, #1E9BF0 0%, #0d7fd4 100%);
+  color: #fff; font-size: 1rem; font-weight: 800;
+  border: none; cursor: pointer; letter-spacing: 0.02em;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.cta-btn:hover:not(:disabled)  { opacity: 0.9; transform: translateY(-1px); }
+.cta-btn:disabled { opacity: 0.5; cursor: not-allowed; }

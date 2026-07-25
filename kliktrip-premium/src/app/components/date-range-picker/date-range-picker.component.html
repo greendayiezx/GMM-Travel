@@ -1,0 +1,105 @@
+<div class="date-picker-wrapper">
+
+  <!-- Trigger fields -->
+  <div class="grid grid-cols-2 gap-4" #triggerRow>
+    <!-- Start Date -->
+    <div class="space-y-1">
+      <div class="flex items-center justify-between h-4">
+        <label class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(44,62,80,0.60)">Berangkat</label>
+      </div>
+      <button (click)="openPicker('start')" aria-label="Pilih tanggal berangkat"
+        class="w-full flex items-center gap-3 border rounded-xl px-4 py-3 text-left transition-all duration-200"
+        [style.border-color]="form.isFieldInvalid('startDate') ? '#ef4444' : (isOpen && activeField==='start' ? '#1E9BF0' : '#e5e7eb')"
+        [style.box-shadow]="form.isFieldInvalid('startDate') ? '0 0 0 3px rgba(239,68,68,0.12)' : (isOpen && activeField==='start' ? '0 0 0 3px rgba(30,155,240,0.12)' : 'none')">
+        <svg class="w-5 h-5 flex-shrink-0" style="color:#1E9BF0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span class="text-sm" [style.color]="startDate ? '#1A1A1A' : '#9ca3af'">{{ startLabel }}</span>
+      </button>
+    </div>
+
+    <!-- End Date -->
+    <div class="space-y-1">
+      <div class="flex items-center justify-between h-4">
+        <label class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(44,62,80,0.60)">Pulang</label>
+
+        <!-- Toggle Switch PP -->
+        <label class="relative inline-flex items-center cursor-pointer select-none">
+          <input type="checkbox" [checked]="form.state().isRoundTrip" (change)="toggleRoundTrip($event)"
+            class="sr-only peer" />
+          <div
+            class="w-8 h-4 bg-slate-200 rounded-full peer peer-focus:outline-none dark:bg-slate-700 peer-checked:after:translate-x-4 rtl:peer-checked:after:-translate-x-4 peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:start-[3px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-2.5 after:w-2.5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-500">
+          </div>
+        </label>
+      </div>
+      <button (click)="form.state().isRoundTrip ? openPicker('end') : null" aria-label="Pilih tanggal pulang"
+        [disabled]="!form.state().isRoundTrip"
+        class="w-full flex items-center gap-3 border rounded-xl px-4 py-3 text-left transition-all duration-200"
+        [class.opacity-50]="!form.state().isRoundTrip" [class.cursor-not-allowed]="!form.state().isRoundTrip"
+        [style.border-color]="form.isFieldInvalid('endDate') ? '#ef4444' : (isOpen && activeField==='end' ? '#1E9BF0' : '#e5e7eb')"
+        [style.box-shadow]="form.isFieldInvalid('endDate') ? '0 0 0 3px rgba(239,68,68,0.12)' : (isOpen && activeField==='end' ? '0 0 0 3px rgba(30,155,240,0.12)' : 'none')">
+        <svg class="w-5 h-5 flex-shrink-0" style="color:#1E9BF0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span class="text-sm" [style.color]="endDate && form.state().isRoundTrip ? '#1A1A1A' : '#9ca3af'">
+          {{ form.state().isRoundTrip ? endLabel : 'Sekali Jalan' }}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Kalender Portal Container -->
+  <div #dropdownPortal class="date-calendar-portal bg-white rounded-2xl p-4" (mouseleave)="onMouseLeave()"
+    [style.display]="isOpen ? 'block' : 'none'"
+    style="position: fixed !important; z-index: 9999999 !important; background-color: #ffffff !important; opacity: 1 !important; box-shadow: 0 20px 60px rgba(0,0,0,0.22) !important; border: 1px solid #e2e8f0 !important;"
+    [style.top.px]="calendarTop" [style.left.px]="calendarLeft" [style.width.px]="calendarWidth">
+
+    <!-- Header navigasi bulan -->
+    <div class="flex items-center justify-between mb-4">
+      <button (click)="prevMonth()"
+        class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+        <svg class="w-4 h-4" style="color:#2C3E50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <p class="text-sm font-semibold" style="color:#1A1A1A">{{ viewLabel }}</p>
+      <button (click)="nextMonth()"
+        class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+        <svg class="w-4 h-4" style="color:#2C3E50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Header hari -->
+    <div class="grid grid-cols-7 mb-2">
+      <div *ngFor="let d of weekdays" class="text-center text-xs font-semibold py-1" style="color:rgba(44,62,80,0.50)">
+        {{ d }}</div>
+    </div>
+
+    <!-- Grid tanggal -->
+    <div class="grid grid-cols-7 gap-y-1">
+      <button *ngFor="let day of calendarDays; trackBy: trackByDay" (click)="onDayClick(day)"
+        (mouseenter)="onDayHover(day)" [disabled]="day.isPast" type="button"
+        class="relative h-9 flex items-center justify-center text-sm transition-all duration-100"
+        [class.opacity-30]="!day.isCurrentMonth" [class.cursor-not-allowed]="day.isPast" [class.opacity-40]="day.isPast"
+        [style.background]="day.isStart || day.isEnd ? '#1E9BF0' : day.isInRange ? 'rgba(30,155,240,0.10)' : 'transparent'"
+        [style.color]="day.isStart || day.isEnd ? '#FFFFFF' : day.isToday ? '#1E9BF0' : '#1A1A1A'"
+        [style.font-weight]="day.isStart || day.isEnd || day.isToday ? '700' : '400'"
+        [style.border-radius]="day.isStart ? '10px 0 0 10px' : day.isEnd ? '0 10px 10px 0' : day.isInRange ? '0' : '10px'">
+        {{ day.date.getDate() }}
+        <span *ngIf="day.isToday && !day.isStart && !day.isEnd"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full" style="background:#1E9BF0">
+        </span>
+      </button>
+    </div>
+
+    <!-- Footer hint -->
+    <p class="text-xs text-center mt-3" style="color:rgba(44,62,80,0.45)">
+      {{ activeField === 'start' ? 'Pilih tanggal keberangkatan' : 'Pilih tanggal kepulangan' }}
+    </p>
+  </div>
+
+</div>

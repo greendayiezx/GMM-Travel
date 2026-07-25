@@ -1,0 +1,197 @@
+<div class="booking-page">
+  <div class="booking-overlay"></div>
+
+  <!-- Step indicator -->
+  <div class="steps-row">
+    <div class="step active"><span class="step-num">1</span> Kursi & Data</div>
+    <div class="step-line active"></div>
+    <div class="step"><span class="step-num">2</span> Bayar</div>
+    <div class="step-line"></div>
+    <div class="step"><span class="step-num">3</span> E-Tiket</div>
+  </div>
+
+  <button class="back-btn" (click)="goBack()">← Kembali</button>
+
+  <!-- Two-column body -->
+  <div class="main-body">
+
+    <!-- LEFT: Seat Selection Panel -->
+    <div class="seat-panel">
+      <p class="panel-title">Pilih Kursi</p>
+
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="seat-status-box">
+        <span class="seat-status-spinner"></span>
+        Memuat ketersediaan kursi…
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="loadError && !isLoading" class="seat-status-box seat-status-error">
+        Gagal memuat data kursi.
+        <button class="retry-btn" (click)="retryLoad()">Coba lagi</button>
+      </div>
+
+      <!-- Seat map card -->
+      <div class="van-card" *ngIf="!isLoading">
+
+        <div class="seat-area">
+
+          <!-- Row 0: Seat 14 + SUPIR -->
+          <div class="seat-row">
+            <ng-container *ngIf="getSeat('14') as seat">
+              <div [class]="'seat ' + seat.status" (click)="selectSeat(seat)">
+                <span class="seat-number">{{ seat.number }}</span>
+                <span class="seat-price-badge" *ngIf="seat.status !== 'filled'">
+                  {{ bookingService.totalPrice / 1000 | number:'1.0-0' }}.000
+                </span>
+              </div>
+            </ng-container>
+            <div class="seat-spacer-double"></div>
+            <div class="driver-seat-circle">SUPIR</div>
+          </div>
+
+          <!-- Row 1: Spacer, Seat 1, Seat 2, Seat 3 -->
+          <div class="seat-row">
+            <div class="seat-spacer"></div>
+            <ng-container *ngFor="let seat of row1">
+              <div [class]="'seat ' + seat.status" (click)="selectSeat(seat)">
+                <span class="seat-number">{{ seat.number }}</span>
+                <span class="seat-price-badge" *ngIf="seat.status !== 'filled'">
+                  {{ bookingService.totalPrice / 1000 | number:'1.0-0' }}.000
+                </span>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Row 2: Seat 4, Spacer, Seat 5, Seat 6 -->
+          <div class="seat-row">
+            <ng-container *ngFor="let seat of row2; let i = index">
+              <div [class]="'seat ' + seat.status" (click)="selectSeat(seat)">
+                <span class="seat-number">{{ seat.number }}</span>
+                <span class="seat-price-badge" *ngIf="seat.status !== 'filled'">
+                  {{ bookingService.totalPrice / 1000 | number:'1.0-0' }}.000
+                </span>
+              </div>
+              <!-- Lorong di antara kursi pertama (col 1) dan berikutnya (col 3) -->
+              <div class="seat-spacer" *ngIf="i === 0"></div>
+            </ng-container>
+          </div>
+
+          <!-- Row 3: Seat 7, Spacer, Seat 8, Seat 9 -->
+          <div class="seat-row">
+            <ng-container *ngFor="let seat of row3; let i = index">
+              <div [class]="'seat ' + seat.status" (click)="selectSeat(seat)">
+                <span class="seat-number">{{ seat.number }}</span>
+                <span class="seat-price-badge" *ngIf="seat.status !== 'filled'">
+                  {{ bookingService.totalPrice / 1000 | number:'1.0-0' }}.000
+                </span>
+              </div>
+              <div class="seat-spacer" *ngIf="i === 0"></div>
+            </ng-container>
+          </div>
+
+          <!-- Row 4: Seat 10, Seat 11, Seat 12, Seat 13 -->
+          <div class="seat-row">
+            <ng-container *ngFor="let seat of row4">
+              <div [class]="'seat ' + seat.status" (click)="selectSeat(seat)">
+                <span class="seat-number">{{ seat.number }}</span>
+                <span class="seat-price-badge" *ngIf="seat.status !== 'filled'">
+                  {{ bookingService.totalPrice / 1000 | number:'1.0-0' }}.000
+                </span>
+              </div>
+            </ng-container>
+          </div>
+
+        </div><!-- /seat-area -->
+
+      </div><!-- /van-card -->
+    </div>
+
+    <!-- RIGHT: Info and Passenger Details Panel -->
+    <div class="info-panel">
+      <!-- Booking summary -->
+      <div class="summary-card">
+        <div class="summary-route">
+          <span class="city">{{ bookingService.schedule?.origin }}</span>
+          <span class="arr">→</span>
+          <span class="city">{{ bookingService.schedule?.destination }}</span>
+        </div>
+        <div class="summary-meta">
+          <span>🕐 {{ bookingService.schedule?.departureTime }} – {{ bookingService.schedule?.arrivalTime }}</span>
+          <span class="sep">·</span>
+          <span>{{ bookingService.schedule?.duration }}</span>
+        </div>
+        <div class="seat-chosen" *ngIf="selectedSeat">
+          Kursi dipilih: <strong>No. {{ selectedSeat }}</strong>
+        </div>
+        <div class="seat-chosen placeholder" *ngIf="!selectedSeat">
+          Belum ada kursi dipilih
+        </div>
+      </div>
+
+      <!-- Legend & Notes Card -->
+      <div class="legend-card">
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-dot dot-filled"></div>
+            <span>Sudah di booking</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dot-selected"></div>
+            <span>Pilihan Anda</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot dot-available"></div>
+            <span>Kosong</span>
+          </div>
+        </div>
+
+        <div class="notes-section">
+          <p class="notes-title">Catatan :</p>
+          <ul class="notes-list">
+            <li>Kursi sewaktu waktu dapat dipesan oleh pengguna lain yang terlebih dahulu menyelesaikan pembeliannya.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Passenger form -->
+      <div class="form-card">
+        <p class="panel-title form-title">Data Penumpang</p>
+
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <input class="form-input" type="text"
+                 placeholder="Contoh: Budi Santoso"
+                 [(ngModel)]="fullName" (input)="sanitizeFullName($event)" maxlength="26" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">No. WhatsApp / HP</label>
+          <input class="form-input" type="tel"
+                 placeholder="Contoh: 08123456789"
+                 [(ngModel)]="phone" (input)="sanitizePhone($event)" maxlength="14" />
+        </div>
+
+        <!-- Live Passenger Card -->
+        <div class="live-passenger-badge-card" *ngIf="fullName || selectedSeat">
+          <div class="check-icon-circle">✓</div>
+          <div class="passenger-meta">
+            <span class="passenger-name">{{ fullName || 'Nama Penumpang' }}</span>
+            <span class="passenger-type">{{ bookingService.schedule?.class === 'EXECUTIVE' ? 'Eksekutif' : 'Reguler' }}</span>
+          </div>
+          <div class="seat-badge-icon">
+            <span class="seat-icon">💺</span>
+            <span class="seat-number-text">{{ selectedSeat || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <button class="cta-btn" [disabled]="!isValid" (click)="confirm()">
+        Lanjut ke Pembayaran →
+      </button>
+    </div>
+
+  </div><!-- /main-body -->
+
+</div>

@@ -1,0 +1,680 @@
+/* ── Page shell ───────────────────────────────────────────── */
+.booking-page {
+  min-height: 100vh;
+  width: 100%;
+  background: url('/assets/jalanan-sawah.png') center center / cover no-repeat fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.booking-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 10, 30, 0.60);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Top bar ──────────────────────────────────────────────── */
+.top-bar {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+}
+
+
+
+.top-bar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.route-text {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #000000;
+}
+
+.trip-meta {
+  font-size: 0.72rem;
+  color: rgba(0, 0, 0, 0.55);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Step indicator (transparan di atas foto) ─────────────── */
+.steps-row {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 76px 24px 14px;
+  width: 100%;
+  max-width: 100%;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+}
+
+.step.active {
+  color: #fbbf24;
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.step.active .step-num {
+  background: #fbbf24;
+  color: #1e293b;
+}
+
+.step-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 10px;
+}
+
+.step-line.active {
+  background: #fbbf24;
+}
+
+/* ── Back button ──────────────────────────────────────────── */
+.back-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 50;
+  background: rgba(255,255,255,0.92);
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  transition: background 0.2s, transform 0.1s;
+}
+.back-btn:hover {
+  background: #ffffff;
+}
+.back-btn:active {
+  transform: scale(0.96);
+}
+
+/* ── Two-column body ──────────────────────────────────────── */
+.main-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 900px;
+  padding: 4px 24px 60px;
+  box-sizing: border-box;
+}
+
+/* ── LEFT: seat panel ─────────────────────────────────────── */
+.seat-panel {
+  flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── RIGHT: info panel ────────────────────────────────────── */
+.info-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 320px;
+}
+
+/* ── Panel title (above van-card, on photo) ───────────────── */
+.panel-title {
+  width: 100%;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin: 0;
+}
+
+/* Title inside white form-card → dark override */
+.form-title {
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+/* ── Van card ─────────────────────────────────────────────── */
+.van-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px 24px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+}
+
+/* ── Driver row ───────────────────────────────────────────── */
+.driver-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.exit-badge {
+  background: #374151;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 5px;
+  letter-spacing: 0.1em;
+}
+
+/* Sopir: hanya outline, tanpa warna */
+.driver-seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 6px 14px;
+}
+
+.driver-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+  filter: grayscale(1);
+}
+
+.driver-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Pemisah area sopir dan penumpang */
+.cabin-divider {
+  width: 100%;
+  height: 1px;
+  background: #e2e8f0;
+  margin-bottom: 14px;
+}
+
+/* ── Seat grid ────────────────────────────────────────────── */
+.seat-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.seat-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.seat-spacer {
+  width: 58px;
+  flex-shrink: 0;
+}
+
+.seat-spacer-double {
+  width: 128px;
+  flex-shrink: 0;
+}
+
+/* ── Individual seat ──────────────────── */
+.seat {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  transition: transform 0.13s, box-shadow 0.13s;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.seat:active {
+  transform: scale(0.92);
+}
+
+.seat.available {
+  background: #ffffff;
+  border: 1.5px solid #94a3b8;
+  color: #1e293b;
+}
+
+.seat.filled {
+  background: #64748b;
+  color: #ffffff;
+  border: none;
+  cursor: not-allowed;
+  justify-content: center;
+  padding-top: 0;
+}
+
+.seat.selected {
+  background: #0091ff;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 145, 255, 0.4);
+}
+
+.seat-price-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
+  background: #fbbf24;
+  color: #000000;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 2px 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.driver-seat-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.2px solid #1e3a8a;
+  color: #1e3a8a;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* ── Legend ───────────────────────────────────────────────── */
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.dot-available {
+  background: #ffffff;
+  border: 1.5px solid #94a3b8;
+}
+
+.dot-filled {
+  background: #64748b;
+}
+
+.dot-selected {
+  background: #0091ff;
+}
+
+/* ── Summary card ─────────────────────────────────────────── */
+.summary-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+.summary-route {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.arr {
+  color: #e68a2e;
+}
+
+.summary-meta {
+  font-size: 0.78rem;
+  color: #64748b;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.sep {
+  color: #cbd5e1;
+}
+
+.seat-chosen {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.seat-chosen.placeholder {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* ── Form card ────────────────────────────────────────────── */
+.form-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px 18px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #475569;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.form-input {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.form-input:focus {
+  border-color: #e68a2e;
+  box-shadow: 0 0 0 3px rgba(230, 138, 46, 0.15);
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
+}
+
+/* ── CTA ──────────────────────────────────────────────────── */
+.cta-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 999px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e68a2e, #f59e0b);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(230, 138, 46, 0.4);
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.cta-btn:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.cta-btn:not(:disabled):hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.cta-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* ── Legend Card & Notes ──────────────────────────────────── */
+.legend-card {
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.notes-section {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+}
+
+.notes-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 6px;
+}
+
+.notes-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.notes-list li {
+  margin-bottom: 4px;
+}
+
+/* ── Live Passenger Badge Card ────────────────────────────── */
+.live-passenger-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #0091ff;
+  background: #f0f9ff;
+  margin-top: 12px;
+  box-sizing: border-box;
+}
+
+.check-icon-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.passenger-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.passenger-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  word-break: break-all;
+}
+
+.passenger-type {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.seat-badge-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .steps-row {
+    padding: 76px 16px 14px;
+  }
+
+  .main-body {
+    flex-direction: column;
+    align-items: center;
+    max-width: 480px;
+    padding: 4px 20px 60px;
+    gap: 16px;
+  }
+
+  .seat-panel {
+    width: 100%;
+    flex: none;
+  }
+
+  .info-panel {
+    width: 100%;
+    flex: none;
+    min-width: 0;
+  }
+}
+
+/* ── Loading / Error states ─────────────────────────────── */
+.seat-status-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 18px 20px;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.seat-status-error {
+  border-color: rgba(239,68,68,0.4);
+  color: #fca5a5;
+}
+
+.seat-status-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: #60a5fa;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.retry-btn {
+  margin-left: auto;
+  background: rgba(239,68,68,0.2);
+  border: 1px solid rgba(239,68,68,0.5);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.retry-btn:hover {
+  background: rgba(239,68,68,0.35);
+}

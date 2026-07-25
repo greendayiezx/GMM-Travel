@@ -1,0 +1,41 @@
+# ─── Secrets — JANGAN pernah commit ───────────────────────────────
+# Semua .env di level manapun dikecualikan, KECUALI template contoh.
+.env
+.env.*
+!.env.example
+!.env.production.example
+*.pem
+*.key
+*credentials*
+**/storage/*.key
+
+# ─── Dependencies ─────────────────────────────────────────────────
+**/vendor/
+**/node_modules/
+
+# ─── Build / cache ────────────────────────────────────────────────
+**/dist/
+**/.angular/
+**/bootstrap/cache/*.php
+**/storage/framework/cache/*
+**/storage/framework/sessions/*
+**/storage/framework/views/*
+**/storage/logs/*
+**/public/storage
+**/public/hot
+
+# ─── Tooling lokal ────────────────────────────────────────────────
+.claude/
+.phpunit.result.cache
+Homestead.yaml
+Homestead.json
+auth.json
+npm-debug.log
+yarn-error.log
+
+# ─── OS / IDE ─────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

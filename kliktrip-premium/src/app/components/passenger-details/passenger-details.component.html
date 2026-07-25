@@ -1,0 +1,63 @@
+<div class="booking-page">
+
+  <button class="back-btn" (click)="back.emit()">← Kembali</button>
+
+  <div class="booking-header">
+    <h2 class="booking-title">Detail Penumpang</h2>
+    <p class="booking-sub">Kursi {{ bookingService.selectedSeat }} · {{ bookingService.schedule?.tripCode }}</p>
+  </div>
+
+  <!-- Schedule summary card -->
+  <div class="summary-card">
+    <div class="route-row">
+      <span class="city">{{ bookingService.schedule?.origin }}</span>
+      <span class="arrow">→</span>
+      <span class="city">{{ bookingService.schedule?.destination }}</span>
+    </div>
+    <div class="meta-row">
+      <span>🕐 {{ bookingService.schedule?.departureTime }} – {{ bookingService.schedule?.arrivalTime }}</span>
+      <span class="dot-sep">·</span>
+      <span>{{ bookingService.schedule?.operator }}</span>
+    </div>
+  </div>
+
+  <!-- Form card -->
+  <div class="form-card">
+
+    <div class="form-group">
+      <label class="form-label">Nama Lengkap</label>
+      <input
+        class="form-input"
+        type="text"
+        placeholder="Contoh: Budi Santoso"
+        [(ngModel)]="fullName"
+        (input)="sanitizeFullName($event)"
+        maxlength="26"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">No. WhatsApp / HP</label>
+      <input
+        class="form-input"
+        type="tel"
+        placeholder="Contoh: 08123456789"
+        [(ngModel)]="phone"
+        (input)="sanitizePhone($event)"
+        maxlength="14"
+      />
+    </div>
+
+  </div>
+
+  <!-- Price summary -->
+  <div class="price-row">
+    <span>Total pembayaran</span>
+    <span class="price-tag">{{ bookingService.totalPrice | currency:'Rp.':'':'1.0-0' }}</span>
+  </div>
+
+  <button class="cta-btn" [disabled]="!isValid" (click)="confirm()">
+    Lanjut ke Pembayaran →
+  </button>
+
+</div>

@@ -1,0 +1,24 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "GMM Travel Backend Service",
+    "keywords": ["laravel", "framework"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0",
+        "midtrans/midtrans-php": "^2.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "config": {
+        "audit": {
+            "block-insecure": false
+        }
+    }
+}

@@ -1,0 +1,103 @@
+<div class="waiting-page">
+  <div class="waiting-overlay"></div>
+
+  <!-- Loading -->
+  <div class="center-box" *ngIf="isLoading">
+    <div class="big-spinner"></div>
+    <p class="loading-text">Memuat status pemesanan…</p>
+  </div>
+
+  <!-- Error -->
+  <div class="center-box" *ngIf="loadError && !isLoading">
+    <p class="error-text">Gagal memuat status. Periksa koneksi Anda.</p>
+    <button class="outline-btn" (click)="refreshStatus()">Coba Lagi</button>
+  </div>
+
+  <!-- Content -->
+  <div class="waiting-content" *ngIf="booking && !isLoading">
+
+    <!-- Status icon -->
+    <div class="status-icon-wrap">
+      <div class="status-icon" [class.icon-paid]="isPaid" [class.icon-processing]="isProcessing" [class.icon-issued]="isIssued" [class.icon-failed]="isFailed">
+        <span *ngIf="isPaid || isProcessing">⏳</span>
+        <span *ngIf="isIssued">✅</span>
+        <span *ngIf="isFailed">❌</span>
+      </div>
+    </div>
+
+    <!-- Main message -->
+    <div class="main-message">
+      <h2 class="msg-title" *ngIf="isPaid">Pembayaran Berhasil Diterima!</h2>
+      <h2 class="msg-title" *ngIf="isProcessing">Tiket Sedang Diproses</h2>
+      <h2 class="msg-title issued" *ngIf="isIssued">Tiket Anda Siap! 🎉</h2>
+      <h2 class="msg-title failed" *ngIf="isFailed">Proses Issuance Gagal</h2>
+
+      <p class="msg-sub" *ngIf="isPaid">
+        Pembayaran Anda telah kami terima. Tim kami akan segera memproses pemesanan tiket pesawat Anda.
+        <strong>Estimasi selesai: 1×24 jam</strong> di hari kerja.
+      </p>
+      <p class="msg-sub" *ngIf="isProcessing">
+        Tim kami sedang mengurus pemesanan tiket pesawat Anda ke maskapai. Harap tunggu, Anda akan mendapat notifikasi begitu tiket siap.
+        <strong>Estimasi selesai: 1×24 jam</strong> di hari kerja.
+      </p>
+      <p class="msg-sub" *ngIf="isIssued">
+        Tiket elektronik Anda sudah siap. Klik tombol di bawah untuk melihat dan mengunduh e-tiket Anda.
+      </p>
+      <p class="msg-sub failed-sub" *ngIf="isFailed">
+        Maaf, kami tidak dapat menerbitkan tiket untuk pemesanan ini (misalnya harga berubah atau kursi tidak tersedia). Tim kami akan menghubungi Anda untuk proses refund.
+      </p>
+    </div>
+
+    <!-- Booking code badge -->
+    <div class="code-card">
+      <p class="code-label">Kode Pemesanan Anda</p>
+      <p class="code-value">{{ booking.booking_code }}</p>
+      <p class="code-hint">Simpan kode ini untuk melacak status tiket Anda</p>
+    </div>
+
+    <!-- Status badge -->
+    <div class="status-badge-row">
+      <span class="status-badge" [class.badge-paid]="isPaid" [class.badge-processing]="isProcessing" [class.badge-issued]="isIssued" [class.badge-failed]="isFailed">
+        {{ statusLabel }}
+      </span>
+    </div>
+
+    <!-- Flight summary -->
+    <div class="summary-card" *ngIf="booking.flight_data as f">
+      <div class="summary-row">
+        <span class="summary-label">Penerbangan</span>
+        <span class="summary-val">{{ f.airline }} {{ f.flightNumber }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Rute</span>
+        <span class="summary-val">{{ f.origin }} → {{ f.destination }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Penumpang</span>
+        <span class="summary-val">{{ booking.passengers.length }} orang</span>
+      </div>
+      <div class="summary-row total-row">
+        <span class="summary-label">Total Dibayar</span>
+        <span class="summary-total">{{ formatPrice(booking.total_amount) }}</span>
+      </div>
+    </div>
+
+    <!-- CTA buttons -->
+    <div class="cta-row">
+      <button class="cta-btn primary" *ngIf="isIssued" (click)="viewTicket()">
+        📄 Lihat / Unduh E-Tiket
+      </button>
+      <button class="cta-btn outline" (click)="refreshStatus()">
+        🔄 Perbarui Status
+      </button>
+      <button class="cta-btn ghost" (click)="goHome()">
+        ← Kembali ke Beranda
+      </button>
+    </div>
+
+    <p class="last-check">
+      Halaman ini memperbarui status otomatis setiap 30 detik.
+    </p>
+
+  </div>
+</div>

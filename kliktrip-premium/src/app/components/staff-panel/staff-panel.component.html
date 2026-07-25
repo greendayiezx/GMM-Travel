@@ -1,0 +1,163 @@
+<div class="staff-page">
+
+  <!-- Login gate -->
+  <div class="login-box" *ngIf="!isAuthenticated">
+    <div class="login-card">
+      <h2 class="login-title">Staff Panel</h2>
+      <p class="login-sub">GMM Global Explore — Manajemen Tiket Pesawat</p>
+      <div class="form-group">
+        <label class="form-label">Kunci Akses Staff</label>
+        <input class="form-input" type="password" placeholder="Masukkan kunci staff"
+               [(ngModel)]="staffKey" (keydown.enter)="login()" />
+      </div>
+      <p class="login-error" *ngIf="loginError">{{ loginError }}</p>
+      <button class="login-btn" [disabled]="isLoading" (click)="login()">
+        {{ isLoading ? 'Memeriksa…' : 'Masuk →' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Main panel -->
+  <div class="panel-wrap" *ngIf="isAuthenticated">
+
+    <!-- Header -->
+    <div class="panel-header">
+      <div>
+        <h2 class="panel-title">Antrian Tiket Pesawat</h2>
+        <p class="panel-sub">{{ bookings.length }} booking menunggu diproses</p>
+      </div>
+      <div class="header-actions">
+        <button class="refresh-btn" (click)="loadQueue()">🔄 Refresh</button>
+        <button class="logout-btn" (click)="logout()">Keluar</button>
+      </div>
+    </div>
+
+    <div class="panel-body">
+
+      <!-- Queue list -->
+      <div class="queue-list">
+
+        <div class="loading-row" *ngIf="isLoading">
+          <div class="spinner"></div>
+          <span>Memuat antrian…</span>
+        </div>
+
+        <div class="empty-row" *ngIf="!isLoading && !loadError && bookings.length === 0">
+          Tidak ada booking yang perlu diproses saat ini.
+        </div>
+
+        <div class="error-row" *ngIf="loadError">
+          Gagal memuat data. <button class="text-btn" (click)="loadQueue()">Coba lagi</button>
+        </div>
+
+        <div class="queue-item"
+             *ngFor="let b of bookings"
+             [class.selected]="selectedBooking?.booking_code === b.booking_code"
+             (click)="selectBooking(b)">
+
+          <div class="qi-top">
+            <span class="qi-code">{{ b.booking_code }}</span>
+            <span class="qi-status" [class]="'status-' + b.status.toLowerCase()">
+              {{ STATUS_LABELS[b.status] || b.status }}
+            </span>
+          </div>
+
+          <div class="qi-route" *ngIf="b.flight_data">
+            {{ b.flight_data.airline }} · {{ b.flight_data.origin }} → {{ b.flight_data.destination }}
+          </div>
+
+          <div class="qi-bottom">
+            <span class="qi-pax">{{ b.passengers.length }} penumpang</span>
+            <span class="qi-price">{{ formatPrice(b.total_amount) }}</span>
+            <span class="qi-date">{{ formatDate(b.created_at) }}</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Detail panel -->
+      <div class="detail-panel" *ngIf="selectedBooking as b">
+        <div class="detail-header">
+          <h3 class="detail-title">{{ b.booking_code }}</h3>
+          <button class="close-btn" (click)="closeDetail()">✕</button>
+        </div>
+
+        <!-- Action feedback -->
+        <div class="action-msg" *ngIf="actionMsg">{{ actionMsg }}</div>
+
+        <!-- Flight info -->
+        <div class="detail-section" *ngIf="b.flight_data as f">
+          <p class="section-title">Detail Penerbangan</p>
+          <div class="detail-row"><span>Maskapai</span><strong>{{ f.airline }} {{ f.flightNumber }}</strong></div>
+          <div class="detail-row"><span>Rute</span><strong>{{ f.origin }} → {{ f.destination }}</strong></div>
+          <div class="detail-row"><span>Waktu</span><strong>{{ f.departureTime }} – {{ f.arrivalTime }}</strong></div>
+          <div class="detail-row"><span>Kelas</span><strong>{{ f.bookingClass }}</strong></div>
+          <div class="detail-row"><span>Harga/pax</span><strong>{{ formatPrice(f.price) }}</strong></div>
+          <div class="detail-row"><span>Total</span><strong class="total-val">{{ formatPrice(b.total_amount) }}</strong></div>
+        </div>
+
+        <!-- Passengers -->
+        <div class="detail-section">
+          <p class="section-title">Data Penumpang</p>
+          <div class="pax-card" *ngFor="let p of b.passengers; let i = index">
+            <p class="pax-name">{{ i + 1 }}. {{ p.title }} {{ p.full_name }}</p>
+            <p class="pax-detail">{{ p.passenger_type }} · {{ p.id_type }}: {{ p.id_number }}</p>
+            <p class="pax-detail">📞 {{ p.phone }} · ✉ {{ p.email }}</p>
+            <p class="pax-detail">TTL: {{ p.date_of_birth }}</p>
+          </div>
+        </div>
+
+        <!-- Raw flight data (for manual booking) -->
+        <details class="raw-details">
+          <summary>Data Lengkap untuk Booking Manual (Raw)</summary>
+          <pre class="raw-json">{{ b.flight_data | json }}</pre>
+        </details>
+
+        <!-- Actions -->
+        <div class="detail-section actions-section">
+          <p class="section-title">Tindakan</p>
+
+          <!-- Start processing -->
+          <div class="action-block" *ngIf="b.status === 'PAID'">
+            <p class="action-desc">Tandai bahwa Anda mulai mengurus tiket ini ke OTA/GDS.</p>
+            <button class="action-btn btn-process" (click)="startProcessing(b.booking_code)">
+              ▶ Mulai Proses Issuance
+            </button>
+          </div>
+
+          <!-- Upload ticket -->
+          <div class="action-block" *ngIf="b.status === 'PAID' || b.status === 'PROCESSING_ISSUANCE'">
+            <p class="action-desc">Upload e-tiket PDF asli dari maskapai/OTA.</p>
+            <input type="file" accept=".pdf" class="file-input" (change)="onFileChange($event)" />
+            <button class="action-btn btn-upload" [disabled]="!uploadFile || isUploading" (click)="uploadTicket(b.booking_code)">
+              {{ isUploading ? 'Mengupload…' : '📤 Upload Tiket & Tandai ISSUED' }}
+            </button>
+          </div>
+
+          <!-- Mark failed -->
+          <div class="action-block fail-block" *ngIf="b.status === 'PAID' || b.status === 'PROCESSING_ISSUANCE'">
+            <p class="action-desc">Tandai gagal jika tiket tidak bisa diterbitkan (harga naik, kursi habis, dll).</p>
+            <textarea class="fail-textarea" placeholder="Alasan kegagalan (wajib diisi)…" [(ngModel)]="failReason" rows="2"></textarea>
+            <button class="action-btn btn-fail" (click)="markFailed(b.booking_code)">
+              ✕ Tandai Gagal (FAILED_ISSUANCE)
+            </button>
+          </div>
+
+          <!-- Ticket link for issued -->
+          <div class="action-block" *ngIf="b.status === 'ISSUED' && b.ticket_url">
+            <a [href]="b.ticket_url" target="_blank" class="action-btn btn-view">📄 Lihat E-Tiket yang Diupload</a>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- No selection placeholder -->
+      <div class="no-selection" *ngIf="!selectedBooking && !isLoading">
+        <p>← Pilih booking dari daftar untuk melihat detail dan mengambil tindakan.</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>

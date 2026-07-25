@@ -1,0 +1,91 @@
+<div class="ticket-page">
+
+  <div class="ticket-bg-overlay"></div>
+
+  <div class="success-header">
+    <h2 class="success-title">Pembayaran Berhasil</h2>
+    <p class="success-sub">E-Tiket Anda siap digunakan</p>
+  </div>
+
+  <!-- Ticket card -->
+  <div class="ticket-card" id="printable-ticket">
+
+    <!-- Ticket header -->
+    <div class="ticket-head">
+      <div class="brand-row">
+        <img src="assets/gmm-logo.png" alt="GMM Travel" class="brand-logo-img" />
+      </div>
+      <div class="booking-code-badge">{{ bookingService.bookingCode }}</div>
+    </div>
+
+    <!-- Route strip -->
+    <div class="route-strip">
+      <div class="city-block">
+        <span class="city-code">{{ bookingService.schedule?.origin }}</span>
+        <span class="time-label">{{ bookingService.schedule?.departureTime }}</span>
+      </div>
+      <div class="route-center">
+        <div class="route-line">
+          <span class="dot"></span>
+          <span class="dash-full"></span>
+          <span class="dot"></span>
+        </div>
+        <span class="duration-label">{{ bookingService.schedule?.duration }}</span>
+      </div>
+      <div class="city-block right">
+        <span class="city-code">{{ bookingService.schedule?.destination }}</span>
+        <span class="time-label">{{ bookingService.schedule?.arrivalTime }}</span>
+      </div>
+    </div>
+
+    <!-- Tear line -->
+    <div class="tear-line">
+      <div class="circle left"></div>
+      <div class="dashes"></div>
+      <div class="circle right"></div>
+    </div>
+
+    <!-- Passenger info grid -->
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">Penumpang</span>
+        <span class="info-val">{{ bookingService.passenger?.fullName }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">No. Kursi</span>
+        <span class="info-val seat-val">{{ bookingService.selectedSeat }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Operator</span>
+        <span class="info-val">{{ bookingService.schedule?.operator }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Kelas</span>
+        <span class="info-val">{{ bookingService.schedule?.class }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">No. HP</span>
+        <span class="info-val">{{ bookingService.passenger?.phone }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Metode Bayar</span>
+        <span class="info-val">{{ bookingService.paymentMethod | uppercase }}</span>
+      </div>
+    </div>
+
+    <!-- QR section -->
+    <div class="qr-section">
+      <img *ngIf="qrDataUrl" [src]="qrDataUrl" alt="QR Tiket" class="qr-image" />
+      <div *ngIf="!qrDataUrl" class="qr-placeholder">⏳</div>
+      <p class="qr-hint">Tunjukkan QR ini kepada petugas</p>
+    </div>
+
+  </div><!-- /ticket-card -->
+
+  <!-- Actions -->
+  <div class="action-row">
+    <button class="print-btn" (click)="printTicket()">Cetak / Simpan PDF</button>
+    <button class="home-btn" (click)="goHome()">Kembali ke Beranda</button>
+  </div>
+
+</div>

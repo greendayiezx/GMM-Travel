@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+@keyframes ripple-expand {
+  0% { width: 10px; height: 10px; opacity: 1; }
+  100% { width: 300px; height: 300px; opacity: 0; }
+}
+
+button:hover:not(:disabled) {
+  box-shadow: 0 12px 35px rgba(30, 155, 240, 0.45) !important;
+  transform: scale(1.02) !important;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98) !important;
+}

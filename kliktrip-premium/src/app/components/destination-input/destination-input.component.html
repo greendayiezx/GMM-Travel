@@ -1,0 +1,89 @@
+<div class="destination-input-wrapper relative">
+  <div #triggerElement class="flex items-center gap-3 border rounded-xl px-4 py-3 transition-all duration-200"
+    [style.border-color]="isOpen ? '#1E9BF0' : hasError ? '#ef4444' : '#e5e7eb'"
+    [style.box-shadow]="isOpen ? '0 0 0 3px rgba(30,155,240,0.12)' : hasError ? '0 0 0 3px rgba(239,68,68,0.10)' : 'none'">
+    <svg class="w-5 h-5 flex-shrink-0" style="color:#1E9BF0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+    <input
+      type="text"
+      [(ngModel)]="query"
+      (input)="onInput()"
+      (focus)="onFocus()"
+      (keydown.escape)="close()"
+      (keydown.arrowdown)="onArrowDown($event)"
+      (keydown.arrowup)="onArrowUp($event)"
+      (keydown.enter)="onEnter($event)"
+      [placeholder]="placeholder"
+      class="flex-1 outline-none text-sm bg-transparent placeholder-gray-400"
+      style="color:#1A1A1A"
+      autocomplete="off"
+      role="combobox"
+      [attr.aria-expanded]="isOpen"
+      aria-autocomplete="list"
+      aria-label="Pilih destinasi tujuan"
+    />
+    <button *ngIf="query" (click)="query=''; close()" class="flex-shrink-0 text-gray-400 hover:text-gray-600">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <p *ngIf="hasError && !query" class="text-xs mt-1" style="color:#ef4444">{{ placeholder }}</p>
+
+  <!-- Dropdown -->
+  <div #dropdownPortal
+    class="bg-white rounded-2xl overflow-hidden"
+    role="listbox"
+    [style.display]="isOpen && filtered.length > 0 ? 'block' : 'none'"
+    style="position: fixed !important; z-index: 9999999 !important; background-color: #ffffff !important; opacity: 1 !important; box-shadow: 0 20px 60px rgba(0,0,0,0.22) !important; border: 1px solid #e2e8f0 !important;"
+    [style.top.px]="dropdownTop"
+    [style.left.px]="dropdownLeft"
+    [style.width.px]="dropdownWidth">
+    <div class="p-2">
+      <p class="text-xs font-semibold uppercase tracking-wider px-3 py-2" style="color:rgba(44,62,80,0.50)">
+        {{ query ? 'Hasil Pencarian' : 'Destinasi Populer' }}
+      </p>
+      <button
+        *ngFor="let dest of filtered; let i = index"
+        (click)="select(dest)"
+        role="option"
+        [attr.aria-selected]="i === activeIndex"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 hover:bg-[#F8F9FA] group text-left"
+        [style.background]="i === activeIndex ? '#F8F9FA' : 'transparent'">
+        <span class="w-10 h-10 flex items-center justify-center flex-shrink-0 bg-slate-50 rounded-xl border border-slate-100 text-slate-800">
+          <img *ngIf="dest.logo" [src]="dest.logo" [alt]="dest.name" class="w-7 h-7 object-contain flex-shrink-0">
+          <ng-container *ngIf="!dest.logo">
+            <svg *ngIf="dest.icon === 'wave'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2 10c3 0 3-3 6-3s3 3 6 3 3-3 6-3 3 3 6 3M2 15c3 0 3-3 6-3s3 3 6 3 3-3 6-3 3 3 6 3M2 20c3 0 3-3 6-3s3 3 6 3 3-3 6-3 3 3 6 3"/>
+            </svg>
+            <svg *ngIf="dest.icon === 'mountain'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 20l7-14 4 8 2-4 5 10H3z"/>
+            </svg>
+            <svg *ngIf="dest.icon === 'anchor'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 5V3m0 18v-2m-9-7h2m14 0h2m-3-7l-1.5 1.5M7.5 16.5L6 18m0-12l1.5 1.5m9 9L18 18M12 17a5 5 0 100-10 5 5 0 000 10z"/>
+            </svg>
+            <svg *ngIf="dest.icon === 'boat'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v14M5 17h14l-2 4H7l-2-4zm7-14L7 8h10l-5-5z"/>
+            </svg>
+            <svg *ngIf="dest.icon === 'bridge'" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M6 10v8M18 10v8M3 18h18M12 10V6a2 2 0 00-4 0v4m8 0V6a2 2 0 00-4 0v4"/>
+            </svg>
+            <span *ngIf="!dest.icon" class="text-xl text-center">{{ dest.emoji }}</span>
+          </ng-container>
+        </span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold truncate group-hover:text-[#1E9BF0] transition-colors" style="color:#1A1A1A">{{ dest.name }}</p>
+          <p class="text-xs truncate" style="color:rgba(44,62,80,0.55)">{{ dest.country }}</p>
+        </div>
+        <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" style="color:#1E9BF0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+

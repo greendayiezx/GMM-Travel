@@ -1,0 +1,92 @@
+<article
+  class="group card-article cursor-pointer"
+  tabindex="0"
+  (click)="selectDestination.emit(dest)"
+  [attr.aria-label]="dest.name + ', ' + dest.country + ' - ' + dest.price">
+
+  <!-- Image area with real photo or gradient -->
+  <div class="card-image-wrap">
+    <img *ngIf="dest.image" [src]="dest.image" [alt]="dest.name"
+      class="card-image"
+      loading="lazy"
+      (error)="onImageError($event)">
+
+    <div *ngIf="!dest.image" class="card-gradient" [style.background]="dest.gradient || 'linear-gradient(135deg, #1E9BF0, #0d7fd4)'"></div>
+
+    <!-- Emoji fallback when no image -->
+    <div *ngIf="!dest.image" class="card-emoji-wrap">
+      <img *ngIf="dest.logo" [src]="dest.logo" [alt]="dest.name" class="card-logo">
+      <span *ngIf="!dest.logo" class="card-emoji" role="img" [attr.aria-label]="dest.name">
+        {{ dest.emoji || '✈️' }}
+      </span>
+    </div>
+
+    <!-- Accent border on hover (Neon Lime) -->
+    <div class="accent-border"></div>
+
+    <!-- Category Badge (top-left) -->
+    <div *ngIf="dest.badge" class="card-badge"
+      [class.badge-ibadah]="dest.kategori === 'IBADAH'"
+      [class.badge-international]="dest.kategori === 'INTERNASIONAL'"
+      [class.badge-domestic]="dest.kategori === 'DOMESTIK'"
+      [class.badge-event]="dest.kategori === 'EVENT'">
+      {{ dest.badge }}
+    </div>
+
+    <!-- Rating chip (top-right) -->
+    <div class="card-rating-chip">
+      <svg class="card-star" width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+      </svg>
+      <span>{{ dest.rating }}</span>
+    </div>
+
+    <!-- Price tag overlay (bottom-right) -->
+    <div class="card-price-overlay">
+      <span class="price-label">Mulai</span>
+      <span class="price-value">{{ dest.price }}</span>
+    </div>
+  </div>
+
+  <!-- Card body -->
+  <div class="card-body">
+    <!-- Title + country -->
+    <div class="card-header-row">
+      <div class="card-titles">
+        <h3 class="card-name">{{ dest.name }}</h3>
+        <p class="card-country">{{ dest.country }}</p>
+      </div>
+    </div>
+
+    <!-- Tagline -->
+    <p class="card-tagline">{{ dest.tagline }}</p>
+
+    <!-- Duration + reviews footer -->
+    <div class="card-footer">
+      <div class="card-duration">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>{{ dest.duration }}</span>
+      </div>
+      <div class="card-reviews" *ngIf="dest.reviews">
+        <span>({{ dest.reviews | number }} ulasan)</span>
+      </div>
+    </div>
+
+    <!-- Kuota bar (Safaria packages) -->
+    <div class="card-kuota" *ngIf="dest.kuota_total">
+      <div class="kuota-bar">
+        <div class="kuota-fill" [style.width]="((dest.kuota_saat_ini || 0) / dest.kuota_total * 100) + '%'"></div>
+      </div>
+      <span class="kuota-text">Kuota: {{ dest.kuota_saat_ini || 0 }}/{{ dest.kuota_total }}</span>
+    </div>
+
+    <!-- CTA — visible on hover/focus -->
+    <button
+      (click)="selectDestination.emit(dest)"
+      class="card-cta">
+      Pesan Sekarang →
+    </button>
+  </div>
+</article>

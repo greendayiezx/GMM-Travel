@@ -1,0 +1,539 @@
+<div class="booking-page">
+
+  <button class="back-btn" (click)="goBack()">← Kembali</button>
+
+  <div class="results-header">
+    <h1 class="results-title">Jadwal Keberangkatan Terbaik Anda</h1>
+    <p class="results-sub">Silakan pilih tiket penerbangan sesuai preferensi Anda</p>
+  </div>
+
+  <!-- Error -->
+  <div class="status-box error-box" *ngIf="loadError && !isLoading">
+    <p>Gagal memuat jadwal penerbangan. Periksa koneksi lalu coba lagi.</p>
+    <button class="retry-btn" (click)="ngOnInit()">Coba Lagi</button>
+  </div>
+
+  <!-- ── SKELETON LOADING (mirip tiket.com) ─────────────────── -->
+  <ng-container *ngIf="isLoading">
+    <p class="skel-subtitle">Mencari tiket untuk perjalananmu</p>
+
+    <!-- Skeleton search summary -->
+    <div class="skel-summary">
+      <div class="skel-bar" style="width:90px;height:14px"></div>
+      <div class="skel-dot"></div>
+      <div class="skel-bar" style="width:80px;height:14px"></div>
+      <div class="skel-dot"></div>
+      <div class="skel-bar" style="width:140px;height:14px"></div>
+      <div class="skel-dot"></div>
+      <div class="skel-bar" style="width:120px;height:14px"></div>
+      <div class="skel-btn"></div>
+    </div>
+
+    <!-- Skeleton date strip -->
+    <div class="skel-date-strip">
+      <div class="skel-date-item" *ngFor="let _ of [1,2,3,4,5,6,7]">
+        <div class="skel-bar" style="width:50px;height:10px;margin-bottom:8px"></div>
+        <div class="skel-bar" style="width:70px;height:12px"></div>
+      </div>
+    </div>
+
+    <!-- Skeleton flight cards -->
+    <div class="skel-card" *ngFor="let _ of [1,2,3,4,5]">
+      <div class="skel-card-left">
+        <div class="skel-avatar"></div>
+        <div class="skel-card-info">
+          <div class="skel-bar" style="width:130px;height:14px;margin-bottom:6px"></div>
+          <div class="skel-bar skel-red" style="width:100px;height:10px;margin-bottom:4px"></div>
+          <div class="skel-bar skel-red" style="width:80px;height:10px;margin-bottom:4px"></div>
+          <div class="skel-bar" style="width:50px;height:10px"></div>
+        </div>
+      </div>
+      <div class="skel-card-right">
+        <div class="skel-bar" style="width:90px;height:14px;margin-bottom:6px"></div>
+        <div class="skel-bar" style="width:70px;height:12px"></div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ── Search summary bar ──────────────────────────────────── -->
+  <div class="search-summary" *ngIf="!isLoading && !loadError">
+    <div class="ss-route">
+      <span class="ss-city">{{ originName || 'Asal' }}</span>
+      <span class="ss-arrow">✈</span>
+      <span class="ss-city">{{ destinationName || 'Tujuan' }}</span>
+    </div>
+    <div class="ss-divider"></div>
+    <div class="ss-info">{{ formattedDate }}</div>
+    <div class="ss-divider"></div>
+    <div class="ss-info">{{ totalPassengers }} Penumpang · {{ seatClass }}</div>
+    <button class="ss-edit-btn" (click)="openEditModal()">Ubah Pencarian</button>
+  </div>
+
+  <!-- ── Date price strip ────────────────────────────────────── -->
+  <div class="date-strip-wrap" *ngIf="!isLoading && nearbyDates.length > 0">
+    <button #dsPrev class="ds-nav ds-prev" (click)="scrollStrip(dsScroll, -1)" aria-label="Sebelumnya">‹</button>
+
+    <div class="date-strip" #dsScroll>
+      <div class="date-item" *ngFor="let d of nearbyDates"
+           [class.active]="d.active"
+           [class.unavailable]="d.price === -1"
+           [class.clickable]="d.price > 0 && !d.active"
+           (click)="d.price > 0 && !d.active ? selectDate(d) : null">
+        <span class="di-label">{{ d.label }}</span>
+
+        <!-- Skeleton loading -->
+        <span class="di-skeleton" *ngIf="d.loading"></span>
+
+        <!-- Harga real -->
+        <span class="di-price" *ngIf="!d.loading && d.price > 0">IDR {{ formatNumber(d.price) }}</span>
+
+        <!-- Tak tersedia -->
+        <span class="di-unavailable" *ngIf="!d.loading && d.price <= 0">Tak Tersedia</span>
+      </div>
+    </div>
+
+    <button #dsNext class="ds-nav ds-next" (click)="scrollStrip(dsScroll, 1)" aria-label="Berikutnya">›</button>
+  </div>
+
+  <!-- ── Empty State ──────────────────────────────────────────── -->
+  <div class="empty-state" *ngIf="!isLoading && !loadError && flights.length === 0">
+    <div class="empty-state-card">
+      <div class="empty-illust">
+        <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect x="158" y="60" width="6" height="120" rx="3" fill="#8B5E3C"/>
+          <rect x="130" y="55" width="60" height="22" rx="4" fill="#F59E0B" transform="rotate(-8 160 66)"/>
+          <polygon points="190,60 198,66 190,72" fill="#F59E0B" transform="rotate(-8 160 66)"/>
+          <rect x="125" y="80" width="55" height="20" rx="4" fill="#F59E0B" transform="rotate(6 152 90)"/>
+          <polygon points="125,84 117,90 125,96" fill="#F59E0B" transform="rotate(6 152 90)"/>
+          <circle cx="90" cy="62" r="22" fill="#FFD6A0"/>
+          <ellipse cx="90" cy="48" rx="24" ry="10" fill="#EF4444"/>
+          <rect x="78" y="40" width="24" height="12" rx="4" fill="#EF4444"/>
+          <circle cx="90" cy="38" r="4" fill="#EF4444"/>
+          <circle cx="83" cy="64" r="2.5" fill="#333"/>
+          <circle cx="97" cy="64" r="2.5" fill="#333"/>
+          <path d="M85 72 Q90 77 95 72" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <rect x="52" y="85" width="30" height="40" rx="8" fill="#3B82F6"/>
+          <rect x="56" y="90" width="22" height="12" rx="3" fill="#60A5FA"/>
+          <rect x="68" y="82" width="44" height="50" rx="10" fill="#3B82F6"/>
+          <path d="M68 95 Q50 105 55 120" stroke="#FFD6A0" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M112 95 Q130 100 125 115" stroke="#FFD6A0" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <rect x="115" y="105" width="25" height="18" rx="2" fill="#FEF3C7" stroke="#D97706" stroke-width="1"/>
+          <line x1="120" y1="110" x2="135" y2="110" stroke="#D97706" stroke-width="1" opacity="0.5"/>
+          <line x1="120" y1="114" x2="132" y2="114" stroke="#D97706" stroke-width="1" opacity="0.5"/>
+          <line x1="120" y1="118" x2="128" y2="118" stroke="#D97706" stroke-width="1" opacity="0.5"/>
+          <path d="M80 132 L75 165" stroke="#1E3A5F" stroke-width="10" stroke-linecap="round"/>
+          <path d="M100 132 L105 165" stroke="#1E3A5F" stroke-width="10" stroke-linecap="round"/>
+          <ellipse cx="73" cy="170" rx="12" ry="6" fill="#7C3AED"/>
+          <ellipse cx="107" cy="170" rx="12" ry="6" fill="#7C3AED"/>
+          <circle cx="40" cy="178" r="3" fill="#E5E7EB"/>
+          <circle cx="160" cy="180" r="4" fill="#E5E7EB"/>
+          <circle cx="190" cy="176" r="2.5" fill="#E5E7EB"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">Penerbangan yang kamu cari nggak ada, nih</h3>
+      <p class="empty-desc">Coba pilih tanggal lain di atas yang tersedia, atau ubah destinasimu.</p>
+      <button class="empty-btn" (click)="openEditModal()">Ubah Pencarian</button>
+    </div>
+  </div>
+
+  <!-- ── Filter bar ──────────────────────────────────────────── -->
+  <div class="filter-bar" *ngIf="!isLoading && flights.length > 0">
+
+    <!-- FILTER (reset semua) -->
+    <div class="fchip-wrap">
+      <button class="fchip" [class.factive]="activeFilterCount() > 0" (click)="toggleDropdown('filter', $event)">
+        <svg class="fchip-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="6"  x2="20" y2="6"/>
+          <line x1="4" y1="12" x2="14" y2="12"/>
+          <line x1="4" y1="18" x2="10" y2="18"/>
+        </svg>
+        Filter
+        <span *ngIf="activeFilterCount() > 0" class="fchip-badge">{{ activeFilterCount() }}</span>
+      </button>
+      <div class="fdrop" *ngIf="openDropdown === 'filter'">
+        <div class="fdrop-title">Filter Aktif</div>
+        <p class="fdrop-empty" *ngIf="activeFilterCount() === 0">Belum ada filter aktif.</p>
+        <ul class="fdrop-active" *ngIf="activeFilterCount() > 0">
+          <li *ngIf="sortMode !== 'reko'">Urutkan: {{ sortLabels[sortMode] }}</li>
+          <li *ngIf="transitFilter === 'direct'">Transit: Langsung</li>
+          <li *ngIf="transitFilter === '1'">Transit: 1 Transit</li>
+          <li *ngIf="airlineFilter.size > 0">Maskapai: {{ airlineFilter.size }} dipilih</li>
+          <li *ngIf="depFrom !== 0 || depTo !== 24">Waktu pergi: {{ formatHour(depFrom) }} - {{ formatHour(depTo) }}</li>
+          <li *ngIf="arrFrom !== 0 || arrTo !== 24">Waktu tiba: {{ formatHour(arrFrom) }} - {{ formatHour(arrTo) }}</li>
+        </ul>
+        <button class="fdrop-btn-primary" (click)="resetAllFilters(); openDropdown = null">Reset Semua</button>
+      </div>
+    </div>
+
+    <!-- URUTKAN -->
+    <div class="fchip-wrap">
+      <button class="fchip" [class.factive]="sortMode !== 'reko'" (click)="toggleDropdown('sort', $event)">
+        <svg class="fchip-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h13M3 12h9M3 18h5"/>
+        </svg>
+        Urutkan
+        <svg class="fchip-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="fdrop" *ngIf="openDropdown === 'sort'">
+        <div class="fdrop-title">Urutkan berdasarkan</div>
+        <label class="fdrop-radio" *ngFor="let opt of sortLabels | keyvalue">
+          <input type="radio" name="sortMode" [value]="opt.key" [(ngModel)]="sortMode">
+          <span>{{ opt.value }}</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- TRANSIT -->
+    <div class="fchip-wrap">
+      <button class="fchip" [class.factive]="transitFilter !== ''" (click)="toggleDropdown('transit', $event)">
+        <svg class="fchip-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+        </svg>
+        Transit
+        <svg class="fchip-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="fdrop" *ngIf="openDropdown === 'transit'">
+        <div class="fdrop-title">Transit</div>
+        <div class="fdrop-chip-row">
+          <button class="fdrop-chip" [class.selected]="transitFilter === 'direct'" (click)="transitFilter = transitFilter === 'direct' ? '' : 'direct'">Langsung</button>
+          <button class="fdrop-chip" [class.selected]="transitFilter === '1'" (click)="transitFilter = transitFilter === '1' ? '' : '1'">1 Transit</button>
+          <button class="fdrop-chip disabled" disabled>2+ Transit</button>
+        </div>
+        <div class="fdrop-actions">
+          <button class="fdrop-btn-ghost" (click)="transitFilter = ''">Reset</button>
+          <button class="fdrop-btn-primary" (click)="openDropdown = null">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MASKAPAI -->
+    <div class="fchip-wrap">
+      <button class="fchip" [class.factive]="airlineFilter.size > 0" (click)="toggleDropdown('airline', $event)">
+        <svg class="fchip-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12l6-3V6a2 2 0 0 1 4 0v3l6 3v3l-6-1.5V17l2 1v2l-4-1-4 1v-2l2-1v-3.5L4 15z"/>
+        </svg>
+        Maskapai
+        <span *ngIf="airlineFilter.size > 0" class="fchip-badge">{{ airlineFilter.size }}</span>
+        <svg class="fchip-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="fdrop fdrop-wide" *ngIf="openDropdown === 'airline'">
+        <div class="fdrop-title">Maskapai</div>
+        <label class="fdrop-airline" *ngFor="let a of availableAirlines">
+          <img [src]="airlineLogoUrl(a.code)" [alt]="a.name" (error)="onLogoError($event, a.code)">
+          <div class="fda-info">
+            <span class="fda-name">{{ a.name }} <span class="fda-count">({{ a.count }})</span></span>
+            <span class="fda-price">Mulai {{ formatPrice(a.minPrice) }}</span>
+          </div>
+          <input type="checkbox" [checked]="airlineFilter.has(a.code)" (change)="toggleAirline(a.code)">
+        </label>
+        <div class="fdrop-actions">
+          <button class="fdrop-btn-ghost" (click)="airlineFilter.clear()">Reset</button>
+          <button class="fdrop-btn-primary" (click)="openDropdown = null">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAKTU -->
+    <div class="fchip-wrap">
+      <button class="fchip" [class.factive]="isTimeFiltered()" (click)="openTimeDropdown($event)">
+        <svg class="fchip-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <polyline points="12 7 12 12 15 14"/>
+        </svg>
+        Waktu
+        <svg class="fchip-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      <div class="fdrop fdrop-time" *ngIf="openDropdown === 'time'">
+        <!-- Waktu Pergi -->
+        <div class="ft-head">
+          <span class="ft-title">
+            Waktu Pergi
+            <span class="ft-dot" *ngIf="draftDepFrom !== 0 || draftDepTo !== 24"></span>
+          </span>
+          <span class="ft-value">{{ formatHour(draftDepFrom) }} - {{ formatHour(draftDepTo) }}</span>
+        </div>
+        <div class="rs">
+          <div class="rs-track"></div>
+          <div class="rs-fill"
+               [style.left.%]="(draftDepFrom / 24) * 100"
+               [style.right.%]="100 - (draftDepTo / 24) * 100"></div>
+          <input class="rs-input" type="range" min="0" max="24" step="1"
+                 [(ngModel)]="draftDepFrom" (input)="clampDep()">
+          <input class="rs-input" type="range" min="0" max="24" step="1"
+                 [(ngModel)]="draftDepTo"   (input)="clampDep()">
+        </div>
+        <div class="rs-labels">
+          <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:59</span>
+        </div>
+
+        <!-- Waktu Tiba -->
+        <div class="ft-head" style="margin-top:18px;">
+          <span class="ft-title">
+            Waktu Tiba
+            <span class="ft-dot" *ngIf="draftArrFrom !== 0 || draftArrTo !== 24"></span>
+          </span>
+          <span class="ft-value">{{ formatHour(draftArrFrom) }} - {{ formatHour(draftArrTo) }}</span>
+        </div>
+        <div class="rs">
+          <div class="rs-track"></div>
+          <div class="rs-fill"
+               [style.left.%]="(draftArrFrom / 24) * 100"
+               [style.right.%]="100 - (draftArrTo / 24) * 100"></div>
+          <input class="rs-input" type="range" min="0" max="24" step="1"
+                 [(ngModel)]="draftArrFrom" (input)="clampArr()">
+          <input class="rs-input" type="range" min="0" max="24" step="1"
+                 [(ngModel)]="draftArrTo"   (input)="clampArr()">
+        </div>
+        <div class="rs-labels">
+          <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:59</span>
+        </div>
+
+        <div class="fdrop-actions">
+          <button class="fdrop-btn-ghost" (click)="resetTimeFilters()">Reset</button>
+          <button class="fdrop-btn-primary" (click)="applyTimeFilter()">Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="fchip" [class.factive]="directOnly" (click)="directOnly = !directOnly">
+      Penerbangan Langsung
+    </button>
+
+    <div class="fb-sep"></div>
+    <span class="fb-count">{{ filteredFlights.length }} penerbangan ditemukan</span>
+  </div>
+
+  <!-- Flight list -->
+  <div class="flight-list" *ngIf="!isLoading && flights.length > 0">
+    <div class="flight-card" *ngFor="let f of filteredFlights; let i = index">
+
+      <!-- Body row -->
+      <div class="card-body">
+
+        <!-- Left: airline + detail -->
+        <div class="card-airline">
+          <div class="airline-head">
+            <img class="airline-logo"
+                 [src]="airlineLogoUrl(f.airline)"
+                 [alt]="airlineName(f.airline)"
+                 (error)="onLogoError($event, f.airline)">
+            <div class="airline-info">
+              <p class="airline-name">{{ airlineName(f.airline) }}</p>
+              <p class="airline-code">{{ aircraftModel(f.airline) }}</p>
+            </div>
+          </div>
+          <div class="airline-baggage">
+            <span class="bag-icon">🧳</span>
+            <span>Bagasi {{ baggageKg(f.airline) }} kg</span>
+          </div>
+          <button class="detail-toggle" (click)="toggleDetails(i)">
+            Detail Perjalanan
+            <span [style.display]="'inline-block'" [style.transform]="expandedIndex === i ? 'rotate(180deg)' : 'rotate(0)'" style="transition:transform 0.2s">▾</span>
+          </button>
+        </div>
+
+        <!-- Center: timeline -->
+        <div class="card-timeline">
+          <div class="timeline-side">
+            <span class="tl-time">{{ f.departureTime }}</span>
+            <span class="tl-code">{{ f.origin }}</span>
+          </div>
+
+          <div class="tl-middle">
+            <span class="tl-direct">
+              {{ f.transitCount === 0 ? 'LANGSUNG' : f.transitCount + ' TRANSIT' }}
+            </span>
+            <div class="tl-line">
+              <span class="tl-icon">✈</span>
+            </div>
+            <span class="tl-dur">
+              <strong>Estimasi {{ f.duration }}</strong>
+              <span *ngIf="f.transitCount > 0" class="tl-transit-info">
+                • Transit {{ transitWait(f) }} di {{ transitAirport(f) }}
+              </span>
+            </span>
+          </div>
+
+          <div class="timeline-side">
+            <span class="tl-time">{{ f.arrivalTime }}</span>
+            <span class="tl-code">{{ f.destination }}</span>
+          </div>
+        </div>
+
+        <!-- Right: price + button -->
+        <div class="card-price">
+          <span class="price-label">HARGA PER PAX</span>
+          <span class="price-value">{{ formatPrice(f.price) }}</span>
+          <span class="price-tag">{{ tagLabel(i) }}</span>
+          <button class="select-btn" (click)="onSelectFlight(f)">
+            {{ isBookableFlight(f) ? 'Booking Sekarang →' : 'Lihat & Beli →' }}
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Collapsible detail (timeline proporsional) -->
+      <div class="card-detail" *ngIf="expandedIndex === i">
+        <div class="td-meta">
+          {{ formattedDate }} • {{ f.duration }}
+          <span *ngIf="f.transitCount > 0"> • {{ f.transitCount }} transit</span>
+        </div>
+
+        <ng-container *ngIf="detailTimeline(f) as m">
+          <div class="td-abs" [style.height.px]="m.height + 20">
+            <!-- Continuous vertical line -->
+            <div class="td-vline" [style.height.px]="m.nodes[m.nodes.length - 1].top"></div>
+
+            <!-- Transit band (positioned between arrive & depart transit) -->
+            <div *ngIf="m.hasTransit && m.transitBox as tb"
+                 class="td-transit-band"
+                 [style.top.px]="tb.top"
+                 [style.height.px]="tb.height">
+              <div class="td-transit-box">
+                <span class="td-transit-icon">⏱</span>
+                Transit {{ isLongTransit(f) ? 'panjang' : '' }} {{ transitWait(f) }} di {{ airportCity(transitAirport(f)) }}
+              </div>
+            </div>
+
+            <!-- Departure node -->
+            <div class="td-node" [style.top.px]="m.nodes[0].top">
+              <span class="td-time">{{ m.nodes[0].time }}</span>
+              <span class="td-dot"></span>
+              <div class="td-content">
+                <p class="td-airport">{{ airportLabel(f.origin) }}</p>
+                <div class="td-airline-row">
+                  <img class="td-mini-logo" [src]="airlineLogoUrl(f.airline)" [alt]="airlineName(f.airline)"
+                       (error)="onLogoError($event, f.airline)">
+                  <span class="td-airline-txt">
+                    {{ airlineName(f.airline) }} {{ f.flightNumber }} · {{ aircraftModel(f.airline) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <ng-container *ngIf="m.hasTransit">
+              <!-- Transit arrival node -->
+              <div class="td-node" [style.top.px]="m.nodes[1].top">
+                <span class="td-time td-time-small">{{ m.nodes[1].time }}</span>
+                <span class="td-dot td-dot-hollow"></span>
+              </div>
+
+              <!-- Transit departure node (start of leg 2) -->
+              <div class="td-node" [style.top.px]="m.nodes[2].top">
+                <span class="td-time td-time-small">{{ m.nodes[2].time }}</span>
+                <span class="td-dot td-dot-hollow"></span>
+                <div class="td-content">
+                  <div class="td-airline-row">
+                    <img class="td-mini-logo" [src]="airlineLogoUrl(secondAirlineCode(f))" [alt]="airlineName(secondAirlineCode(f))"
+                         (error)="onLogoError($event, secondAirlineCode(f))">
+                    <span class="td-airline-txt">
+                      {{ airlineName(secondAirlineCode(f)) }} {{ secondFlightNumber(f) }} · {{ aircraftModel(secondAirlineCode(f)) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Arrival node -->
+            <div class="td-node" [style.top.px]="m.nodes[m.nodes.length - 1].top">
+              <span class="td-time">{{ m.nodes[m.nodes.length - 1].time }}</span>
+              <span class="td-dot"></span>
+              <div class="td-content">
+                <p class="td-airport">{{ airportLabel(f.destination) }}</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+    </div>
+  </div>
+
+  <app-footer-section *ngIf="!isLoading && flights.length > 0"
+                      class="relative z-30 block mt-16 w-full"
+                      style="margin-bottom: -80px; align-self: stretch;"></app-footer-section>
+
+  <!-- ── Edit Search Modal ───────────────────────────────────── -->
+  <div class="edit-overlay" *ngIf="showEditModal" (click)="closeEditModal()"></div>
+  <div class="edit-modal" *ngIf="showEditModal">
+    <div class="em-header">
+      <h3 class="em-title">Ubah Pencarian</h3>
+      <button class="em-close" (click)="closeEditModal()">✕</button>
+    </div>
+
+    <!-- Origin / Destination -->
+    <div class="em-route-card">
+      <div class="em-field">
+        <label class="em-label">Dari</label>
+        <div class="em-value" *ngIf="!editOriginQuery && editOriginResults.length === 0" (click)="editOriginQuery = ' '">
+          {{ editOriginName || editOrigin }}
+        </div>
+        <input class="em-input" *ngIf="editOriginQuery !== ''" type="text"
+               [value]="editOriginQuery === ' ' ? '' : editOriginQuery"
+               (input)="onEditOriginInput($any($event.target).value)"
+               placeholder="Cari bandara..." autofocus>
+        <div class="em-dropdown" *ngIf="editOriginResults.length > 0">
+          <div class="em-drop-item" *ngFor="let ap of editOriginResults" (click)="selectEditOrigin(ap)">
+            <strong>{{ ap.city }}</strong> <span class="em-drop-code">{{ ap.code }}</span>
+            <div class="em-drop-name">{{ ap.name }}</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="em-swap" (click)="swapEditCities()">⇅</button>
+
+      <div class="em-field">
+        <label class="em-label">Ke</label>
+        <div class="em-value" *ngIf="!editDestQuery && editDestResults.length === 0" (click)="editDestQuery = ' '">
+          {{ editDestinationName || editDestination }}
+        </div>
+        <input class="em-input" *ngIf="editDestQuery !== ''" type="text"
+               [value]="editDestQuery === ' ' ? '' : editDestQuery"
+               (input)="onEditDestInput($any($event.target).value)"
+               placeholder="Cari bandara...">
+        <div class="em-dropdown" *ngIf="editDestResults.length > 0">
+          <div class="em-drop-item" *ngFor="let ap of editDestResults" (click)="selectEditDest(ap)">
+            <strong>{{ ap.city }}</strong> <span class="em-drop-code">{{ ap.code }}</span>
+            <div class="em-drop-name">{{ ap.name }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date -->
+    <div class="em-date-card">
+      <div class="em-field">
+        <label class="em-label">Pergi</label>
+        <input class="em-input" type="date" [(ngModel)]="editDate">
+      </div>
+      <div class="em-round-toggle">
+        <span>Pulang-pergi?</span>
+        <label class="em-switch">
+          <input type="checkbox" [(ngModel)]="editRoundTrip">
+          <span class="em-slider"></span>
+        </label>
+      </div>
+      <div class="em-field" *ngIf="editRoundTrip">
+        <label class="em-label">Pulang</label>
+        <input class="em-input" type="date" [(ngModel)]="editReturnDate">
+      </div>
+    </div>
+
+    <!-- Passengers & Class -->
+    <div class="em-pax-card">
+      <span>{{ editPassengers }} Penumpang, {{ editSeatClass }}</span>
+    </div>
+
+    <!-- Submit -->
+    <button class="em-submit" (click)="submitEditSearch()">Ayo Cari</button>
+  </div>
+
+</div>

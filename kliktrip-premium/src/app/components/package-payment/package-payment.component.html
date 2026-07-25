@@ -1,0 +1,338 @@
+<div class="pp-page">
+
+  <!-- Steps -->
+  <div class="pp-steps">
+    <div class="pp-steps-inner">
+      <div class="pp-step done">
+        <span class="pp-step-dot">✓</span>
+        <span class="pp-step-label">Pilih Metode</span>
+      </div>
+      <span class="pp-step-line"></span>
+      <div class="pp-step active">
+        <span class="pp-step-dot">2</span>
+        <span class="pp-step-label">Bayar</span>
+      </div>
+      <span class="pp-step-line"></span>
+      <div class="pp-step">
+        <span class="pp-step-dot">3</span>
+        <span class="pp-step-label">Selesai</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="pp-main">
+    <div class="pp-grid">
+
+      <!-- LEFT -->
+      <section class="pp-left">
+
+        <!-- Countdown card -->
+        <div class="pp-countdown-card">
+          <span class="pp-count-label">Selesaikan sebelum</span>
+          <div class="pp-count-timer">
+            <span class="pp-count-cell">{{ remainH }}</span>
+            <span class="pp-count-colon">:</span>
+            <span class="pp-count-cell">{{ remainM }}</span>
+            <span class="pp-count-colon">:</span>
+            <span class="pp-count-cell">{{ remainS }}</span>
+          </div>
+        </div>
+
+        <!-- Payment methods -->
+        <div class="pp-methods-card">
+          <div class="pp-methods-header">
+            <h3>Metode Pembayaran</h3>
+            <div class="pp-secure-badge">
+              <span class="pp-secure-shield">🛡</span>
+              <span>100% SECURE<br/>GUARANTEE</span>
+            </div>
+          </div>
+
+          <div class="pp-methods-list">
+            <label class="pp-method-item" *ngFor="let m of featuredMethods"
+                   [class.selected]="selectedMethod?.id === m.id"
+                   (click)="selectMethod(m)">
+              <span class="pp-radio">
+                <span class="pp-radio-dot" *ngIf="selectedMethod?.id === m.id"></span>
+              </span>
+              <img class="pp-method-icon" [src]="m.icon" [alt]="m.label"/>
+              <span class="pp-method-label">{{ m.label }}</span>
+            </label>
+          </div>
+
+          <button class="pp-see-all" (click)="openAll()">
+            Lihat semua <span class="pp-chev">⌄</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- RIGHT sidebar -->
+      <aside class="pp-side">
+        <div class="pp-side-card">
+
+          <div class="pp-order-id">Order ID: {{ orderId }}</div>
+
+          <div class="pp-pkg" (click)="showOrderCollapsed = !showOrderCollapsed">
+            <img src="assets/icon-destination.svg" alt="Destination" class="pp-side-icon-img" />
+            <div class="pp-pkg-info">
+              <div class="pp-pkg-name">{{ booking?.packageName }}</div>
+              <div class="pp-pkg-date">{{ booking?.selectedDate }}</div>
+            </div>
+            <span class="pp-pkg-chev">⌄</span>
+          </div>
+
+          <div class="pp-toggle-row" (click)="usePromo = !usePromo">
+            <img src="assets/icon-promo.svg" alt="Promo" class="pp-side-icon-img" />
+            <span class="pp-toggle-label">Lihat promo/voucher</span>
+            <span class="pp-switch" [class.on]="usePromo"><span class="pp-switch-thumb"></span></span>
+          </div>
+
+          <div class="pp-toggle-row" (click)="usePoin = !usePoin">
+            <img src="assets/icon-coin.svg" alt="Poin" class="pp-side-icon-img" />
+            <div class="pp-toggle-multi">
+              <div class="pp-toggle-label">Pakai 0 poin</div>
+              <div class="pp-toggle-sub">Poin saat ini: 0</div>
+            </div>
+            <span class="pp-switch" [class.on]="usePoin"><span class="pp-switch-thumb"></span></span>
+          </div>
+
+          <div class="pp-total-row">
+            <span>Total Pembayaran</span>
+            <span class="pp-total-amount">{{ totalDisplay }} <span class="pp-total-chev">⌄</span></span>
+          </div>
+
+          <div *ngIf="paymentError" class="pp-pay-error">⚠ {{ paymentError }}</div>
+          <button class="pp-pay-btn" [disabled]="!selectedMethod || isProcessingPayment" (click)="payNow()">
+            <span *ngIf="isProcessingPayment">Memproses...</span>
+            <span *ngIf="!isProcessingPayment">{{ selectedMethod ? 'Bayar Sekarang' : 'Belum Pilih Metode Pembayaran' }}</span>
+          </button>
+
+          <div class="pp-earn">Dapat <b>{{ pointsEarned | number:'1.0-0' }}</b> GMM Poin</div>
+
+          <div class="pp-tos">
+            Dengan menekan tombol bayar, kamu menyetujui<br/>
+            <a>Syarat & Ketentuan dan Kebijakan Privasi GMM Travel</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ── Instruksi Pembayaran Modal ── -->
+  <div class="pp-modal-backdrop" *ngIf="showInstructions" (click)="closeInstructions()">
+    <div class="pp-modal pp-instr-modal" (click)="$event.stopPropagation()">
+
+      <div class="pp-modal-header">
+        <h3>Informasi Pembayaran</h3>
+        <button class="pp-modal-close" (click)="closeInstructions()">✕</button>
+      </div>
+
+      <div class="pp-instr-body">
+
+        <!-- VA / Transfer Bank -->
+        <ng-container *ngIf="instrPaymentType === 'va'">
+          <div class="pp-instr-bank-row">
+            <img [src]="instrDisplayIcon" [alt]="instrDisplayLabel" class="pp-instr-bank-logo"/>
+            <div>
+              <div class="pp-instr-bank-name">{{ instrDisplayLabel }}</div>
+              <div class="pp-instr-holder">GMM GLOBAL EXPLORE</div>
+            </div>
+          </div>
+
+          <div class="pp-instr-field">
+            <div class="pp-instr-field-label">Nomor Virtual Account</div>
+            <div class="pp-instr-va-row">
+              <span class="pp-instr-va-num">{{ instrVaNumber }}</span>
+              <button class="pp-instr-copy" (click)="copyVa()">
+                {{ instrCopied ? '✓ Disalin' : 'Salin' }}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Mandiri echannel -->
+        <ng-container *ngIf="instrPaymentType === 'echannel'">
+          <div class="pp-instr-bank-row">
+            <img src="assets/logo-mandiri.svg" alt="Mandiri" class="pp-instr-bank-logo"/>
+            <div>
+              <div class="pp-instr-bank-name">Mandiri Virtual Account</div>
+              <div class="pp-instr-holder">GMM GLOBAL EXPLORE</div>
+            </div>
+          </div>
+
+          <div class="pp-instr-field">
+            <div class="pp-instr-field-label">Kode Perusahaan (Biller Code)</div>
+            <div class="pp-instr-va-row">
+              <span class="pp-instr-va-num">{{ instrBillerCode }}</span>
+            </div>
+          </div>
+          <div class="pp-instr-field">
+            <div class="pp-instr-field-label">Nomor Virtual Account (Bill Key)</div>
+            <div class="pp-instr-va-row">
+              <span class="pp-instr-va-num">{{ instrBillKey }}</span>
+              <button class="pp-instr-copy" (click)="copyVa()">
+                {{ instrCopied ? '✓ Disalin' : 'Salin' }}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- QR (GoPay/QRIS) -->
+        <ng-container *ngIf="instrPaymentType === 'qr'">
+          <div class="pp-instr-qr-wrap">
+            <img [src]="instrQrUrl" alt="QR Code" class="pp-instr-qr-img" *ngIf="instrQrUrl"/>
+            <div *ngIf="!instrQrUrl" class="pp-instr-qr-placeholder">QR tidak tersedia</div>
+          </div>
+          <p class="pp-instr-qr-hint">Scan QR ini dengan aplikasi GoPay, DANA, OVO, ShopeePay, atau m-banking.</p>
+        </ng-container>
+
+        <!-- Total & deadline -->
+        <div class="pp-instr-summary">
+          <div class="pp-instr-row">
+            <span class="pp-instr-row-label">Total Pembayaran</span>
+            <span class="pp-instr-row-val blue">{{ totalDisplay }}</span>
+          </div>
+          <div class="pp-instr-row" *ngIf="instrExpiredAt">
+            <span class="pp-instr-row-label">Bayar sebelum</span>
+            <span class="pp-instr-row-val">{{ instrExpiredAt }}</span>
+          </div>
+          <div class="pp-instr-row">
+            <span class="pp-instr-row-label">Order ID</span>
+            <span class="pp-instr-row-val">{{ orderId }}</span>
+          </div>
+        </div>
+
+        <!-- Steps -->
+        <div class="pp-instr-steps" *ngIf="instrPaymentType === 'va' || instrPaymentType === 'echannel'">
+          <div class="pp-instr-steps-title">Cara Pembayaran</div>
+          <ng-container *ngIf="instrPaymentType === 'va'">
+            <ol>
+              <li>Buka aplikasi mobile banking atau ATM <b>{{ bankLabel(instrBank) }}</b>.</li>
+              <li>Pilih menu <b>Transfer → Virtual Account</b>.</li>
+              <li>Masukkan nomor VA: <b>{{ instrVaNumber }}</b>.</li>
+              <li>Konfirmasi jumlah <b>{{ totalDisplay }}</b> dan selesaikan transaksi.</li>
+            </ol>
+          </ng-container>
+          <ng-container *ngIf="instrPaymentType === 'echannel'">
+            <ol>
+              <li>Buka aplikasi <b>Livin' by Mandiri</b> atau ATM Mandiri.</li>
+              <li>Pilih <b>Bayar → Multi Payment</b>.</li>
+              <li>Masukkan kode perusahaan: <b>{{ instrBillerCode }}</b>.</li>
+              <li>Masukkan nomor VA: <b>{{ instrBillKey }}</b>.</li>
+              <li>Konfirmasi pembayaran sebesar <b>{{ totalDisplay }}</b>.</li>
+            </ol>
+          </ng-container>
+        </div>
+
+        <button class="pp-instr-done" (click)="closeInstructions()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QRIS Payment Modal -->
+  <div class="pp-modal-backdrop" *ngIf="showQrModal" (click)="closeQrModal()">
+    <div class="pp-modal pp-qr-modal" (click)="$event.stopPropagation()">
+      <div class="pp-modal-header">
+        <h3>Bayar dengan QRIS</h3>
+        <button class="pp-modal-close" (click)="closeQrModal()">✕</button>
+      </div>
+      <div class="pp-qr-body">
+        <img src="assets/logo-qris.svg" alt="QRIS" class="pp-qr-brand"/>
+        <div class="pp-qr-amount">{{ totalDisplay }}</div>
+        <div class="pp-qr-order">Order ID: {{ orderId }}</div>
+
+        <div class="pp-qr-code-wrap">
+          <img *ngIf="qrDataUrl" [src]="qrDataUrl" alt="QRIS Code" class="pp-qr-code"/>
+        </div>
+
+        <div class="pp-qr-expire">Kode berlaku selama <b>{{ qrExpireLabel }}</b></div>
+
+        <ol class="pp-qr-steps">
+          <li>Buka aplikasi mobile banking / e-wallet Anda (GoPay, DANA, OVO, ShopeePay, LinkAja, BCA, Mandiri, BNI, BRI, dll).</li>
+          <li>Pilih menu <b>Scan QRIS</b> atau <b>Bayar QR</b>.</li>
+          <li>Arahkan kamera ke kode QRIS di atas.</li>
+          <li>Konfirmasi pembayaran sebesar <b>{{ totalDisplay }}</b>.</li>
+        </ol>
+
+        <div class="pp-qr-secure">
+          <span>🔒</span> Pembayaran diproses aman via Midtrans Payment Gateway
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Pilih metode pembayaran -->
+  <div class="pp-modal-backdrop" *ngIf="showAllModal" (click)="closeAll()">
+    <div class="pp-modal" (click)="$event.stopPropagation()">
+      <div class="pp-modal-header">
+        <h3>Pilih metode pembayaran</h3>
+        <button class="pp-modal-close" (click)="closeAll()">✕</button>
+      </div>
+
+      <div class="pp-modal-body">
+
+        <section class="pp-mod-sec">
+          <h4>Transfer Bank (Virtual Account)</h4>
+          <p class="pp-mod-desc">Anda bisa membayar dengan transfer melalui ATM, Internet Banking & Mobile Banking.</p>
+          <div class="pp-mod-grid">
+            <button class="pp-mod-tile" *ngFor="let m of vaMethods()" (click)="selectMethod(m)">
+              <img [src]="m.icon" [alt]="m.label"/>
+              <span>{{ m.label }}</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="pp-mod-sec">
+          <h4>Kartu Kredit / Debit
+            <span class="pp-mod-cards">
+              <img src="assets/banks/mastercard.svg" alt="MC"/>
+              <img src="assets/banks/visa.svg" alt="VISA"/>
+              <img src="assets/banks/amex.svg" alt="AMEX"/>
+              <img src="assets/banks/jcb.svg" alt="JCB"/>
+            </span>
+          </h4>
+          <p class="pp-mod-desc">Cara bayar praktis. Masukkan informasi kartu debit atau kredit untuk menyelesaikan pembayaran.</p>
+          <div class="pp-mod-grid">
+            <button class="pp-mod-tile" (click)="selectMethod(methods[2])">
+              <span class="pp-plus">＋</span>
+              <span>Tambah Kartu</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="pp-mod-sec">
+          <h4>Paylater / Cicilan Tanpa Kartu</h4>
+          <p class="pp-mod-desc">Nikmati pembayaran lebih fleksibel tanpa perlu memiliki kartu kredit.</p>
+          <div class="pp-mod-grid">
+            <button class="pp-mod-tile" *ngFor="let m of paylaterMethods()" (click)="selectMethod(m)">
+              <img [src]="m.icon" [alt]="m.label"/>
+              <span>{{ m.label }}</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="pp-mod-sec">
+          <h4>E-Wallet</h4>
+          <p class="pp-mod-desc">Bayar instan lewat dompet digital di smartphone milikmu, bebas bayar dari mana saja.</p>
+          <div class="pp-mod-grid">
+            <button class="pp-mod-tile" *ngFor="let m of ewalletMethods()" (click)="selectMethod(m)">
+              <img [src]="m.icon" [alt]="m.label"/>
+              <span>{{ m.label }}</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="pp-mod-sec">
+          <h4>Pembayaran Instan</h4>
+          <p class="pp-mod-desc">Bayar praktis tanpa banyak klik lewat layanan dari bank partner.</p>
+          <div class="pp-mod-grid">
+            <button class="pp-mod-tile" *ngFor="let m of instantMethods()" (click)="selectMethod(m)">
+              <img [src]="m.icon" [alt]="m.label"/>
+              <span>{{ m.label }}</span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

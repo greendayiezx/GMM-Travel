@@ -1,0 +1,145 @@
+<div class="booking-page">
+  <div class="booking-overlay"></div>
+
+  <div class="steps-row">
+    <div class="step done"><span class="step-num">✓</span> Pilih Penerbangan</div>
+    <div class="step-line active"></div>
+    <div class="step active"><span class="step-num">2</span> Data Penumpang</div>
+    <div class="step-line"></div>
+    <div class="step"><span class="step-num">3</span> Bayar</div>
+  </div>
+
+  <button class="back-btn" (click)="goBack()">← Kembali</button>
+
+  <!-- Flight summary -->
+  <div class="order-card" *ngIf="flightService.selectedFlight as f">
+    <div class="order-row">
+      <span class="order-label">Penerbangan</span>
+      <span class="order-val">{{ f.origin }} → {{ f.destination }}</span>
+    </div>
+    <div class="order-row">
+      <span class="order-label">Maskapai</span>
+      <span class="order-val">{{ f.airline }} · {{ f.flightNumber }}</span>
+    </div>
+    <div class="order-row">
+      <span class="order-label">Waktu</span>
+      <span class="order-val">{{ f.departureTime }} – {{ f.arrivalTime }} ({{ f.duration }})</span>
+    </div>
+    <div class="order-row">
+      <span class="order-label">Penumpang</span>
+      <span class="order-val">{{ passengers.length }} orang</span>
+    </div>
+    <div class="order-row total-row">
+      <span class="order-label">Total</span>
+      <span class="order-total">Rp {{ flightService.totalPrice.toLocaleString('id-ID') }}</span>
+    </div>
+  </div>
+
+  <!-- Passenger forms -->
+  <div class="passengers-wrap">
+
+    <div class="pax-form-card" *ngFor="let p of passengers; let i = index">
+      <div class="pax-form-header">
+        <span class="pax-form-title">{{ passengerLabel(i) }}</span>
+        <button class="remove-pax-btn" *ngIf="passengers.length > 1" (click)="removePassenger(i)">✕ Hapus</button>
+      </div>
+
+      <!-- Title + Nama -->
+      <div class="form-row">
+        <div class="form-group form-group--title">
+          <label class="form-label">Sapaan</label>
+          <select class="form-input form-select" [(ngModel)]="p.title">
+            <option value="Mr">Mr</option>
+            <option value="Mrs">Mrs</option>
+            <option value="Ms">Ms</option>
+          </select>
+        </div>
+        <div class="form-group form-group--name">
+          <label class="form-label">Nama Lengkap <span class="required">*</span></label>
+          <input class="form-input" type="text"
+                 [class.error]="submitted && p.full_name.trim().length < 3"
+                 placeholder="Sesuai KTP/Paspor"
+                 [(ngModel)]="p.full_name"
+                 (input)="sanitizeName($event, i)"
+                 maxlength="60" />
+          <p class="field-error" *ngIf="submitted && p.full_name.trim().length < 3">Nama minimal 3 karakter</p>
+        </div>
+      </div>
+
+      <!-- Tanggal Lahir + Tipe ID -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tanggal Lahir <span class="required">*</span></label>
+          <input class="form-input" type="date"
+                 [class.error]="submitted && !p.date_of_birth"
+                 [(ngModel)]="p.date_of_birth" />
+          <p class="field-error" *ngIf="submitted && !p.date_of_birth">Wajib diisi</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jenis Identitas <span class="required">*</span></label>
+          <select class="form-input form-select" [(ngModel)]="p.id_type">
+            <option value="KTP">KTP</option>
+            <option value="Passport">Paspor</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Nomor ID -->
+      <div class="form-group">
+        <label class="form-label">Nomor {{ p.id_type === 'KTP' ? 'KTP' : 'Paspor' }} <span class="required">*</span></label>
+        <input class="form-input" type="text"
+               [class.error]="submitted && p.id_number.trim().length < 5"
+               [placeholder]="p.id_type === 'KTP' ? '16 digit NIK' : 'Nomor Paspor'"
+               [(ngModel)]="p.id_number"
+               maxlength="30" />
+        <p class="field-error" *ngIf="submitted && p.id_number.trim().length < 5">Nomor identitas tidak valid</p>
+      </div>
+
+      <!-- Telepon -->
+      <div class="form-group">
+        <label class="form-label">No. WhatsApp / HP <span class="required">*</span></label>
+        <input class="form-input" type="tel"
+               [class.error]="submitted && p.phone.trim().length < 9"
+               placeholder="08xxxxxxxxxx"
+               [(ngModel)]="p.phone"
+               (input)="sanitizePhone($event, i)"
+               maxlength="16" />
+        <p class="field-error" *ngIf="submitted && p.phone.trim().length < 9">Nomor telepon tidak valid</p>
+        <p class="field-hint">Notifikasi tiket akan dikirim ke nomor ini</p>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label">Email <span class="required">*</span></label>
+        <input class="form-input" type="email"
+               [class.error]="submitted && !isEmailValid(p.email)"
+               placeholder="nama@email.com"
+               [(ngModel)]="p.email" />
+        <p class="field-error" *ngIf="submitted && !isEmailValid(p.email)">Format email tidak valid</p>
+        <p class="field-hint">Notifikasi tiket akan dikirim ke email ini</p>
+      </div>
+
+      <!-- Tipe penumpang -->
+      <div class="form-group">
+        <label class="form-label">Tipe Penumpang</label>
+        <select class="form-input form-select" [(ngModel)]="p.passenger_type">
+          <option value="Adult">Dewasa (≥12 th)</option>
+          <option value="Child">Anak (2–11 th)</option>
+          <option value="Infant">Bayi (&lt;2 th)</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- Tambah penumpang -->
+    <div class="add-pax-row">
+      <button class="add-pax-btn" (click)="addPassenger('Adult')">+ Tambah Penumpang</button>
+    </div>
+
+  </div>
+
+  <button class="cta-btn" [disabled]="submitted && !allValid" (click)="confirm()">
+    Lanjut ke Pembayaran →
+  </button>
+
+</div>

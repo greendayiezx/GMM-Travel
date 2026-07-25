@@ -1,0 +1,167 @@
+<section class="destinations-section" id="destinations-anchor">
+  <div class="dest-container">
+
+    <!-- ── Header ──────────────────────────────────────── -->
+    <div class="dest-header">
+      <div class="dest-header-text">
+        <h2 class="dest-title">
+          Jelajahi Destinasi<br>
+          <span class="dest-title-accent">Impian Anda</span>
+        </h2>
+        <p class="dest-subtitle">
+          Ribuan pilihan wisata kurasi terbaik, dari petualangan alam hingga pengalaman kota metropolitan.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Filter Tabs ─────────────────────────────────── -->
+    <div class="filter-bar">
+      <div class="filter-tabs">
+        <button *ngFor="let f of filters"
+          class="filter-tab"
+          [class.active]="activeFilter === f"
+          (click)="setFilter(f)">
+          <span class="filter-tab-label">{{ f }}</span>
+          <span class="filter-tab-count">{{ getCategoryCount(f) }}</span>
+        </button>
+      </div>
+
+      <!-- Search + Sort + Stats Row -->
+      <div class="filter-controls">
+        <div class="search-wrapper">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text"
+            class="search-input"
+            placeholder="Cari paket wisata..."
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()">
+          <button *ngIf="searchQuery" class="search-clear" (click)="clearSearch()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Premium Custom Dropdown for Terbaru / Sort -->
+        <div class="custom-sort-wrapper">
+          <button class="custom-sort-btn" (click)="toggleSortDropdown($event)" [class.open]="isSortOpen">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="7" y1="12" x2="17" y2="12"/>
+              <line x1="10" y1="18" x2="14" y2="18"/>
+            </svg>
+            <span class="custom-sort-text">{{ activeSortLabel }}</span>
+            <svg class="sort-arrow" [class.rotated]="isSortOpen" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          <div class="custom-sort-menu" *ngIf="isSortOpen">
+            <div *ngFor="let opt of sortOptions"
+                 class="sort-menu-item"
+                 [class.active]="activeSort === opt.value"
+                 (click)="selectSortOption(opt.value)">
+              <span>{{ opt.label }}</span>
+              <svg *ngIf="activeSort === opt.value" class="sort-check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stat Pill moved right next to Terbaru container -->
+        <div class="stat-pill-inline">
+          <span class="stat-number">{{ totalResults }}</span>
+          <span class="stat-label">Paket Tersedia</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Results Counter ──────────────────────────────── -->
+    <div class="results-info" *ngIf="filteredAll.length > 0">
+      <span>Menampilkan <strong>{{ (currentPage - 1) * itemsPerPage + 1 }}–{{ currentPage * itemsPerPage > totalResults ? totalResults : currentPage * itemsPerPage }}</strong> dari <strong>{{ totalResults }}</strong> paket</span>
+    </div>
+
+    <!-- ── Empty State ──────────────────────────────────── -->
+    <div class="empty-state" *ngIf="filteredAll.length === 0">
+      <div class="empty-icon">🔍</div>
+      <h3>Tidak Ditemukan</h3>
+      <p>Tidak ada paket yang sesuai dengan pencarian "{{ searchQuery }}"</p>
+      <button class="empty-reset" (click)="clearSearch(); setFilter('Semua')">Reset Pencarian</button>
+    </div>
+
+    <!-- ── Mobile: Vertical package list (15 per batch) ──────────── -->
+    <div class="mobile-package-list" [style.opacity]="animating ? '0' : '1'">
+      <div class="mobile-package-column">
+        <div *ngFor="let dest of mobileFiltered; let i = index" class="mobile-package-item"
+          [attr.data-pkg-name]="dest.name"
+          [id]="'pkg-card-m-' + dest.name"
+          [style.animation-delay]="(i % 15 * 50) + 'ms'"
+          style="animation: card-enter 0.35s ease both">
+          <app-destination-card [dest]="dest"
+            (selectDestination)="onCardSelect($event)"></app-destination-card>
+        </div>
+      </div>
+
+      <!-- Load More Button ONLY ON MOBILE -->
+      <div class="mobile-load-more-wrap" *ngIf="hasMoreMobile">
+        <button class="mobile-load-more-btn" (click)="loadMoreMobile()">
+          <span>Lihat Selengkapnya</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Desktop grid ────────────────────────────────── -->
+    <div class="dest-grid"
+      [style.opacity]="animating ? '0' : '1'">
+      <app-destination-card
+        *ngFor="let dest of filtered; let i = index"
+        [dest]="dest"
+        [attr.data-pkg-name]="dest.name"
+        [id]="'pkg-card-' + dest.name"
+        (selectDestination)="onCardSelect($event)"
+        [style.animation-delay]="(i * 50) + 'ms'"
+        style="animation: card-enter 0.4s ease both">
+      </app-destination-card>
+    </div>
+
+    <!-- ── Pagination ──────────────────────────────────── -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <!-- Prev -->
+      <button class="page-btn page-arrow"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <!-- Page numbers -->
+      <ng-container *ngFor="let p of pageNumbers">
+        <span *ngIf="p === -1" class="page-ellipsis">…</span>
+        <button *ngIf="p !== -1"
+          class="page-btn"
+          [class.active]="currentPage === p"
+          (click)="goToPage(p)">
+          {{ p }}
+        </button>
+      </ng-container>
+
+      <!-- Next -->
+      <button class="page-btn page-arrow"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</section>

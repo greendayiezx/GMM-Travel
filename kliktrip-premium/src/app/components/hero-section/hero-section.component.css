@@ -1,0 +1,179 @@
+/* Floating Tab Container (Tiket.com style) */
+.hero-tab-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: inline-flex;
+  width: fit-content;
+}
+
+.hero-tab-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border-radius: 40px;
+  padding: 8px 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  height: 60px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Individual Tab Button */
+.hero-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px 8px 10px;
+  border-radius: 30px;
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.hero-tab-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+/* Hover state for inactive tabs */
+.hero-tab-btn:hover:not(.hero-tab-active) {
+  background: #f8fafc;
+  color: #1E9BF0;
+  transform: translateY(-2px);
+}
+
+.hero-tab-btn:hover:not(.hero-tab-active) .hero-tab-icon {
+  background: #e0f2fe;
+  color: #1E9BF0;
+}
+
+/* Active Tab state (Tiket.com blue pill style) */
+.hero-tab-btn.hero-tab-active {
+  background: #e6f2ff;
+  color: #0070f3;
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.12);
+}
+
+.hero-tab-btn.hero-tab-active .hero-tab-icon {
+  background: #cbe3ff;
+  color: #0070f3;
+}
+
+/* Red Coming Soon Badge */
+.coming-soon-badge {
+  background: #e11d48;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 2px;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.3);
+}
+
+/* Nav Scroll Arrow Buttons — HIDDEN ON DESKTOP / PC */
+.hero-tab-nav-btn {
+  display: none;
+}
+
+/* ── Mobile Responsive Fix for Tab Bar ── */
+@media (max-width: 768px) {
+  .hero-tab-container {
+    width: 92%;
+    max-width: 92vw;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hero-tab-bar {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    gap: 6px;
+    padding: 6px 14px;
+    height: 52px;
+    border-radius: 30px;
+  }
+
+  .hero-tab-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Arrow buttons ON MOBILE — merged seamlessly with border edge */
+  .hero-tab-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+    color: #1E9BF0;
+    cursor: pointer;
+    z-index: 25;
+    transition: all 0.2s ease;
+  }
+
+  .hero-tab-nav-btn.left {
+    left: -12px;
+  }
+
+  .hero-tab-nav-btn.right {
+    right: -12px;
+  }
+
+  .hero-tab-nav-btn:active {
+    transform: translateY(-50%) scale(0.92);
+    background: #1E9BF0;
+    color: #ffffff;
+  }
+
+  .hero-tab-btn {
+    padding: 6px 12px 6px 8px;
+    font-size: 0.78rem;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .hero-tab-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .coming-soon-badge {
+    font-size: 0.58rem;
+    padding: 2px 6px;
+  }
+}

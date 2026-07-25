@@ -1,0 +1,267 @@
+<div class="fs-wrap">
+
+  <!-- Trip type toggle (radio style) -->
+  <div class="fs-trip-toggle">
+    <label class="fs-radio" [class.active]="!isRoundTrip" (click)="isRoundTrip=false">
+      <span class="fs-radio-dot" [class.checked]="!isRoundTrip"></span>
+      Sekali Jalan
+    </label>
+    <label class="fs-radio" [class.active]="isRoundTrip" (click)="isRoundTrip=true">
+      <span class="fs-radio-dot" [class.checked]="isRoundTrip"></span>
+      Pulang Pergi
+    </label>
+  </div>
+
+  <!-- Horizontal inline form row -->
+  <div class="fs-inline-row">
+
+    <!-- ── FROM ── -->
+    <div class="fs-inline-field fs-panel-anchor" (click)="togglePanel('origin', $event)">
+      <span class="fs-inline-label">Dari</span>
+      <span class="fs-inline-value" [class.placeholder]="!origin">{{ origin ? originQuery : 'Pilih Bandara' }}</span>
+
+      <!-- Origin Dropdown Panel -->
+      <div class="fs-dropdown-panel" *ngIf="showOriginPanel" (click)="$event.stopPropagation()">
+        <div class="panel-header">
+          <h3 class="panel-title" style="margin:0;">Pilih Kota atau Bandara</h3>
+          <button class="panel-close-btn" (click)="closePanel('origin', $event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div class="panel-search-box">
+          <svg class="panel-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="panel-search-input" type="text" placeholder="Masukkan kota atau bandara"
+                 [value]="originQuery"
+                 (input)="onOriginInput($any($event.target).value)"
+                 (click)="$event.stopPropagation()"
+                 autocomplete="off" />
+          <span class="panel-loading" *ngIf="isSearchingOrigin">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </span>
+        </div>
+
+        <!-- Search Results -->
+        <ul class="panel-results" *ngIf="originResults.length > 0">
+          <li *ngFor="let a of originResults" (click)="selectOrigin(a, $event)">
+            <span class="dd-code">{{ a.code }}</span>
+            <span class="dd-name">{{ a.name }}, {{ a.city }}</span>
+            <span class="dd-country">{{ a.country }}</span>
+          </li>
+        </ul>
+
+        <!-- Popular Destinations -->
+        <div class="panel-popular" *ngIf="originResults.length === 0">
+          <p class="panel-popular-title">Destinasi Populer</p>
+          <div class="panel-pills">
+            <button *ngFor="let city of popularCities" class="panel-pill" (click)="onPopularClick(city, 'origin', $event)">{{ city.label }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SWAP ── -->
+    <div class="fs-inline-swap" (click)="swapAirports($event)" title="Tukar asal & tujuan">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><path d="M3 12h18"/>
+      </svg>
+    </div>
+
+    <!-- ── TO ── -->
+    <div class="fs-inline-field fs-panel-anchor" (click)="togglePanel('destination', $event)">
+      <span class="fs-inline-label">Ke</span>
+      <span class="fs-inline-value" [class.placeholder]="!destination">{{ destination ? destinationQuery : 'Pilih Bandara' }}</span>
+
+      <!-- Destination Dropdown Panel -->
+      <div class="fs-dropdown-panel" *ngIf="showDestinationPanel" (click)="$event.stopPropagation()">
+        <div class="panel-header">
+          <h3 class="panel-title" style="margin:0;">Pilih Kota atau Bandara</h3>
+          <button class="panel-close-btn" (click)="closePanel('destination', $event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div class="panel-search-box">
+          <svg class="panel-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="panel-search-input" type="text" placeholder="Masukkan kota atau bandara"
+                 [value]="destinationQuery"
+                 (input)="onDestinationInput($any($event.target).value)"
+                 (click)="$event.stopPropagation()"
+                 autocomplete="off" />
+          <span class="panel-loading" *ngIf="isSearchingDestination">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </span>
+        </div>
+
+        <!-- Search Results -->
+        <ul class="panel-results" *ngIf="destinationResults.length > 0">
+          <li *ngFor="let a of destinationResults" (click)="selectDestination(a, $event)">
+            <span class="dd-code">{{ a.code }}</span>
+            <span class="dd-name">{{ a.name }}, {{ a.city }}</span>
+            <span class="dd-country">{{ a.country }}</span>
+          </li>
+        </ul>
+
+        <!-- Popular Destinations -->
+        <div class="panel-popular" *ngIf="destinationResults.length === 0">
+          <p class="panel-popular-title">Destinasi Populer</p>
+          <div class="panel-pills">
+            <button *ngFor="let city of popularCities" class="panel-pill" (click)="onPopularClick(city, 'destination', $event)">{{ city.label }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DIVIDER ── -->
+    <div class="fs-inline-divider"></div>
+
+    <!-- ── DEPARTURE DATE ── -->
+    <div class="fs-inline-field fs-inline-field--date fs-panel-anchor" (click)="togglePanel('date', $event)">
+      <span class="fs-inline-label">Berangkat</span>
+      <span class="fs-inline-value" [class.placeholder]="!departureDate">{{ formatDepartureDisplay() }}</span>
+
+      <!-- Calendar Dropdown -->
+      <div class="fs-calendar-panel" *ngIf="showDatePanel" (click)="$event.stopPropagation()">
+        <div class="cal-header">
+          <h3 class="panel-title" style="margin:0;">Pilih Tanggal</h3>
+          <button class="cal-close" (click)="closePanel('date', $event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="cal-months-row">
+          <button class="cal-nav-btn" (click)="prevCalendarMonth($event)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="cal-month" *ngFor="let m of calendarMonths">
+            <p class="cal-month-name">{{ m.name }}</p>
+            <div class="cal-weekdays">
+              <span class="cal-wd cal-wd--sun">Min</span><span class="cal-wd">Sen</span><span class="cal-wd">Sel</span><span class="cal-wd">Rab</span><span class="cal-wd">Kam</span><span class="cal-wd">Jum</span><span class="cal-wd">Sab</span>
+            </div>
+            <div class="cal-grid">
+              <ng-container *ngFor="let day of m.days">
+                <span *ngIf="day === null" class="cal-day cal-day--empty"></span>
+                <button *ngIf="day !== null" class="cal-day"
+                        [class.cal-day--selected]="isDateSelected(m, day)"
+                        [class.cal-day--today]="isToday(m, day)"
+                        [class.cal-day--past]="isDatePast(m, day)"
+                        [disabled]="isDatePast(m, day)"
+                        (click)="selectDate(m, day, $event)">
+                  {{ day }}
+                </button>
+              </ng-container>
+            </div>
+          </div>
+          <button class="cal-nav-btn" (click)="nextCalendarMonth($event)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RETURN (conditional) ── -->
+    <div class="fs-inline-field fs-inline-field--date" *ngIf="isRoundTrip" (click)="$event.stopPropagation()">
+      <span class="fs-inline-label">Pulang</span>
+      <input class="fs-date-native" type="date"
+             [min]="departureDate || todayMin"
+             [(ngModel)]="returnDate" />
+    </div>
+
+    <!-- ── DIVIDER ── -->
+    <div class="fs-inline-divider"></div>
+
+    <!-- ── PASSENGER & CLASS ── -->
+    <div class="fs-inline-field fs-inline-field--pax fs-panel-anchor" (click)="togglePanel('pax', $event)">
+      <span class="fs-inline-label">Penumpang, Kelas</span>
+      <span class="fs-inline-value">{{ paxClassLabel }}</span>
+
+      <!-- Passenger Dropdown -->
+      <div class="fs-pax-panel" *ngIf="showPaxPanel" (click)="$event.stopPropagation()">
+        <div class="panel-header">
+          <h3 class="panel-title" style="margin:0;">Atur Penumpang &amp; Kelas</h3>
+          <button class="panel-close-btn" (click)="closePanel('pax', $event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div class="pax-row" style="margin-top:12px;">
+          <div class="pax-info">
+            <span class="pax-type">Dewasa</span>
+            <span class="pax-desc">di atas 12 tahun</span>
+          </div>
+          <div class="pax-ctrl">
+            <button class="pax-btn" (click)="removeAdult(); $event.stopPropagation()" [disabled]="adults<=1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <span class="pax-count">{{ adults }}</span>
+            <button class="pax-btn pax-btn--add" (click)="addAdult(); $event.stopPropagation()" [disabled]="adults>=9">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="pax-row">
+          <div class="pax-info">
+            <span class="pax-type">Anak</span>
+            <span class="pax-desc">2 - 11 tahun</span>
+          </div>
+          <div class="pax-ctrl">
+            <button class="pax-btn" (click)="removeChild(); $event.stopPropagation()" [disabled]="children<=0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <span class="pax-count">{{ children }}</span>
+            <button class="pax-btn pax-btn--add" (click)="addChild(); $event.stopPropagation()" [disabled]="children>=8">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="pax-row">
+          <div class="pax-info">
+            <span class="pax-type">Bayi</span>
+            <span class="pax-desc">di bawah 2 tahun</span>
+          </div>
+          <div class="pax-ctrl">
+            <button class="pax-btn" (click)="removeInfant(); $event.stopPropagation()" [disabled]="infants<=0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <span class="pax-count">{{ infants }}</span>
+            <button class="pax-btn pax-btn--add" (click)="addInfant(); $event.stopPropagation()" [disabled]="infants>=8">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="class-divider"></div>
+
+        <div class="class-grid">
+          <button class="class-btn" [class.active]="seatClass==='Economy'" (click)="seatClass='Economy'; $event.stopPropagation()">Economy</button>
+          <button class="class-btn" [class.active]="seatClass==='Business'" (click)="seatClass='Business'; $event.stopPropagation()">Business</button>
+          <button class="class-btn" [class.active]="seatClass==='Premium Economy'" (click)="seatClass='Premium Economy'; $event.stopPropagation()">Premium Economy</button>
+          <button class="class-btn" [class.active]="seatClass==='First'" (click)="seatClass='First'; $event.stopPropagation()">First</button>
+        </div>
+
+        <button class="pax-save-btn" (click)="savePax($event)">Simpan</button>
+      </div>
+    </div>
+
+    <!-- ── SEARCH BUTTON ── -->
+    <button class="fs-search-btn" (click)="onSearch()">
+      Cari
+    </button>
+
+  </div>
+
+  <!-- Error messages -->
+  <div class="fs-errors" *ngIf="submitted && !isValid">
+    <p class="fs-error" *ngIf="!origin">⚠ Pilih bandara asal</p>
+    <p class="fs-error" *ngIf="!destination">⚠ Pilih bandara tujuan</p>
+    <p class="fs-error" *ngIf="!departureDate">⚠ Pilih tanggal keberangkatan</p>
+  </div>
+
+  <!-- Promo Banner -->
+  <div class="fs-promo-banner">
+    <span class="promo-icon">🎫</span>
+    <span class="promo-text">Cek semua promo yang sedang berlangsung untuk hemat lebih banyak saat terbang. <a href="#" class="promo-link">Cek promo sekarang!</a></span>
+  </div>
+
+</div>

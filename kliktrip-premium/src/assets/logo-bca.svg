@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
+  <path d="M10 8h8v24H10z" fill="#003D79"/>
+  <path d="M22 8h4c6 0 10 3 10 8s-4 8-10 8h-4V8z" fill="#003D79"/>
+  <text x="48" y="28" font-family="Arial Black, Arial" font-weight="900" font-size="24" fill="#003D79">BCA</text>
+</svg>

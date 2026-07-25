@@ -1,0 +1,759 @@
+[
+  {
+    "name": "Kotamobagu",
+    "base_price": 850000,
+    "price_categories": null,
+    "single_supplement": null,
+    "duration": "3 Hari 2 Malam",
+    "max_pax": 15
+  },
+  {
+    "name": "Manado",
+    "base_price": 1250000,
+    "price_categories": null,
+    "single_supplement": null,
+    "duration": "4 Hari 3 Malam",
+    "max_pax": 12
+  },
+  {
+    "name": "Gorontalo",
+    "base_price": 1500000,
+    "price_categories": null,
+    "single_supplement": null,
+    "duration": "4 Hari 3 Malam",
+    "max_pax": 10
+  },
+  {
+    "name": "Makassar",
+    "base_price": 1350000,
+    "price_categories": null,
+    "single_supplement": null,
+    "duration": "3 Hari 2 Malam",
+    "max_pax": 15
+  },
+  {
+    "name": "Kendari",
+    "base_price": 1450000,
+    "price_categories": null,
+    "single_supplement": null,
+    "duration": "4 Hari 3 Malam",
+    "max_pax": 12
+  },
+  {
+    "name": "UMROH ITIKAF",
+    "base_price": 47000000,
+    "price_categories": null,
+    "single_supplement": null,
+    "duration": "14 Hari",
+    "max_pax": 12
+  },
+  {
+    "name": "UMROH CERIA MAULID",
+    "base_price": 31900000,
+    "price_categories": [
+      {
+        "type": "Harga Promo (s.d. 30 Jul 2026)",
+        "price": 31900000
+      },
+      {
+        "type": "Harga Normal",
+        "price": 34500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 7 Malam",
+    "max_pax": 24
+  },
+  {
+    "name": "Korea Seoul 06 Hari / 04 Malam",
+    "base_price": 7990000,
+    "price_categories": [
+      {
+        "type": "Twin Share / Dewasa",
+        "price": 7990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 2800000
+      },
+      {
+        "type": "Uang Muka (non-refundable)",
+        "price": 7000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "6 Hari 4 Malam",
+    "max_pax": 25
+  },
+  {
+    "name": "7D PREMIUM NEW YEAR VIETNAM HANOI SAPA FANSIPAN + HALONG BAY CRUISE",
+    "base_price": 14990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 14990000
+      },
+      {
+        "type": "Child No Bed (<6 Tahun)",
+        "price": 14590000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 3250000
+      },
+      {
+        "type": "Infant Flat Rate (<23 Bln)",
+        "price": 4000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "7 Hari 6 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "6D WINTER HOLIDAY HONGKONG SHENZHEN GUANGZHOU ZHUHAI + DISNEYLAND",
+    "base_price": 14990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 14990000
+      },
+      {
+        "type": "Child No Bed (Maks 6th)",
+        "price": 13990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 3000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "6 Hari 5 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "Hongkong Shenzhen Macau by GA 06 Hari / 04 Malam",
+    "base_price": 10780000,
+    "price_categories": [
+      {
+        "type": "Adult / Child Twin / Child Extra Bed",
+        "price": 10780000
+      },
+      {
+        "type": "Child No Bed (Maks 6th)",
+        "price": 10480000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 3500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "6 Hari 4 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "7D SPECIAL COMPLETE HOSEZHUMAGU +DISNEYLAND",
+    "base_price": 18390000,
+    "price_categories": [
+      {
+        "type": "Dewasa Twin/Triple",
+        "price": 18390000
+      },
+      {
+        "type": "Child w/ Extra Bed (Maks 12th)",
+        "price": 18390000
+      },
+      {
+        "type": "Child No Bed (Maks 6th)",
+        "price": 17390000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 4500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "7 Hari 6 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "7D NEW YEAR SALE CHINA - CHONGQING CHENGDU",
+    "base_price": 13990000,
+    "price_categories": [
+      {
+        "type": "Dewasa Twin/Triple",
+        "price": 14990000
+      },
+      {
+        "type": "Child with Extra Bed (<12 Tahun)",
+        "price": 14990000
+      },
+      {
+        "type": "Child No Bed (<6 Tahun)",
+        "price": 14590000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 4500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "7 Hari 6 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "6D SPECIAL YEAR END VIETNAM HANOI SAPA FANSIPAN WITH HALONG BAY CRUISE",
+    "base_price": 13490000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 13490000
+      },
+      {
+        "type": "Child No Bed (<6 Years)",
+        "price": 12990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 3250000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "6 Hari 5 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "10D NEW YEAR TURKIYE CAPPADOCIA + MT ULUDAG & BOSPHORUS CRUISE",
+    "base_price": 24990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 24990000
+      },
+      {
+        "type": "Child No Bed (<6 Years)",
+        "price": 23990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 6500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "10 Hari 9 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "8D FESTIVE YEAR END DUAL THEME PARK",
+    "base_price": 24990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 24990000
+      },
+      {
+        "type": "Child No Bed (<6 Years)",
+        "price": 23990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 4000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "8 Hari 7 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "6D PROMO MONO SEOUL",
+    "base_price": 8499000,
+    "price_categories": [
+      {
+        "type": "Dewasa Twin/Triple",
+        "price": 8499000
+      },
+      {
+        "type": "Child No Bed (Maks 6 Thn)",
+        "price": 7999000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 5000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "6 Hari 5 Malam",
+    "max_pax": 30
+  },
+  {
+    "name": "Chengdu Jiuzhaigou Mounigou 11 Hari / 08 Malam",
+    "base_price": 13900000,
+    "price_categories": [
+      {
+        "type": "Twin/Triple Share",
+        "price": 13900000
+      },
+      {
+        "type": "Child No Bed / Infant",
+        "price": 11815000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 3600000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "11 Hari 8 Malam",
+    "max_pax": 24
+  },
+  {
+    "name": "MOTOGP SEPANG 2026",
+    "base_price": 8990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 8990000
+      },
+      {
+        "type": "Child Extra Bed (maks 10 thn)",
+        "price": 8690000
+      },
+      {
+        "type": "Child No Bed (maks 5 thn)",
+        "price": 8390000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 1000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "3 Hari 2 Malam",
+    "max_pax": 25
+  },
+  {
+    "name": "8D WINTER SCHOOL HOLIDAY BEIJING SHANGHAI WITH UNIVERSAL STUDIO",
+    "base_price": 16990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 16990000
+      },
+      {
+        "type": "Child No Bed (<6 Tahun)",
+        "price": 16590000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 4750000
+      },
+      {
+        "type": "Infant Flat Rate (<23 Bln)",
+        "price": 3750000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "8 Hari 7 Malam",
+    "max_pax": 25
+  },
+  {
+    "name": "Best Deal Guilin Yangshuo by Batik Air 09 Hari / 07 Malam",
+    "base_price": 7980000,
+    "price_categories": [
+      {
+        "type": "Dewasa / Child Twin / Child Extra Bed",
+        "price": 7980000
+      },
+      {
+        "type": "Child No Bed",
+        "price": 7680000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 2500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 7 Malam",
+    "max_pax": 30
+  },
+  {
+    "name": "UZBEKISTAN 9D7N",
+    "base_price": 34990000,
+    "price_categories": [
+      {
+        "type": "Per Pax (Twin/Triple)",
+        "price": 34990000
+      },
+      {
+        "type": "Tipping & Asuransi (WAJIB)",
+        "price": 1750000
+      },
+      {
+        "type": "Airport Tax & Fuel Surcharge",
+        "price": 200
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 7 Malam",
+    "max_pax": 25
+  },
+  {
+    "name": "Chongqing Wulong Jiuzhaigou by SQ 09 Hari / 07 Malam",
+    "base_price": 19900000,
+    "price_categories": [
+      {
+        "type": "Dewasa / Child (Twin/Triple)",
+        "price": 19900000
+      },
+      {
+        "type": "Child No Bed",
+        "price": 19500000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 5000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 7 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "9D SNOWY NEW YEAR CHINA HARBIN SNOW TOWN + BEIJING",
+    "base_price": 29990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 29990000
+      },
+      {
+        "type": "Child No Bed (<6 Tahun)",
+        "price": 28990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 7500000
+      },
+      {
+        "type": "Infant Flat Rate (<23 Bln)",
+        "price": 4500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 8 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "Macau + Hongkong 06 Hari / 04 Malam",
+    "base_price": 8880000,
+    "price_categories": [
+      {
+        "type": "Dewasa / Child Twin",
+        "price": 9790000
+      },
+      {
+        "type": "Child No Bed",
+        "price": 9590000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 2300000
+      },
+      {
+        "type": "Fuel Surcharge",
+        "price": 800000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "6 Hari 4 Malam",
+    "max_pax": 26
+  },
+  {
+    "name": "6D ENCHANTING AUTUMN KOREA SEOUL BUSAN",
+    "base_price": 13990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 13990000
+      },
+      {
+        "type": "Child No Bed (<6 Tahun)",
+        "price": 13590000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 4000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "6 Hari 5 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "UMROH LUXURY FAMILY",
+    "base_price": 34900000,
+    "price_categories": [
+      {
+        "type": "Paket Umroh Luxury (Quad Share)",
+        "price": 34900000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 7 Malam",
+    "max_pax": 45
+  },
+  {
+    "name": "Umroh Al Fatih Spesial Series 12 Hari Bintang 5",
+    "base_price": 49500000,
+    "price_categories": [
+      {
+        "type": "QUAD (Sekamar Berempat)",
+        "price": 49500000
+      },
+      {
+        "type": "TRIPLE (Sekamar Bertiga)",
+        "price": 53500000
+      },
+      {
+        "type": "DOUBLE (Sekamar Berdua)",
+        "price": 58500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "12 Hari 10 Malam",
+    "max_pax": 45
+  },
+  {
+    "name": "Chongqing Zhangjiajie 09 Hari / 06 Malam",
+    "base_price": 10900000,
+    "price_categories": [
+      {
+        "type": "Adult / Child Twin Share (May / Jun / Jul / Aug / Sep / Oct)",
+        "price": 10900000
+      },
+      {
+        "type": "Child No Bed (< 6 Tahun)",
+        "price": 9265000
+      },
+      {
+        "type": "Infant Flat Rate (< 23 Bulan)",
+        "price": 3815000
+      },
+      {
+        "type": "Single Supplement (Kamar Sendiri)",
+        "price": 2800000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 6 Malam",
+    "max_pax": 25
+  },
+  {
+    "name": "Autumn in Japan 07 Hari / 05 Malam",
+    "base_price": 24500000,
+    "price_categories": [
+      {
+        "type": "Adult / Child Twin Share (Harga Early Bird)",
+        "price": 24500000
+      },
+      {
+        "type": "Child No Bed (< 6 Tahun) (Harga Early Bird)",
+        "price": 24100000
+      },
+      {
+        "type": "Single Supplement (Sekamar Sendiri)",
+        "price": 5500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "7 Hari 5 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "Inner Mongolia by Singapore Airlines 08 Hari / 05 Malam",
+    "base_price": 16980000,
+    "price_categories": [
+      {
+        "type": "Adult / Child Twin Share / Extra Bed",
+        "price": 15980000
+      },
+      {
+        "type": "Child No Bed (< 6 Tahun)",
+        "price": 14980000
+      },
+      {
+        "type": "Single Supplement (Sekamar Sendiri)",
+        "price": 3500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "8 Hari 5 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "Inner Mongolia",
+    "base_price": 16980000,
+    "price_categories": [
+      {
+        "type": "Adult / Child Twin Share / Extra Bed",
+        "price": 15980000
+      },
+      {
+        "type": "Child No Bed (< 6 Tahun)",
+        "price": 14980000
+      },
+      {
+        "type": "Single Supplement (Sekamar Sendiri)",
+        "price": 3500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "8 Hari 5 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "Danang Hanoi Sapa Halong Bay 07 Hari / 06 Malam",
+    "base_price": 16900000,
+    "price_categories": [
+      {
+        "type": "Adult / Child Twin Share",
+        "price": 16900000
+      },
+      {
+        "type": "Single Supplement (Sekamar Sendiri)",
+        "price": 2500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "7 Hari 6 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "5D SIGNATURE YEAR END VIETNAM HANOI SAPA FANSIPAN WITH HALONG BAY CRUISE",
+    "base_price": 12990000,
+    "price_categories": [
+      {
+        "type": "Adult Dewasa Twin/Triple",
+        "price": 12990000
+      },
+      {
+        "type": "Child No Bed (< 6 Tahun)",
+        "price": 12490000
+      },
+      {
+        "type": "Single Supplement (Sekamar Sendiri)",
+        "price": 3000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "5 Hari 4 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "Southern Xinjiang 11 Hari / 09 Malam",
+    "base_price": 34300000,
+    "price_categories": [
+      {
+        "type": "Adult / Child Twin Share",
+        "price": 34300000
+      },
+      {
+        "type": "Single Supplement (Sekamar Sendiri)",
+        "price": 9500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "11 Hari 9 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "Beijing Shanghai 09 Hari / 06 Malam",
+    "base_price": 15900000,
+    "price_categories": [
+      {
+        "type": "Twin Share",
+        "price": 16900000
+      },
+      {
+        "type": "Child No Bed",
+        "price": 15900000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 3000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 6 Malam",
+    "max_pax": 24
+  },
+  {
+    "name": "5D NEW DEAL JAPAN FUKUOKA YUFUIN BEPPU",
+    "base_price": 15990000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 15990000
+      },
+      {
+        "type": "Child w/ Extra Bed (Maks 12 Thn)",
+        "price": 15990000
+      },
+      {
+        "type": "Child No Bed (Maks 6 Thn)",
+        "price": 15590000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 4000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "5 Hari 4 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "7D SUPER SALE AUSTRALIA (MELBOURNE+SYDNEY) WITH PENGUIN PARADE AND THE NOBBIES",
+    "base_price": 21490000,
+    "price_categories": [
+      {
+        "type": "Dewasa (Twin/Triple)",
+        "price": 21490000
+      },
+      {
+        "type": "Child with Extra Bed",
+        "price": 20490000
+      },
+      {
+        "type": "Child No Bed (< 6 Thn)",
+        "price": 18990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 5000000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "7 Hari 6 Malam",
+    "max_pax": 20
+  },
+  {
+    "name": "LONG WEEKEND WEST EUROPE LUCERNE + SCAFFHAUSEN 9D",
+    "base_price": 26990000,
+    "price_categories": [
+      {
+        "type": "Dewasa / Child (Twin Sharing)",
+        "price": 26990000
+      },
+      {
+        "type": "Single Supplement",
+        "price": 8500000
+      }
+    ],
+    "single_supplement": null,
+    "duration": "9 Hari 8 Malam",
+    "max_pax": 20
+  }
+]

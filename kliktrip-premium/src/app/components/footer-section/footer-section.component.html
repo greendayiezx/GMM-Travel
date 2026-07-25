@@ -1,0 +1,276 @@
+<footer class="ft-root">
+
+  <!-- ═══ MAIN BLUE SECTION ═══ -->
+  <div class="ft-blue">
+    <div class="ft-container ft-top-grid">
+
+      <!-- Col 1: Brand -->
+      <div class="ft-brand-col">
+        <div class="ft-brand-row">
+          <img [src]="logo.src" [alt]="logo.alt" class="ft-logo" />
+          <div>
+            <h2 class="ft-brand-name">
+              GMM Global <span class="ft-brand-gradient">Explore</span>
+            </h2>
+            <span class="ft-brand-sub">Your Trusted Travel Partner</span>
+          </div>
+        </div>
+
+        <p class="ft-desc">{{ description }}</p>
+
+        <div class="ft-trust-list">
+          <!-- Aman & Terpercaya -->
+          <div class="ft-trust-item">
+            <span class="ft-trust-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            </span>
+            <span>Aman & Terpercaya</span>
+          </div>
+          <!-- Layanan 24/7 -->
+          <div class="ft-trust-item">
+            <span class="ft-trust-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 16v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-2" />
+                <path d="M12 2C8 2 4 6 4 10v4h16v-4c0-4-4-8-8-8z" />
+                <path d="M9 22h6" />
+              </svg>
+            </span>
+            <span>Layanan 24/7</span>
+          </div>
+          <!-- Harga Terbaik -->
+          <div class="ft-trust-item">
+            <span class="ft-trust-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+            </span>
+            <span>Harga Terbaik</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 2: Quick Links -->
+      <div class="ft-link-col">
+        <h3 class="ft-link-title">Quick Links <span class="ft-title-bar green"></span></h3>
+        <ul class="ft-link-list">
+          <li *ngFor="let link of quickLinks">
+            <a [href]="link.href"><span class="ft-arrow">›</span> {{ link.name }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Layanan Kami -->
+      <div class="ft-link-col">
+        <h3 class="ft-link-title">Layanan Kami <span class="ft-title-bar green"></span></h3>
+        <ul class="ft-link-list">
+          <li *ngFor="let link of layananLinks">
+            <a [href]="link.href"><span class="ft-arrow">›</span> {{ link.name }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Informasi -->
+      <div class="ft-link-col">
+        <h3 class="ft-link-title">Informasi <span class="ft-title-bar green"></span></h3>
+        <ul class="ft-link-list">
+          <li *ngFor="let link of infoLinks">
+            <a [href]="link.href"><span class="ft-arrow">›</span> {{ link.name }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 5: Newsletter -->
+      <div class="ft-newsletter-col">
+        <h3 class="ft-link-title">Newsletter <span class="ft-title-bar green"></span></h3>
+        <p class="ft-news-desc">Dapatkan promo dan informasi terbaru dari GMM Global Explore.</p>
+        <div class="ft-news-input-wrap">
+          <input type="email" placeholder="Masukkan email Anda" class="ft-news-input" [(ngModel)]="newsletterEmail" />
+          <button class="ft-news-btn" aria-label="Kirim">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+
+        <h4 class="ft-app-title">Unduh Aplikasi Kami</h4>
+        <div class="ft-app-badges">
+          <div class="ft-store-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
+              <path
+                d="M3.609 1.814L13.792 12 3.61 22.186a1.005 1.005 0 0 1-.61-.92V2.734c0-.39.224-.727.61-.92zm10.89 9.48l2.717-2.717-9.562-5.45 6.845 8.167zm2.717 1.412l-2.717-2.717-6.845 8.167 9.562-5.45zm1.672-.953l-3.02-1.72 3.02-1.72c.63.36.63 3.08 0 3.44z" />
+            </svg>
+            <div>
+              <span class="ft-store-small">GET IT ON</span>
+              <span class="ft-store-big">Google Play</span>
+            </div>
+          </div>
+          <div class="ft-store-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
+              <path
+                d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+            </svg>
+            <div>
+              <span class="ft-store-small">Download on the</span>
+              <span class="ft-store-big">App Store</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ CONTACT BAR (White) ═══ -->
+  <div class="ft-contact-bar">
+    <div class="ft-container ft-contact-grid">
+
+      <!-- Alamat -->
+      <div class="ft-contact-item">
+        <span class="ft-contact-icon location">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#1E9BF0">
+            <path
+              d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+          </svg>
+        </span>
+        <div>
+          <h5 class="ft-contact-title">Alamat</h5>
+          <p class="ft-contact-line">Jl. Pingkan Matindas No.60 </p>
+          <p class="ft-contact-line">Manado, Sulawesi Utara</p>
+        </div>
+      </div>
+
+      <!-- WhatsApp -->
+      <div class="ft-contact-item">
+        <span class="ft-contact-icon whatsapp">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.019-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" />
+          </svg>
+        </span>
+        <div>
+          <h5 class="ft-contact-title">WhatsApp</h5>
+          <p class="ft-contact-line">+62 822-9321-7200</p>
+          <a href="https://wa.me/6282293217200" class="ft-contact-link">Chat dengan kami</a>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="ft-contact-item">
+        <span class="ft-contact-icon email">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        </span>
+        <div>
+          <h5 class="ft-contact-title">Email</h5>
+          <p class="ft-contact-line">yantisyamn&#64;gmail.com</p>
+          <a href="mailto:yantisyamn@gmail.com" class="ft-contact-link">Kirim email</a>
+        </div>
+      </div>
+
+      <!-- Jam Operasional -->
+      <div class="ft-contact-item">
+        <span class="ft-contact-icon clock">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </span>
+        <div>
+          <h5 class="ft-contact-title">Jam Operasional</h5>
+          <p class="ft-contact-line">Setiap Hari</p>
+          <p class="ft-contact-line">07.00 - 22.00 WITA</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ BOTTOM BAR ═══ -->
+  <div class="ft-bottom-bar">
+    <div class="ft-container ft-bottom-inner">
+
+      <!-- Left: Copyright -->
+      <div class="ft-copyright">
+        <p>{{ copyright }}</p>
+        <p>Made with <span style="color:#22c55e">💚</span> in Indonesia</p>
+      </div>
+
+      <!-- Center: Payment Methods with REAL logos -->
+      <div class="ft-payments">
+        <span class="ft-pay-label">Metode Pembayaran</span>
+        <div class="ft-pay-logos">
+          <img src="assets/logo-mandiri.svg" alt="Mandiri" class="ft-pay-logo" />
+          <img src="assets/logo_bca.png" alt="BCA" class="ft-pay-logo" />
+          <img src="assets/logo-bni.svg" alt="BNI" class="ft-pay-logo" />
+          <img src="assets/logo-bri.svg" alt="BRI" class="ft-pay-logo" />
+          <img src="assets/logo-ovo.svg" alt="OVO" class="ft-pay-logo" />
+          <img src="assets/logo-dana.svg" alt="DANA" class="ft-pay-logo" />
+        </div>
+      </div>
+
+      <!-- Right: Social Icons -->
+      <div class="ft-socials">
+        <span class="ft-social-label">Ikuti Kami</span>
+        <div class="ft-social-icons">
+          <!-- Facebook -->
+          <a href="#" class="ft-social-icon fb" aria-label="Facebook">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+            </svg>
+          </a>
+          <!-- Instagram -->
+          <a href="#" class="ft-social-icon ig" aria-label="Instagram">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
+          </a>
+          <!-- TikTok -->
+          <a href="#" class="ft-social-icon tiktok" aria-label="TikTok">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1 0-5.78 2.92 2.92 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 3 15.57 6.34 6.34 0 0 0 9.37 22a6.34 6.34 0 0 0 6.38-6.22V9.4a8.16 8.16 0 0 0 3.84.96V7.1a4.79 4.79 0 0 1-0-.41z" />
+            </svg>
+          </a>
+          <!-- YouTube -->
+          <a href="#" class="ft-social-icon yt" aria-label="YouTube">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.546 12 3.546 12 3.546s-7.505 0-9.377.504A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.504 9.376.504 9.376.504s7.505 0 9.377-.504a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ CURVED WAVE STRIP (SVG) ═══ -->
+  <svg class="ft-wave-svg" viewBox="0 0 1440 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Solid white background path to prevent any page background leakage -->
+    <path d="M0,0 L1440,0 L1440,220 L0,220 Z" fill="#ffffff" />
+
+    <!-- Blue wave (lapisan atas — drawn first, curves highest) -->
+    <path d="M0,25 C300,25 500,105 850,105 C1100,105 1300,45 1440,15 L1440,220 L0,220 Z" fill="#1E9BF0" />
+    <!-- Green wave (lapisan tengah — drawn second, intermediate curve) -->
+    <path d="M0,45 C300,45 500,125 850,125 C1100,125 1300,65 1440,35 L1440,220 L0,220 Z" fill="#a8eb12" />
+    <!-- Yellow wave (lapisan bawah — drawn last, curves lowest, dominantly wide/tall) -->
+    <path d="M0,75 C300,75 500,150 850,150 C1100,150 1300,95 1440,65 L1440,220 L0,220 Z" fill="#FFD600" />
+  </svg>
+
+</footer>

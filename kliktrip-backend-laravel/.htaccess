@@ -1,0 +1,31 @@
+# ── .htaccess ROOT PROJECT ───────────────────────────────────────
+# PENTING: Docroot server (Apache/cPanel) HARUS diarahkan ke folder `public/`,
+# BUKAN ke root project ini. File di bawah ini adalah pertahanan berlapis
+# untuk kasus salah konfigurasi docroot — memblokir akses langsung ke file &
+# folder sensitif dari internet.
+
+# Blokir SEMUA akses ke root project secara default.
+# (Semua traffic seharusnya lewat public/index.php.)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Kalau ada yang mengakses root, arahkan ke folder public.
+    RewriteRule ^(\.env|\.git|storage|bootstrap|config|database|resources|routes|tests|vendor|app) - [F,L]
+</IfModule>
+
+# Blokir eksplisit file konfigurasi & repository (403 Forbidden).
+<FilesMatch "^\.env|\.env\..*|composer\.(json|lock)|artisan|\.gitignore|\.gitattributes$">
+    Require all denied
+</FilesMatch>
+
+# Blokir semua dotfiles (.env, .git, dll).
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Blokir akses ke folder sensitif bila mod_rewrite tidak aktif.
+<IfModule mod_authz_core.c>
+    <DirectoryMatch "^.*/(storage|bootstrap|config|database|vendor|app|routes|resources|tests)/">
+        Require all denied
+    </DirectoryMatch>
+</IfModule>

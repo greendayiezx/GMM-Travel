@@ -1,0 +1,481 @@
+:host {
+  display: block;
+  width: 100vw;
+  position: relative;
+  left: calc(50% - 50vw);
+  box-sizing: border-box;
+}
+
+/* ═══ ROOT ═══ */
+.ft-root {
+  width: 100%;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #1e293b;
+  margin: 0;
+  padding: 0;
+}
+
+/* ═══ CONTAINER ═══ */
+.ft-container {
+  width: 100%;
+  margin: 0;
+  padding: 0 60px;
+  box-sizing: border-box;
+}
+
+/* ═══ BLUE TOP SECTION ═══ */
+.ft-blue {
+  background: linear-gradient(135deg, #0066cc 0%, #1E9BF0 50%, #0088e8 100%);
+  padding: 56px 0 48px;
+  color: #fff;
+  width: 100%;
+}
+
+.ft-top-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 0.9fr 0.9fr 1.2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Brand column */
+.ft-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ft-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ft-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.ft-brand-name {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.15;
+  color: #000000;
+}
+
+.ft-brand-gradient {
+  background: linear-gradient(135deg, #FFD600, #FF9100);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ft-brand-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.75;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-top: 2px;
+}
+
+.ft-desc {
+  font-size: 0.82rem;
+  line-height: 1.65;
+  opacity: 0.88;
+  margin: 0;
+  max-width: 260px;
+}
+
+/* Trust badges */
+.ft-trust-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ft-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.ft-trust-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Link columns */
+.ft-link-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ft-link-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ft-title-bar {
+  width: 36px;
+  height: 3px;
+  border-radius: 2px;
+  display: block;
+}
+.ft-title-bar.green {
+  background: #22c55e;
+}
+
+.ft-link-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ft-link-list li a {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s, transform 0.15s;
+}
+.ft-link-list li a:hover {
+  color: #fff;
+  transform: translateX(3px);
+}
+
+.ft-arrow {
+  font-weight: 900;
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+/* Newsletter column */
+.ft-newsletter-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ft-news-desc {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  opacity: 0.82;
+  margin: 12px 0 14px;
+}
+
+.ft-news-input-wrap {
+  display: flex;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ft-news-input {
+  flex: 1;
+  padding: 11px 14px;
+  border: none;
+  outline: none;
+  font-size: 0.8rem;
+  color: #333;
+  background: #fff;
+  min-width: 0;
+}
+.ft-news-input::placeholder {
+  color: #9ca3af;
+}
+
+.ft-news-btn {
+  padding: 0 16px;
+  background: #1E9BF0;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.ft-news-btn:hover {
+  background: #0b7dd4;
+}
+
+.ft-app-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin: 22px 0 10px;
+}
+
+.ft-app-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.ft-store-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #111827;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.ft-store-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.ft-store-small {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 500;
+  opacity: 0.75;
+  line-height: 1;
+  color: #fff;
+}
+.ft-store-big {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #fff;
+}
+
+/* ═══ CONTACT BAR ═══ */
+.ft-contact-bar {
+  background: #ffffff;
+  padding: 32px 0;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  width: 100%;
+}
+
+.ft-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.ft-contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ft-contact-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ft-contact-icon.location { background: #eff6ff; }
+.ft-contact-icon.whatsapp { background: #f0fdf4; }
+.ft-contact-icon.email    { background: #eff6ff; }
+.ft-contact-icon.clock    { background: #eff6ff; }
+
+.ft-contact-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1E9BF0;
+  margin: 0 0 4px;
+}
+
+.ft-contact-line {
+  font-size: 0.78rem;
+  color: #374151;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ft-contact-link {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1E9BF0;
+  text-decoration: none;
+  transition: text-decoration 0.15s;
+}
+.ft-contact-link:hover {
+  text-decoration: underline;
+}
+
+/* ═══ BOTTOM BAR ═══ */
+.ft-bottom-bar {
+  background: #ffffff;
+  padding: 28px 0;
+  width: 100%;
+}
+
+.ft-bottom-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.ft-copyright {
+  font-size: 0.78rem;
+  color: #6b7280;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ft-copyright p {
+  margin: 0;
+}
+
+/* ── Payment logos (real images) ── */
+.ft-payments {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.ft-pay-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.ft-pay-logos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ft-pay-logo {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.15s;
+}
+.ft-pay-logo:hover {
+  transform: scale(1.1);
+}
+
+/* ── Social icons ── */
+.ft-socials {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.ft-social-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.ft-social-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ft-social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-decoration: none;
+}
+.ft-social-icon:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.ft-social-icon.fb     { background: #1877f2; }
+.ft-social-icon.ig     { background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af); }
+.ft-social-icon.tiktok { background: #111; }
+.ft-social-icon.yt     { background: #ff0000; }
+
+/* ═══ CURVED WAVE SVG ═══ */
+.ft-wave-svg {
+  display: block;
+  width: 100%;
+  height: 200px;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  vertical-align: bottom;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 1024px) {
+  .ft-top-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+  }
+  .ft-brand-col {
+    grid-column: 1 / -1;
+  }
+  .ft-newsletter-col {
+    grid-column: 1 / -1;
+  }
+  .ft-contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ft-top-grid {
+    grid-template-columns: 1fr;
+  }
+  .ft-contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .ft-bottom-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .ft-socials {
+    align-items: center;
+  }
+  .ft-copyright {
+    align-items: center;
+  }
+  .ft-payments {
+    align-items: center;
+  }
+  .ft-app-badges {
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,38 @@
+<section class="py-16 lg:py-20 px-6 lg:px-16 bg-transparent" aria-labelledby="usp-heading">
+  <div class="container mx-auto">
+    <!-- Section header -->
+    <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+      <h2 id="usp-heading" class="text-3xl lg:text-4xl font-extrabold text-white">
+        Perjalanan Premium,<br>
+        <span style="color:#AAEE00">Layanan Tanpa Kompromi</span>
+      </h2>
+      <p class="text-base font-semibold" style="color: #000000; text-shadow: none">
+        Kami hadir bukan sekadar menjual tiket. Kami memastikan setiap perjalanan Anda menjadi kenangan tak ternilai.
+      </p>
+    </div>
+
+    <!-- USP grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20" role="list">
+      <div role="listitem" *ngFor="let usp of usps">
+      <app-usp-card
+        [icon]="usp.icon"
+        [title]="usp.title"
+        [description]="usp.description"
+        [variant]="usp.variant"
+        [bulletPoints]="usp.bulletPoints">
+      </app-usp-card>
+      </div>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="rounded-2xl p-6 sm:p-8 lg:p-12" style="background: linear-gradient(135deg, #1a8fd1 0%, #005fa3 100%)" role="region" aria-label="Statistik layanan KlikTrip">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 text-center">
+        <div *ngFor="let stat of stats" class="space-y-1">
+          <p class="text-3xl lg:text-4xl font-extrabold text-white">{{ stat.value }}</p>
+          <p class="text-sm font-semibold text-white">{{ stat.label }}</p>
+          <p class="text-xs" style="color:rgba(255,255,255,0.75)">{{ stat.sub }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

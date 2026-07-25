@@ -1,0 +1,219 @@
+<div class="booking-page">
+
+  <!-- Step indicator -->
+  <div class="steps-row">
+    <div class="step done"><span class="step-num">✓</span> Kursi & Data</div>
+    <div class="step-line done"></div>
+    <div class="step active"><span class="step-num">2</span> Bayar</div>
+    <div class="step-line"></div>
+    <div class="step"><span class="step-num">3</span> E-Tiket</div>
+  </div>
+
+  <button class="back-btn" (click)="router.navigate(['/booking/seat'])" [disabled]="isProcessing || !!instructions">← Kembali</button>
+
+  <div class="booking-header">
+    <h2 class="booking-title">Pembayaran</h2>
+    <p class="booking-sub">Selesaikan dalam</p>
+    <div class="countdown" [class.urgent]="timeLeft < 120">{{ minutes }}:{{ seconds }}</div>
+  </div>
+
+  <!-- Order summary -->
+  <div class="order-card">
+    <div class="order-row">
+      <span class="order-label">Rute</span>
+      <span class="order-val">{{ bookingService.schedule?.origin }} → {{ bookingService.schedule?.destination }}</span>
+    </div>
+    <div class="order-row">
+      <span class="order-label">Penumpang</span>
+      <span class="order-val">{{ bookingService.passenger?.fullName }}</span>
+    </div>
+    <div class="order-row">
+      <span class="order-label">Kursi</span>
+      <span class="order-val">No. {{ bookingService.selectedSeat }}</span>
+    </div>
+    <div class="order-row total-row">
+      <span class="order-label">Total</span>
+      <span class="order-total">{{ (bookingService.totalPrice + 5000) | currency:'Rp ':'':'1.0-0' }}</span>
+    </div>
+  </div>
+
+  <!-- ── PHASE 1: Pilih metode (sebelum charge) ── -->
+  <ng-container *ngIf="!instructions">
+
+    <div class="methods-card">
+      <p class="methods-title">Pilih Metode Pembayaran</p>
+
+      <div class="method-group">
+        <p class="group-label">Virtual Account</p>
+        <div *ngFor="let m of methods.slice(0,3)"
+             class="method-item" [class.selected]="selected === m.id"
+             (click)="select(m.id)">
+          <img [src]="m.icon" [alt]="m.label" class="method-logo-img" />
+          <div class="method-info">
+            <span class="method-name">{{ m.label }}</span>
+            <span class="method-detail">{{ m.detail }}</span>
+          </div>
+          <div class="method-check" [class.visible]="selected === m.id">✓</div>
+        </div>
+      </div>
+
+      <div class="method-group">
+        <p class="group-label">E-Wallet</p>
+        <div *ngFor="let m of methods.slice(3,6)"
+             class="method-item" [class.selected]="selected === m.id"
+             (click)="select(m.id)">
+          <img [src]="m.icon" [alt]="m.label" class="method-logo-img" />
+          <div class="method-info">
+            <span class="method-name">{{ m.label }}</span>
+            <span class="method-detail">{{ m.detail }}</span>
+          </div>
+          <div class="method-check" [class.visible]="selected === m.id">✓</div>
+        </div>
+      </div>
+
+      <div class="method-group">
+        <p class="group-label">QRIS</p>
+        <div class="method-item" [class.selected]="selected === 'qris'" (click)="select('qris')">
+          <img src="/assets/logo-qris.svg" alt="QRIS" class="method-logo-img" />
+          <div class="method-info">
+            <span class="method-name">QRIS</span>
+            <span class="method-detail">Scan QR dengan app apapun</span>
+          </div>
+          <div class="method-check" [class.visible]="selected === 'qris'">✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing overlay -->
+    <div class="processing-overlay" *ngIf="isProcessing">
+      <div class="spinner"></div>
+      <p>Menghubungi server pembayaran…</p>
+    </div>
+
+    <button class="cta-btn" [disabled]="!selected || isProcessing" (click)="confirm()">
+      <span *ngIf="!isProcessing">Bayar Sekarang →</span>
+      <span *ngIf="isProcessing">Memproses…</span>
+    </button>
+
+  </ng-container>
+
+  <!-- ── PHASE 2: Instruksi pembayaran (setelah charge) ── -->
+  <ng-container *ngIf="instructions">
+
+    <!-- VA: BNI / BRI / Permata -->
+    <div class="instruksi-card" *ngIf="paymentType === 'va'">
+      <div class="instruksi-header">
+        <span class="instruksi-badge">Virtual Account</span>
+        <p class="instruksi-bank">{{ instructions.bank | uppercase }}</p>
+      </div>
+
+      <p class="instruksi-label">Nomor Virtual Account</p>
+      <div class="va-number-row">
+        <span class="va-number">{{ instructions.va_number }}</span>
+        <button class="copy-btn" (click)="copyToClipboard('va', instructions.va_number)">
+          {{ getCopyLabel('va') }}
+        </button>
+      </div>
+
+      <div class="instruksi-steps">
+        <p class="steps-title">Cara Bayar</p>
+        <ol>
+          <li>Buka aplikasi m-banking atau ATM {{ instructions.bank | uppercase }}.</li>
+          <li>Pilih menu <strong>Transfer / Virtual Account</strong>.</li>
+          <li>Masukkan nomor VA di atas.</li>
+          <li>Konfirmasi nominal <strong>{{ (bookingService.totalPrice + 5000) | currency:'Rp ':'':'1.0-0' }}</strong> dan selesaikan pembayaran.</li>
+          <li>Tiket akan dikirim otomatis setelah pembayaran terverifikasi.</li>
+        </ol>
+      </div>
+
+      <div class="polling-info">
+        <div class="polling-dot"></div>
+        <span>Menunggu konfirmasi pembayaran…</span>
+      </div>
+      <button class="simulate-btn" *ngIf="isSandbox" [disabled]="isSimulating" (click)="simulateSuccess()">
+        {{ isSimulating ? 'Memproses…' : '⚡ Simulasi Pembayaran Berhasil (Sandbox)' }}
+      </button>
+    </div>
+
+    <!-- Mandiri echannel -->
+    <div class="instruksi-card" *ngIf="paymentType === 'echannel'">
+      <div class="instruksi-header">
+        <span class="instruksi-badge">Mandiri Bill Payment</span>
+        <p class="instruksi-bank">MANDIRI</p>
+      </div>
+
+      <div class="mandiri-row">
+        <div class="mandiri-field">
+          <p class="instruksi-label">Biller Code</p>
+          <div class="va-number-row">
+            <span class="va-number">{{ instructions.biller_code }}</span>
+            <button class="copy-btn" (click)="copyToClipboard('biller', instructions.biller_code)">
+              {{ getCopyLabel('biller') }}
+            </button>
+          </div>
+        </div>
+        <div class="mandiri-field">
+          <p class="instruksi-label">Bill Key</p>
+          <div class="va-number-row">
+            <span class="va-number">{{ instructions.bill_key }}</span>
+            <button class="copy-btn" (click)="copyToClipboard('bill', instructions.bill_key)">
+              {{ getCopyLabel('bill') }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="instruksi-steps">
+        <p class="steps-title">Cara Bayar via Mandiri</p>
+        <ol>
+          <li>Buka Livin' by Mandiri atau ATM Mandiri.</li>
+          <li>Pilih <strong>Bayar → Multi Payment</strong>.</li>
+          <li>Masukkan <strong>Biller Code</strong> lalu <strong>Bill Key</strong> di atas.</li>
+          <li>Konfirmasi pembayaran sebesar <strong>{{ (bookingService.totalPrice + 5000) | currency:'Rp ':'':'1.0-0' }}</strong>.</li>
+        </ol>
+      </div>
+
+      <div class="polling-info">
+        <div class="polling-dot"></div>
+        <span>Menunggu konfirmasi pembayaran…</span>
+      </div>
+      <button class="simulate-btn" *ngIf="isSandbox" [disabled]="isSimulating" (click)="simulateSuccess()">
+        {{ isSimulating ? 'Memproses…' : '⚡ Simulasi Pembayaran Berhasil (Sandbox)' }}
+      </button>
+    </div>
+
+    <!-- GoPay / OVO / DANA / QRIS -->
+    <div class="instruksi-card" *ngIf="paymentType === 'qr'">
+      <div class="instruksi-header">
+        <span class="instruksi-badge">{{ methodLabel }}</span>
+        <p class="instruksi-bank">Scan QR Code</p>
+      </div>
+
+      <div class="qr-wrapper" *ngIf="qrDataUrl">
+        <img [src]="qrDataUrl" alt="QR Code Pembayaran" class="qr-image" />
+      </div>
+      <p class="qr-fallback" *ngIf="!qrDataUrl">Memuat QR Code…</p>
+
+      <div class="instruksi-steps">
+        <p class="steps-title">Cara Bayar</p>
+        <ol>
+          <li>Buka aplikasi <strong>{{ methodLabel }}</strong> di ponselmu.</li>
+          <li>Tap ikon <strong>Scan / Pay</strong>.</li>
+          <li>Arahkan kamera ke QR Code di atas.</li>
+          <li>Konfirmasi pembayaran sebesar <strong>{{ (bookingService.totalPrice + 5000) | currency:'Rp ':'':'1.0-0' }}</strong>.</li>
+          <li>Tiket akan terbit otomatis setelah pembayaran berhasil.</li>
+        </ol>
+      </div>
+
+      <div class="polling-info">
+        <div class="polling-dot"></div>
+        <span>Menunggu konfirmasi pembayaran…</span>
+      </div>
+      <button class="simulate-btn" *ngIf="isSandbox" [disabled]="isSimulating" (click)="simulateSuccess()">
+        {{ isSimulating ? 'Memproses…' : '⚡ Simulasi Pembayaran Berhasil (Sandbox)' }}
+      </button>
+    </div>
+
+  </ng-container>
+
+</div>

@@ -1,0 +1,444 @@
+<div class="checkout-page">
+  <!-- Progress steps (mirrors payment page) -->
+  <div class="pp-steps">
+    <div class="pp-steps-inner">
+      <div class="pp-step active">
+        <span class="pp-step-dot">1</span>
+        <span class="pp-step-label">Pilih Metode</span>
+      </div>
+      <span class="pp-step-line"></span>
+      <div class="pp-step">
+        <span class="pp-step-dot">2</span>
+        <span class="pp-step-label">Bayar</span>
+      </div>
+      <span class="pp-step-line"></span>
+      <div class="pp-step">
+        <span class="pp-step-dot">3</span>
+        <span class="pp-step-label">Selesai</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="checkout-content">
+    <div class="checkout-container">
+
+      <!-- Left Column: Form Section -->
+      <div class="checkout-main-col">
+
+        <!-- CARD 1: DETAIL PEMESANAN -->
+        <div class="form-card card-detail-pemesanan">
+          <h2 class="card-title">Detail Pemesanan</h2>
+          <p class="card-subtitle">Isi formulir ini dengan benar karena e-tiket akan dikirim ke alamat email sesuai data
+            pemesan.</p>
+
+          <!-- Salutation Radio Row -->
+          <div class="salutation-row">
+            <label class="radio-label" [class.active]="salutation === 'Tuan'">
+              <input type="radio" name="salutation" value="Tuan" [(ngModel)]="salutation">
+              <span class="radio-custom"></span>
+              <span>Tuan</span>
+            </label>
+            <label class="radio-label" [class.active]="salutation === 'Nyonya'">
+              <input type="radio" name="salutation" value="Nyonya" [(ngModel)]="salutation">
+              <span class="radio-custom"></span>
+              <span>Nyonya</span>
+            </label>
+            <label class="radio-label" [class.active]="salutation === 'Nona'">
+              <input type="radio" name="salutation" value="Nona" [(ngModel)]="salutation">
+              <span class="radio-custom"></span>
+              <span>Nona</span>
+            </label>
+          </div>
+
+          <!-- Form Fields -->
+          <div class="form-fields-grid">
+            <!-- Nama Lengkap -->
+            <div class="field-group">
+              <label class="field-label">Nama lengkap</label>
+              <input type="text" class="field-input" placeholder="Contoh: John Doe" [(ngModel)]="fullName">
+            </div>
+
+            <!-- Nomor Ponsel -->
+            <div class="field-group">
+              <label class="field-label">Nomor ponsel</label>
+              <div class="phone-input-wrap">
+                <div class="phone-code-custom-container">
+                  <button type="button" class="phone-code-trigger" (click)="togglePhoneCodeDropdown($event)">
+                    <span class="flag-icon">{{ selectedCountryObj.flag }}</span>
+                    <span class="phone-code-text">{{ selectedCountryObj.code }}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                      class="code-chevron" [class.rotated]="isPhoneCodeOpen">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+
+                  <div class="phone-code-menu" *ngIf="isPhoneCodeOpen" (click)="$event.stopPropagation()">
+                    <div *ngFor="let c of countryCodes" class="phone-code-option"
+                      [class.selected]="phoneCode === c.code" (click)="selectPhoneCode(c, $event)">
+                      <span class="opt-name">{{ c.name }}</span>
+                      <svg *ngIf="phoneCode === c.code" class="opt-check" width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="#1E9BF0" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <input type="tel" class="field-input phone-field" placeholder="852293216427" [(ngModel)]="phoneNumber">
+              </div>
+            </div>
+
+            <!-- Alamat Email -->
+            <div class="field-group">
+              <label class="field-label">Alamat email</label>
+              <input type="email" class="field-input" placeholder="jhondoe@example.com" [(ngModel)]="email">
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: DETAIL PENGUNJUNG -->
+        <div class="form-card card-detail-pengunjung mt-6">
+          <h2 class="card-title">Detail Pengunjung</h2>
+          <p class="card-subtitle">Pastikan mengisi detail pengunjung dengan benar untuk kelancaran acara.</p>
+
+          <div class="visitor-cards-list">
+            <div *ngFor="let v of visitorList; let idx = index" class="visitor-accordion">
+              <div class="visitor-acc-header">
+                <span class="acc-title">Tiket {{ v.ticketIndex }} ({{ v.ticketType }})</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </div>
+
+              <div class="visitor-acc-body">
+                <!-- Pick-up Point (Custom Modern Dropdown) -->
+                <div class="field-group">
+                  <label class="field-label">Choose your pick-up point!</label>
+                  <div class="custom-select-container">
+                    <button type="button" class="custom-select-trigger" (click)="togglePickupDropdown(v, $event)"
+                      [class.active]="v.isPickupOpen">
+                      <div class="custom-select-val">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                          <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span>{{ v.pickupPoint || 'Pilih Lokasi Penjemputan' }}</span>
+                      </div>
+                      <svg class="custom-select-chevron" [class.rotated]="v.isPickupOpen" width="16" height="16"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+
+                    <!-- Dropdown Menu Popup -->
+                    <div class="custom-select-menu" *ngIf="v.isPickupOpen" (click)="$event.stopPropagation()">
+                      <div *ngFor="let opt of pickupOptions" class="custom-select-option"
+                        [class.selected]="v.pickupPoint === opt" (click)="selectPickupOption(v, opt, $event)">
+                        <div class="opt-label-wrap">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            [attr.stroke]="v.pickupPoint === opt ? '#1E9BF0' : '#64748b'" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                          </svg>
+                          <span>{{ opt }}</span>
+                        </div>
+                        <svg *ngIf="v.pickupPoint === opt" class="opt-check" width="16" height="16" viewBox="0 0 24 24"
+                          fill="none" stroke="#1E9BF0" stroke-width="2.5" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="field-group">
+                  <label class="field-label">Full Name <span class="text-red-500">*</span></label>
+                  <input type="text" class="field-input" [class.input-error]="showValidationErrors && (!v.fullName || !v.fullName.trim())" placeholder="As written in ID or Passport"
+                    [(ngModel)]="v.fullName">
+                  <span class="field-error-text" *ngIf="showValidationErrors && (!v.fullName || !v.fullName.trim())">Wajib diisi</span>
+                </div>
+
+                <!-- Passport Number -->
+                <div class="field-group">
+                  <label class="field-label">Passport Number <span class="text-red-500">*</span></label>
+                  <input type="text" class="field-input" [class.input-error]="showValidationErrors && (!v.passportNumber || !v.passportNumber.trim())" placeholder="e.g. A12345678" [(ngModel)]="v.passportNumber">
+                  <span class="field-error-text" *ngIf="showValidationErrors && (!v.passportNumber || !v.passportNumber.trim())">Wajib diisi</span>
+                </div>
+
+                <!-- Date Of Birth -->
+                <div class="field-group">
+                  <label class="field-label">Date Of Birth <span class="text-red-500">*</span></label>
+                  <div class="date-input-wrap">
+                    <input type="date" class="field-input" [class.input-error]="showValidationErrors && !v.dateOfBirth" [(ngModel)]="v.dateOfBirth">
+                  </div>
+                  <span class="field-error-text" *ngIf="showValidationErrors && !v.dateOfBirth">Wajib diisi</span>
+                </div>
+
+                <!-- Passport Expiry Date -->
+                <div class="field-group">
+                  <label class="field-label">Passport Expiry Date <span class="text-red-500">*</span></label>
+                  <div class="date-input-wrap">
+                    <input type="date" class="field-input" [class.input-error]="showValidationErrors && !v.passportExpiry" [(ngModel)]="v.passportExpiry">
+                  </div>
+                  <span class="field-error-text" *ngIf="showValidationErrors && !v.passportExpiry">Wajib diisi</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3: FASILITAS EKSTRA -->
+        <div class="form-card card-fasilitas-ekstra mt-6">
+          <h2 class="card-title">Fasilitas Ekstra</h2>
+          <p class="card-subtitle">Pilih fasilitas tambahan untuk kenyamanan perjalananmu.</p>
+
+          <div class="extra-facility-card">
+            <div class="ef-header">
+              <span class="ef-icon">🧳</span>
+              <div class="ef-info">
+                <h3 class="ef-title">Bagasi Ekstra</h3>
+                <p class="ef-sub">Pilih opsi bagasi tambahan yang kamu butuhkan</p>
+              </div>
+            </div>
+
+            <!-- Bagasi Custom Dropdown -->
+            <div class="custom-select-container mt-3">
+              <button type="button" class="custom-select-trigger" (click)="toggleBaggageDropdown($event)" [class.active]="isBaggageOpen">
+                <div class="custom-select-val">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 20h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path>
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  <span>{{ selectedBaggageLabel }}</span>
+                </div>
+                <svg class="custom-select-chevron" [class.rotated]="isBaggageOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <div class="custom-select-menu" *ngIf="isBaggageOpen" (click)="$event.stopPropagation()">
+                <div *ngFor="let opt of baggageOptions"
+                     class="custom-select-option"
+                     [class.selected]="selectedBaggagePrice === opt.price"
+                     (click)="selectBaggageOption(opt, $event)">
+                  <div class="opt-label-wrap">
+                    <span>{{ opt.label }}</span>
+                  </div>
+                  <svg *ngIf="selectedBaggagePrice === opt.price" class="opt-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E9BF0" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4: OPSIONAL & PERLINDUNGAN EKSTRA -->
+        <div class="form-card card-opsional-ekstra mt-6" *ngIf="koreaOptionGroups.length > 0">
+          <div class="card-header-with-badge">
+            <div>
+              <h2 class="card-title">Opsional & Perlindungan Ekstra</h2>
+              <p class="card-subtitle mb-0">Pilih opsi tambahan yang direkomendasikan untuk pengalaman tour terbaik.</p>
+            </div>
+          </div>
+
+          <div class="korea-options-groups-list">
+            <div *ngFor="let group of koreaOptionGroups" class="korea-group-card">
+              <div class="kg-header">
+                <div class="kg-title-wrap">
+                  <img *ngIf="group.imageIcon" [src]="group.imageIcon" [alt]="group.categoryName" class="kg-group-icon-img" />
+                  <span *ngIf="!group.imageIcon && group.icon" class="prot-icon">{{ group.icon }}</span>
+                  <h3 class="kg-title">{{ group.categoryName }}</h3>
+                </div>
+                <span *ngIf="group.badge" class="kg-badge">{{ group.badge }}</span>
+              </div>
+
+              <div class="kg-items-list">
+                <div *ngFor="let item of group.items" class="protection-card" [class.selected]="item.selected">
+                  <div class="prot-card-top-row">
+                    <div class="prot-card-info">
+                      <div class="prot-header mb-1">
+                        <h4 class="prot-title">{{ item.title }}</h4>
+                      </div>
+                      <p class="item-desc-text">{{ item.description }}</p>
+
+                      <div class="prot-feature-box mb-3" *ngIf="item.features && item.features.length > 0">
+                        <div *ngFor="let feat of item.features" class="prot-feat-item">
+                          <span class="feat-check">✓</span>
+                          <span>{{ feat }}</span>
+                        </div>
+                      </div>
+
+                      <div class="prot-action-row">
+                        <div class="prot-price-wrap">
+                          <span class="prot-price">{{ item.priceDisplay }}</span>
+                          <span class="prot-pax"><small>{{ item.perPax ? '/pax' : '/grup' }}</small></span>
+                          <span *ngIf="item.selected" class="prot-status-badge">✓ Dipilih</span>
+                        </div>
+
+                        <button type="button"
+                          class="btn-toggle-protection"
+                          [class.btn-cancel]="item.selected"
+                          (click)="toggleKoreaOption(item)">
+                          {{ item.selected ? 'Batal Pilih' : '+ Tambahkan' }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 5: YANG AKAN KAMU DAPATKAN -->
+        <div class="form-card card-yang-didapatkan mt-6">
+          <h2 class="card-title mb-4">Yang akan Kamu Dapatkan</h2>
+
+          <div class="benefits-list">
+            <!-- Benefit 1: 100% Refund -->
+            <div class="benefit-card">
+              <div class="benefit-icon-box">
+                <img src="assets/icon-refund.svg" alt="Refund" class="benefit-img-icon" />
+              </div>
+              <div class="benefit-content">
+                <h3 class="benefit-title">Bisa 100% Refund</h3>
+                <p class="benefit-desc">Dapatkan refund 100% dari harga tiketmu (tidak termasuk biaya upgrade tiket 100%
+                  Refund) hingga 24 jam sebelum keberangkatan.</p>
+              </div>
+            </div>
+
+            <!-- Benefit 2: Voucher Gratis -->
+            <div class="voucher-card">
+              <div class="voucher-card-header">
+                <div class="vh-left">
+                  <img src="assets/icon-voucher.svg" alt="Voucher" class="benefit-img-icon" />
+                  <h3 class="vh-title">Ambil voucher gratismu</h3>
+                </div>
+                <span class="gratis-tag">GRATIS</span>
+              </div>
+              <p class="voucher-sub">Klaim vouchernya sekarang dan dapetin setelah pembayaran transaksi ini.</p>
+
+              <div class="vouchers-list-grid">
+                <!-- Voucher 1 -->
+                <div class="voucher-item-row">
+                  <div class="vi-left">
+                    <img src="assets/icon-promo.svg" alt="Promo" class="vi-img-icon" />
+                    <span class="vi-text">Disc 10.000 + Disc tambahan hingga 25.000 untuk Jemputan Bandara <a
+                        href="javascript:void(0)" class="vi-terms-link">Lihat S&K</a></span>
+                  </div>
+                  <button class="btn-claim-voucher" [class.claimed]="vouchersClaimed['v1']"
+                    (click)="claimVoucher('v1')">
+                    {{ vouchersClaimed['v1'] ? 'Diklaim ✓' : 'Klaim' }}
+                  </button>
+                </div>
+
+                <!-- Voucher 2 -->
+                <div class="voucher-item-row">
+                  <div class="vi-left">
+                    <img src="assets/icon-mobil.svg" alt="Mobil" class="vi-img-icon" />
+                    <span class="vi-text">Disc s.d. Rp110.000 untuk Sewa Mobil <a href="javascript:void(0)"
+                        class="vi-terms-link">Lihat S&K</a></span>
+                  </div>
+                  <button class="btn-claim-voucher" [class.claimed]="vouchersClaimed['v2']"
+                    (click)="claimVoucher('v2')">
+                    {{ vouchersClaimed['v2'] ? 'Diklaim ✓' : 'Klaim' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="see-all-vouchers">
+                <a href="javascript:void(0)" (click)="showAllVouchers = !showAllVouchers">
+                  <span class="chevron-sm">˅</span> Lihat semua voucher (1)
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Order Summary Sidebar -->
+      <aside class="checkout-sidebar-col">
+        <div class="sidebar-summary-card">
+
+          <!-- Header Item Info -->
+          <div class="summary-pkg-header">
+            <div class="pkg-thumb">
+              <img
+                [src]="bookingData?.packageImage || 'https://images.unsplash.com/photo-1517154421773-0529f29ea451?q=80&w=400'"
+                [alt]="bookingData?.packageName">
+            </div>
+            <div class="pkg-title-wrap">
+              <h3 class="pkg-name">{{ bookingData?.packageName }}</h3>
+              <a href="javascript:void(0)" (click)="goBack()" class="pkg-detail-link">Detail</a>
+            </div>
+          </div>
+
+          <p class="pkg-sub-desc">{{ bookingData?.duration || 'Bundle Tiket Theme Park 1 Hari - Weekday' }}</p>
+
+          <div class="pkg-ticket-tag">
+            <span class="ticket-tag-text">{{ ticketSummaryText }}</span>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <!-- Date Selected -->
+          <div class="selected-date-row">
+            <span class="date-label-sub">Tanggal Dipilih</span>
+            <div class="date-val-text">{{ bookingData?.selectedDate }}</div>
+          </div>
+
+          <!-- Addons Summary Breakdown (if selected) -->
+          <div class="addons-breakdown-list" *ngIf="selectedBaggagePrice > 0 || selectedKoreaOptions.length > 0">
+            <div class="summary-divider"></div>
+            <span class="date-label-sub mb-2">Fasilitas & Opsional Ekstra</span>
+            <div class="addon-sum-row" *ngIf="selectedBaggagePrice > 0">
+              <span>• Bagasi: {{ selectedBaggageLabel }}</span>
+            </div>
+            <div class="addon-sum-row" *ngFor="let opt of selectedKoreaOptions; let i = index">
+              <span>{{ i + 1 }}. {{ opt.title }} ({{ opt.priceDisplay }})</span>
+            </div>
+          </div>
+
+          <!-- Policy Tags -->
+          <div class="policy-tags-list">
+            <div class="policy-item">
+              <span class="policy-icon">🚫</span>
+              <span class="policy-text">Tidak bisa refund</span>
+            </div>
+            <div class="policy-item">
+              <span class="policy-icon">⚡</span>
+              <span class="policy-text">Konfirmasi instan</span>
+            </div>
+            <div class="policy-item">
+              <span class="policy-icon">🗓</span>
+              <span class="policy-text">Berlaku pada {{ bookingData?.selectedDate }}</span>
+            </div>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <!-- Total Payment Row -->
+          <div class="total-pay-row">
+            <span class="total-pay-label">Total Pembayaran</span>
+            <div class="total-pay-amount">{{ finalTotalPaymentFormatted }}</div>
+          </div>
+
+          <!-- Action Button -->
+          <button class="btn-submit-checkout" (click)="submitBooking()" [disabled]="isSubmitting">
+            <span *ngIf="!isSubmitting">Lanjutkan ke Pembayaran</span>
+            <span *ngIf="isSubmitting">Memproses...</span>
+          </button>
+
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</div>

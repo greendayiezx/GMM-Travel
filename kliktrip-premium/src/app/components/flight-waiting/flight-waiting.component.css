@@ -1,0 +1,150 @@
+.waiting-page {
+  min-height: 100vh;
+  width: 100%;
+  background: url('/assets/jalanan-sawah.png') center center / cover no-repeat fixed;
+  padding: 40px 16px 80px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.waiting-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 10, 30, 0.65);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.center-box {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+  text-align: center;
+}
+
+.big-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: #1E9BF0;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text { font-size: 0.9rem; color: rgba(255,255,255,0.75); margin: 0; }
+.error-text   { font-size: 0.9rem; color: #fca5a5; margin: 0; }
+
+.outline-btn {
+  padding: 9px 22px; border-radius: 20px;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+  color: #fff; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  transition: background 0.2s;
+}
+.outline-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* Main content */
+.waiting-content {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 18px;
+}
+
+/* Status icon */
+.status-icon-wrap { display: flex; justify-content: center; }
+.status-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  background: rgba(255,255,255,0.12);
+  border: 3px solid rgba(255,255,255,0.2);
+}
+.status-icon.icon-paid       { background: rgba(30,155,240,0.2); border-color: #1E9BF0; }
+.status-icon.icon-processing { background: rgba(251,191,36,0.2); border-color: #fbbf24; }
+.status-icon.icon-issued     { background: rgba(16,185,129,0.2); border-color: #10b981; }
+.status-icon.icon-failed     { background: rgba(239,68,68,0.2);  border-color: #ef4444; }
+
+/* Main message */
+.main-message { text-align: center; }
+.msg-title {
+  font-size: 1.4rem; font-weight: 900; color: #fff;
+  margin: 0 0 8px; line-height: 1.2;
+}
+.msg-title.issued { color: #6ee7b7; }
+.msg-title.failed { color: #fca5a5; }
+.msg-sub {
+  font-size: 0.88rem; color: rgba(255,255,255,0.75);
+  line-height: 1.6; margin: 0;
+}
+.failed-sub { color: #fca5a5; }
+
+/* Booking code */
+.code-card {
+  background: rgba(255,255,255,0.97); border-radius: 16px;
+  padding: 18px 24px; width: 100%; text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.code-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin: 0 0 6px; }
+.code-value { font-size: 1.6rem; font-weight: 900; color: #1E9BF0; margin: 0 0 6px; letter-spacing: 0.06em; }
+.code-hint  { font-size: 0.72rem; color: #9ca3af; margin: 0; }
+
+/* Status badge */
+.status-badge-row { display: flex; justify-content: center; }
+.status-badge {
+  padding: 6px 18px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 800; letter-spacing: 0.02em;
+  background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7);
+}
+.badge-paid       { background: rgba(30,155,240,0.25); color: #93c5fd; }
+.badge-processing { background: rgba(251,191,36,0.25); color: #fde68a; }
+.badge-issued     { background: rgba(16,185,129,0.25); color: #6ee7b7; }
+.badge-failed     { background: rgba(239,68,68,0.25);  color: #fca5a5; }
+
+/* Summary */
+.summary-card {
+  background: rgba(255,255,255,0.97); border-radius: 16px;
+  padding: 18px 22px; width: 100%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.summary-row   { display: flex; justify-content: space-between; align-items: center; }
+.summary-label { font-size: 0.8rem; color: #6b7280; font-weight: 600; }
+.summary-val   { font-size: 0.88rem; color: #111; font-weight: 700; }
+.total-row     { border-top: 1px solid #f3f4f6; padding-top: 10px; margin-top: 4px; }
+.summary-total { font-size: 1.05rem; font-weight: 900; color: #1E9BF0; }
+
+/* CTA */
+.cta-row {
+  display: flex; flex-direction: column; gap: 10px; width: 100%;
+}
+.cta-btn {
+  width: 100%; padding: 13px; border-radius: 12px;
+  font-size: 0.92rem; font-weight: 800; cursor: pointer;
+  border: none; transition: opacity 0.2s, transform 0.15s;
+}
+.cta-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.cta-btn.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff;
+}
+.cta-btn.outline {
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.35); color: #fff;
+}
+.cta-btn.ghost {
+  background: transparent; color: rgba(255,255,255,0.6);
+  font-size: 0.82rem; font-weight: 600; padding: 8px;
+}
+
+.last-check {
+  font-size: 0.72rem; color: rgba(255,255,255,0.4); text-align: center; margin: 0;
+}
