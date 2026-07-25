@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\WelcomeMail;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -30,18 +31,19 @@ class TestMail extends Command
         $this->line('  FROM      : ' . config('mail.from.address'));
         $this->newLine();
 
-        $this->info("Mengirim email test ke {$to} ...");
+        $this->info("Mengirim email WELCOME asli ke {$to} ...");
 
         try {
-            Mail::raw('Ini email test dari GMM Global Explore. Jika Anda menerimanya, konfigurasi SMTP sudah benar.', function ($m) use ($to) {
-                $m->to($to)->subject('Test SMTP - GMM Global Explore');
-            });
-            $this->info('BERHASIL: email terkirim tanpa error dari server SMTP.');
+            // Kirim WelcomeMail persis seperti alur registrasi (render template
+            // emails.welcome) agar error rendering/kirim muncul di sini.
+            Mail::to($to)->send(new WelcomeMail('Test', $to, 'email'));
+            $this->info('BERHASIL: welcome email terkirim tanpa error.');
             $this->line('Cek inbox & folder Spam di ' . $to);
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error('GAGAL kirim email:');
+            $this->error('GAGAL kirim welcome email:');
             $this->error($e->getMessage());
+            $this->line('File: ' . $e->getFile() . ':' . $e->getLine());
             return self::FAILURE;
         }
     }
