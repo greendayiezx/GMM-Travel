@@ -96,7 +96,7 @@
 
       <!-- CTA -->
       <div class="cta-section">
-        <a href="{{ config('app.frontend_url', 'https://globalexplore.web.id') }}" class="cta-btn">
+        <a href="https://globalexplore.web.id" class="cta-btn">
           Mulai Jelajahi Sekarang 🚀
         </a>
       </div>
@@ -119,23 +119,23 @@
       </p>
     </div>
 
-    <!-- Footer (mengikuti footer website) -->
-    <div class="footer" style="background:#1a1a2e; padding:32px 32px 24px; text-align:center;">
+    <!-- Footer (mengikuti footer website, background putih) -->
+    <div class="footer" style="background:#ffffff; padding:32px 32px 24px; text-align:center; border-top:1px solid #eef1f5;">
       <img src="https://www.globalexplore.web.id/assets/gmm-tour-logo.png"
            alt="GMM Global Explore" width="52" height="52"
-           style="display:block; margin:0 auto 12px; border-radius:12px; background:#fff; padding:5px;">
-      <div style="font-size:18px; font-weight:800; color:#ffffff; letter-spacing:-0.3px;">
-        GMM Global <span style="color:#FFD600;">Explore</span>
+           style="display:block; margin:0 auto 12px;">
+      <div style="font-size:18px; font-weight:800; color:#1a2b4a; letter-spacing:-0.3px;">
+        GMM Global <span style="color:#1E9BF0;">Explore</span>
       </div>
-      <div style="font-size:12px; color:#8a8aa0; margin:4px 0 16px;">Your Trusted Travel Partner</div>
+      <div style="font-size:12px; color:#9aa3b2; margin:4px 0 16px;">Your Trusted Travel Partner</div>
 
-      <div style="font-size:12.5px; color:#a5a5bd; line-height:1.7; max-width:420px; margin:0 auto 20px;">
+      <div style="font-size:12.5px; color:#667085; line-height:1.7; max-width:420px; margin:0 auto 20px;">
         Kami hadir untuk memberikan pengalaman perjalanan terbaik untuk Anda dan keluarga.
         Aman, nyaman, dan terpercaya.
       </div>
 
       <!-- Kontak (sama seperti website) -->
-      <div style="font-size:12.5px; color:#c3c3d6; line-height:2; margin-bottom:18px;">
+      <div style="font-size:12.5px; color:#475467; line-height:2; margin-bottom:18px;">
         📍 Jl. Pingkan Matindas No.60, Manado, Sulawesi Utara<br>
         💬 WhatsApp: <a href="https://wa.me/6282293217200" style="color:#1E9BF0; text-decoration:none;">+62 822-9321-7200</a><br>
         ✉️ <a href="mailto:yantisyamn@gmail.com" style="color:#1E9BF0; text-decoration:none;">yantisyamn@gmail.com</a><br>
@@ -150,7 +150,7 @@
         <a href="#" style="color:#1E9BF0; text-decoration:none; margin:0 7px; font-size:12px; font-weight:600;">YouTube</a>
       </div>
 
-      <div style="font-size:11.5px; color:#6f6f88; line-height:1.7; border-top:1px solid #2c2c46; padding-top:16px;">
+      <div style="font-size:11.5px; color:#98a2b3; line-height:1.7; border-top:1px solid #eef1f5; padding-top:16px;">
         © {{ date('Y') }} GMM Global Explore. All rights reserved.<br>
         Made with <span style="color:#22c55e;">💚</span> in Indonesia
       </div>

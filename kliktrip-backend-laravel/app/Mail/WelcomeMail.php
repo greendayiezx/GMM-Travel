@@ -32,8 +32,11 @@ class WelcomeMail extends Mailable
 
     public function content(): Content
     {
+        // Sertakan versi teks (multipart) — meningkatkan deliverability &
+        // mengurangi kemungkinan masuk spam dibanding HTML-only.
         return new Content(
             view: 'emails.welcome',
+            text: 'emails.welcome_text',
         );
     }
 }
