@@ -19,6 +19,7 @@ import { TravelService } from './services/travel.service';
 import { ClerkService } from './services/clerk.service';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -362,8 +363,13 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.carGroup.position.set(0.65, -0.48, -17);
     this.carGroup.rotation.y = 0;
 
-    // ── Load Toyota HiAce GLTF ───────────────────────────────
+    // ── Load Toyota HiAce GLTF (Draco-compressed) ────────────
     const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    // Decoder Draco dari CDN Google (model .glb sudah dikompres Draco:
+    // 62MB → 1.5MB). Tanpa decoder ini model tidak akan termuat.
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    loader.setDRACOLoader(dracoLoader);
     loader.load(
       'assets/toyota_hiace_kombi_hq_interior.glb',
       (gltf) => {
