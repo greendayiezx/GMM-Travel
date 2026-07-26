@@ -48,6 +48,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   // ── Animation state ──────────────────────────────────────────
   private animFrameId = 0;
+  private renderPaused = false;              // true → skip render (tab hidden / hero off-screen)
+  private heroObserver?: IntersectionObserver;
+  private onVisibilityChange = () => this.updateRenderPaused();
+  private heroVisible = true;
   private clock = new THREE.Clock();
   private isScrolling = false;   // true while ScrollTrigger is driving the car
   private isFlying   = false;    // true after search button takeoff completes
@@ -457,7 +461,26 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     window.addEventListener('scroll', this.nativeScrollHandler, { passive: true });
     this.clock.start();
     this.animate();
+    this.setupRenderPause();
     setTimeout(() => this.startPlaceholderAnimation(), 0);
+  }
+
+  /** Pasang listener untuk menjeda render loop saat tab tersembunyi / hero
+   *  keluar dari viewport — menghemat CPU/GPU & memperbaiki idle detection. */
+  private setupRenderPause(): void {
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+    const canvas = this.renderer?.domElement;
+    if (canvas && 'IntersectionObserver' in window) {
+      this.heroObserver = new IntersectionObserver((entries) => {
+        this.heroVisible = entries[0]?.isIntersecting ?? true;
+        this.updateRenderPaused();
+      }, { threshold: 0.01 });
+      this.heroObserver.observe(canvas);
+    }
+  }
+
+  private updateRenderPaused(): void {
+    this.renderPaused = document.hidden || !this.heroVisible;
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -759,6 +782,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────
   private animate(): void {
     this.animFrameId = requestAnimationFrame(() => this.animate());
+
+    // Hemat CPU/GPU: lewati seluruh kerja render saat tab tidak aktif atau
+    // hero 3D tidak terlihat di layar. Loop tetap hidup (murah) agar resume
+    // instan. Mengurangi main-thread work & konsumsi baterai.
+    if (this.renderPaused) return;
+
     const t = this.clock.getElapsedTime();
 
     // THE ULTIMATE GUARD: If we are on the ticket page, keep car locked at y: -100 and skip all animation logic
@@ -931,6 +960,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     }
     cancelAnimationFrame(this.animFrameId);
     window.removeEventListener('scroll', this.nativeScrollHandler);
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    this.heroObserver?.disconnect();
     ScrollTrigger.getAll().forEach(t => t.kill());
     this.renderer?.dispose();
   }
