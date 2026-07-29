@@ -191,6 +191,102 @@ class PaymentController extends Controller
         }
     }
 
+    /**
+     * Charge paket wisata dari APLIKASI MOBILE (tanpa Clerk).
+     * Karena app mobile belum memakai Clerk, endpoint ini mengidentifikasi
+     * pelanggan lewat email (find-or-create User), membuat PackageOrder, lalu
+     * memanggil Midtrans. Dibatasi rate-limit untuk mencegah abuse.
+     * POST /api/mobile/package-charge
+     */
+    public function mobilePackageCharge(Request $request)
+    {
+        $data = $request->validate([
+            'orderId'       => ['required', 'string', 'max:64'],
+            'amount'        => ['required', 'integer', 'min:1'],
+            'customerName'  => ['required', 'string', 'max:255'],
+            'customerEmail' => ['required', 'email'],
+            'customerPhone' => ['nullable', 'string', 'max:32'],
+            'packageName'   => ['nullable', 'string', 'max:255'],
+            'items'         => ['nullable', 'array', 'max:30'],
+            'items.*.name'  => ['required_with:items', 'string', 'max:120'],
+            'items.*.qty'   => ['required_with:items', 'integer', 'min:0', 'max:50'],
+            'paymentMethod' => ['nullable', 'string', 'max:32'],
+        ]);
+
+        $amount = (int) $data['amount'];
+        $globalFloor = (int) config('services.package.min_amount', 50000);
+        if ($amount < $globalFloor) {
+            return response()->json(['message' => 'Nominal pembayaran tidak valid.'], 422);
+        }
+
+        // Identifikasi pelanggan via email (tanpa Clerk).
+        $userRole = \App\Models\Role::where('slug', 'user')->first();
+        $user = User::firstOrCreate(
+            ['email' => $data['customerEmail']],
+            [
+                'name'    => $data['customerName'],
+                'role_id' => $userRole?->id,
+                'phone'   => $data['customerPhone'] ?? null,
+            ]
+        );
+
+        $order = PackageOrder::updateOrCreate(
+            ['order_code' => (string) $data['orderId']],
+            [
+                'user_id'      => $user->id,
+                'package_name' => $data['packageName'] ?: 'Paket Wisata GMM',
+                'total_amount' => $amount,
+                'items'        => $data['items'] ?? null,
+                'status'       => self::PAYMENT_PENDING,
+            ]
+        );
+
+        Log::info('Mobile package charge', [
+            'order_code'   => $order->order_code,
+            'amount'       => $amount,
+            'package_name' => $data['packageName'] ?? null,
+            'email'        => $data['customerEmail'],
+        ]);
+
+        try {
+            $coreMethod = $this->normalizeCoreMethod($data['paymentMethod'] ?? 'bni_va');
+            $result = $this->midtransService->charge(
+                $data['orderId'],
+                (float) $amount,
+                $coreMethod,
+                [
+                    'name'  => $data['customerName'],
+                    'phone' => $data['customerPhone'] ?? '08000000000',
+                ],
+                [
+                    'id'       => 'PKG-' . $data['orderId'],
+                    'price'    => $amount,
+                    'quantity' => 1,
+                    'name'     => $data['packageName'] ?: 'Paket Wisata GMM',
+                ]
+            );
+
+            return response()->json([
+                'success'      => true,
+                'order_id'     => $order->id,
+                'order_code'   => $order->order_code,
+                'payment_type' => $result['payment_type'],
+                'instructions' => $result['instructions'],
+                'expired_at'   => $result['expired_at'],
+                'sandbox'      => $result['sandbox'] ?? false,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Mobile package charge gagal', [
+                'error'    => $e->getMessage(),
+                'order_id' => $data['orderId'],
+            ]);
+            return response()->json(
+                ['message' => 'Gagal memproses pembayaran. Coba lagi.'],
+                500,
+            );
+        }
+    }
+
     private function normalizeCoreMethod(string $method): string
     {
         return match ($method) {

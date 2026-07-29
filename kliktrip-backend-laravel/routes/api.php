@@ -34,6 +34,8 @@ Route::middleware(['clerk.auth', 'throttle:60,1'])->group(function () {
 
 // Pembuatan pembayaran paket: wajib login (attribution) + dibatasi rate.
 Route::post('/charge', [PaymentController::class, 'packageCharge'])->middleware(['clerk.auth', 'throttle:20,1']);
+// Charge paket dari APP MOBILE (tanpa Clerk — identifikasi via email).
+Route::post('/mobile/package-charge', [PaymentController::class, 'mobilePackageCharge'])->middleware('throttle:20,1');
 // Pembuatan pembayaran dibatasi: cegah spam charge / abuse.
 // Pembuatan & pengecekan pembayaran travel WAJIB login (clerk.auth) agar
 // booking tertaut ke user asli & terlindungi cek kepemilikan (anti-IDOR).
@@ -76,4 +78,29 @@ Route::get('/schedules', function () {
         TravelSchedule::with(['travelRoute.departureCity', 'travelRoute.arrivalCity'])
             ->get(['id', 'travel_route_id', 'departure_time', 'price', 'available_seats', 'status'])
     );
+});
+
+// ── Cities untuk shuttle autocomplete ─────────────────────────
+Route::get('/cities', function () {
+    $query = request('q', '');
+    
+    if (empty(trim($query))) {
+        return response()->json([]);
+    }
+    
+    $cities = \App\Models\City::with('province')
+        ->where('name', 'like', '%' . $query . '%')
+        ->orWhereHas('province', function ($q) use ($query) {
+            $q->where('name', 'like', '%' . $query . '%');
+        })
+        ->limit(10)
+        ->get()
+        ->map(fn($city) => [
+            'id' => $city->id,
+            'name' => $city->name,
+            'province' => $city->province?->name ?? '',
+            'displayName' => $city->name . ($city->province ? ', ' . $city->province->name : ''),
+        ]);
+    
+    return response()->json($cities);
 });
