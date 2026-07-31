@@ -10,6 +10,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // CORS paling luar: handle preflight OPTIONS + tambah header CORS ke
+        // semua response (perlu untuk Flutter Web / SPA lintas-origin).
+        $middleware->prepend(\App\Http\Middleware\CorsMiddleware::class);
+
+        // HandleCors Laravel (konfigurasi config/cors.php) tetap dipakai.
         $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
 
         // Security headers ke SEMUA response (api & web) — proteksi level browser

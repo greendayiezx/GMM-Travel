@@ -35,6 +35,13 @@ class TravelScheduleSeeder extends Seeder
         $gorontalo  = City::firstOrCreate(['name' => 'Gorontalo'],  ['province_id' => $goronprov->id]);
         $makassar   = City::firstOrCreate(['name' => 'Makassar'],   ['province_id' => $sulsel->id]);
         $kendari    = City::firstOrCreate(['name' => 'Kendari'],    ['province_id' => $sultra->id]);
+        
+        // Rute uji default Jakarta-Bandung
+        $dki = Province::firstOrCreate(['name' => 'DKI Jakarta']);
+        $jabar = Province::firstOrCreate(['name' => 'Jawa Barat']);
+        $jakarta = City::firstOrCreate(['name' => 'Jakarta'], ['province_id' => $dki->id]);
+        $bandung = City::firstOrCreate(['name' => 'Bandung'], ['province_id' => $jabar->id]);
+        $tangerang = City::firstOrCreate(['name' => 'Tangerang'], ['province_id' => $jabar->id]);
 
         // 2. Vehicles
         $vehicles = [];
@@ -65,7 +72,7 @@ class TravelScheduleSeeder extends Seeder
         }
 
         // 4. Routes + Schedules
-        $cities = compact('manado', 'kotamobagu', 'gorontalo', 'makassar', 'kendari');
+        $cities = compact('manado', 'kotamobagu', 'gorontalo', 'makassar', 'kendari', 'jakarta', 'bandung', 'tangerang');
 
         $routeData = [
             ['kotamobagu', 'manado',     180,  300,  500000],
@@ -88,6 +95,9 @@ class TravelScheduleSeeder extends Seeder
             ['kendari',    'kotamobagu',1600, 2400, 1350000],
             ['kendari',    'gorontalo', 1200, 2040, 1200000],
             ['kendari',    'makassar',   600, 1500,  900000],
+            ['jakarta',    'bandung',    150,  180,  125000],
+            ['tangerang',  'bandung',    180,  220,  150000],
+            ['bandung',    'jakarta',    150,  180,  125000],
         ];
 
         $departureTimes = ['05:30', '09:15', '12:00', '15:40', '18:30', '21:00'];

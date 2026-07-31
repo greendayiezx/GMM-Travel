@@ -55,6 +55,11 @@ class User extends Authenticatable
         return $this->hasMany(Favorite::class);
     }
 
+    public function savedPassengers(): HasMany
+    {
+        return $this->hasMany(SavedPassenger::class);
+    }
+
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);

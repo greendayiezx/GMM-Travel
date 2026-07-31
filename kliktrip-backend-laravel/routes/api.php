@@ -8,10 +8,27 @@ use App\Http\Controllers\TravelScheduleController;
 use App\Http\Controllers\FlightBookingController;
 use App\Http\Controllers\FlightSearchController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\UserController;
 use App\Models\TravelSchedule;
 
 // ── Health Check ──────────────────────────────────────────────
 Route::get('/health', fn() => response()->json(['status' => 'ok']));
+
+// ── Profil user (wajib login Clerk) ───────────────────────────
+// Statistik nyata untuk halaman profil app mobile (trips/points/reviews).
+Route::get('/me/stats', [UserController::class, 'stats'])->middleware(['clerk.auth', 'throttle:60,1']);
+// Ringkasan tier & progres loyalitas (kartu "Loyalty Status").
+Route::get('/me/loyalty', [UserController::class, 'loyalty'])->middleware(['clerk.auth', 'throttle:60,1']);
+// Daftar booking nyata milik user (flight + shuttle + wisata).
+Route::get('/me/bookings', [UserController::class, 'bookings'])->middleware(['clerk.auth', 'throttle:60,1']);
+// Penumpang tersimpan (Saved Passenger Data) milik user.
+Route::get('/me/passengers',    [UserController::class, 'passengers'])->middleware(['clerk.auth', 'throttle:60,1']);
+Route::post('/me/passengers',   [UserController::class, 'storePassenger'])->middleware(['clerk.auth', 'throttle:30,1']);
+Route::delete('/me/passengers/{id}', [UserController::class, 'deletePassenger'])->middleware(['clerk.auth', 'throttle:30,1']);
+// Channel pembayaran aktif (Payment Methods) — data nyata dari DB.
+Route::get('/me/payment-methods', [UserController::class, 'paymentMethods'])->middleware(['clerk.auth', 'throttle:60,1']);
+// Favorit milik user (SavedPage) — data nyata dari DB.
+Route::get('/me/favorites', [UserController::class, 'favorites'])->middleware(['clerk.auth', 'throttle:60,1']);
 
 // ── Clerk Webhooks ────────────────────────────────────────────
 Route::post('/clerk/webhook', [ClerkWebhookController::class, 'handle']);
