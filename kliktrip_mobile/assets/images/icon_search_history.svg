@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="128"
+     height="128"
+     viewBox="0 0 64 64"
+     fill="none">
+
+<defs>
+
+<linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#44C3FF"/>
+<stop offset="100%" stop-color="#1565D8"/>
+</linearGradient>
+
+<linearGradient id="lime" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#F4FF62"/>
+<stop offset="100%" stop-color="#C8FF00"/>
+</linearGradient>
+
+</defs>
+
+<!-- Search -->
+
+<circle
+cx="28"
+cy="28"
+r="16"
+fill="url(#blue)"/>
+
+<!-- Clock -->
+
+<circle
+cx="28"
+cy="28"
+r="9"
+fill="url(#lime)"/>
+
+<path
+d="M28 23V28L32 31"
+stroke="#1565D8"
+stroke-width="2.6"
+stroke-linecap="round"
+stroke-linejoin="round"/>
+
+<!-- Handle -->
+
+<path
+d="M40 40L50 50"
+stroke="url(#blue)"
+stroke-width="5"
+stroke-linecap="round"/>
+
+</svg>

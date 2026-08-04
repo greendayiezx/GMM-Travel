@@ -1,0 +1,41 @@
+<section class="popular-airlines-section">
+  <div class="pa-container">
+    
+    <!-- Header -->
+    <div class="pa-header">
+      <h2 class="pa-title">
+        Maskapai <span class="pa-title-accent">Populer</span>
+      </h2>
+      <p class="pa-subtitle">
+        Terbang bersama maskapai terbaik dengan harga dan layanan terbaik
+      </p>
+    </div>
+
+    <!-- Airlines Grid -->
+    <div class="pa-grid">
+      <div class="pa-card" *ngFor="let airline of airlines; let i = index"
+           [style.animation-delay]="(i * 60) + 'ms'"
+           style="animation: pa-card-enter 0.4s ease both">
+        <div class="pa-logo-wrap">
+          <img [src]="airline.logo" [alt]="airline.name + ' logo'" class="pa-logo"
+               loading="lazy"
+               (error)="onLogoError($event, airline)" />
+        </div>
+        <div class="pa-info">
+          <h3 class="pa-airline-name">{{ airline.name }}</h3>
+          <span class="pa-airline-code">{{ airline.code }}</span>
+        </div>
+        <div class="pa-rating">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#EAB308" stroke="#EAB308" stroke-width="1">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          <span class="pa-rating-value">{{ airline.rating }}</span>
+        </div>
+        <div class="pa-desc">
+          <p>{{ airline.description }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

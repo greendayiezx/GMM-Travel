@@ -28,47 +28,75 @@ class LoyaltyService
     ];
 
     /** Ringkasan loyalitas lengkap untuk kartu profil. */
-    public function forUser(User $user): array
+    public function forUser(?User $user): array
     {
-        $since = Carbon::now()->subYear();
-        $rates = config('loyalty.earn_rp_per_point');
-        $valid = config('loyalty.valid_status');
+        if (!$user) {
+            return $this->defaultLoyaltyData();
+        }
 
-        $flightSpend = (float) FlightBooking::where('user_id', $user->id)
-            ->whereIn('status', $valid['flight'])
-            ->where('created_at', '>=', $since)
-            ->sum('total_amount');
+        try {
+            $since = Carbon::now()->subYear();
+            $rates = config('loyalty.earn_rp_per_point');
+            $valid = config('loyalty.valid_status');
 
-        $shuttleSpend = (float) TravelBooking::where('user_id', $user->id)
-            ->whereIn('status', $valid['shuttle'])
-            ->where('created_at', '>=', $since)
-            ->sum('total_amount');
+            $flightSpend = (float) FlightBooking::where('user_id', $user->id)
+                ->whereIn('status', $valid['flight'] ?? ['PAID', 'ISSUED'])
+                ->where('created_at', '>=', $since)
+                ->sum('total_amount');
 
-        $tourSpend = (float) TourBooking::where('user_id', $user->id)
-            ->whereIn('status', $valid['tour'])
-            ->where('created_at', '>=', $since)
-            ->sum('total_amount');
+            $shuttleSpend = (float) TravelBooking::where('user_id', $user->id)
+                ->whereIn('status', $valid['shuttle'] ?? ['PAID'])
+                ->where('created_at', '>=', $since)
+                ->sum('total_amount');
 
-        $spend12m = $flightSpend + $shuttleSpend + $tourSpend;
+            $tourSpend = (float) TourBooking::where('user_id', $user->id)
+                ->whereIn('status', $valid['tour'] ?? ['PAID'])
+                ->where('created_at', '>=', $since)
+                ->sum('total_amount');
 
-        // Poin dasar (1x) per produk sesuai earning rate.
-        $points = intdiv((int) $flightSpend, max(1, (int) $rates['flight']))
-            + intdiv((int) $shuttleSpend, max(1, (int) $rates['shuttle']))
-            + intdiv((int) $tourSpend, max(1, (int) $rates['tour']));
+            $spend12m = $flightSpend + $shuttleSpend + $tourSpend;
 
-        [$tier, $next, $progress, $remaining, $threshold] =
-            $this->tierProgress($spend12m);
+            // Poin dasar (1x) per produk sesuai earning rate.
+            $ratesFlight = max(1, (int) ($rates['flight'] ?? 2000));
+            $ratesShuttle = max(1, (int) ($rates['shuttle'] ?? 200));
+            $ratesTour = max(1, (int) ($rates['tour'] ?? 100));
 
+            $points = intdiv((int) $flightSpend, $ratesFlight)
+                + intdiv((int) $shuttleSpend, $ratesShuttle)
+                + intdiv((int) $tourSpend, $ratesTour);
+
+            [$tier, $next, $progress, $remaining, $threshold] =
+                $this->tierProgress($spend12m);
+
+            return [
+                'tier'                => $tier,
+                'tier_label'          => self::TIER_LABEL[$tier] ?? 'Blue',
+                'points_balance'      => $points,
+                'spend_12m'           => (int) $spend12m,
+                'next_tier'           => $next,
+                'next_tier_label'     => $next ? (self::TIER_LABEL[$next] ?? null) : null,
+                'next_tier_threshold' => $threshold,
+                'remaining_to_next'   => $remaining,
+                'progress_pct'        => $progress,
+            ];
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('LoyaltyService error: ' . $e->getMessage());
+            return $this->defaultLoyaltyData();
+        }
+    }
+
+    public function defaultLoyaltyData(): array
+    {
         return [
-            'tier'                => $tier,
-            'tier_label'          => self::TIER_LABEL[$tier],
-            'points_balance'      => $points,
-            'spend_12m'           => (int) $spend12m,
-            'next_tier'           => $next,
-            'next_tier_label'     => $next ? self::TIER_LABEL[$next] : null,
-            'next_tier_threshold' => $threshold,
-            'remaining_to_next'   => $remaining,
-            'progress_pct'        => $progress,
+            'tier'                => 'blue',
+            'tier_label'          => 'Blue',
+            'points_balance'      => 0,
+            'spend_12m'           => 0,
+            'next_tier'           => 'silver',
+            'next_tier_label'     => 'Silver',
+            'next_tier_threshold' => 5000000,
+            'remaining_to_next'   => 5000000,
+            'progress_pct'        => 0,
         ];
     }
 

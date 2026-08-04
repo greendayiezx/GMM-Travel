@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="128"
+     height="128"
+     viewBox="0 0 64 64"
+     fill="none">
+
+  <defs>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#42C4FF"/>
+      <stop offset="100%" stop-color="#1565D8"/>
+    </linearGradient>
+
+    <linearGradient id="lime" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F4FF62"/>
+      <stop offset="100%" stop-color="#C8FF00"/>
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0"
+                    dy="2"
+                    stdDeviation="2"
+                    flood-opacity=".18"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+
+    <!-- Envelope -->
+
+    <rect
+      x="10"
+      y="16"
+      width="44"
+      height="32"
+      rx="6"
+      fill="url(#blue)"/>
+
+    <!-- Flap -->
+
+    <path
+      d="M10 18
+         L32 34
+         L54 18"
+      stroke="url(#lime)"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+
+    <!-- Bottom Fold -->
+
+    <path
+      d="M18 42
+         L28 33"
+
+      stroke="white"
+      stroke-width="2.5"
+      opacity=".45"
+      stroke-linecap="round"/>
+
+    <path
+      d="M46 42
+         L36 33"
+
+      stroke="white"
+      stroke-width="2.5"
+      opacity=".45"
+      stroke-linecap="round"/>
+
+    <!-- Notification -->
+
+    <circle
+      cx="48"
+      cy="16"
+      r="4"
+      fill="url(#lime)"/>
+
+  </g>
+
+</svg>

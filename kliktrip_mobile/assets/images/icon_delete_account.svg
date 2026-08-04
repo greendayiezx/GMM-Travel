@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="128"
+     height="128"
+     viewBox="0 0 64 64"
+     fill="none">
+
+  <defs>
+    <linearGradient id="blue"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%">
+      <stop offset="0%" stop-color="#42C4FF"/>
+      <stop offset="100%" stop-color="#1565D8"/>
+    </linearGradient>
+
+    <linearGradient id="lime"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%">
+      <stop offset="0%" stop-color="#F4FF62"/>
+      <stop offset="100%" stop-color="#C8FF00"/>
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0"
+                    dy="2"
+                    stdDeviation="2"
+                    flood-opacity=".18"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+
+    <!-- Lid -->
+    <rect
+      x="18"
+      y="14"
+      width="28"
+      height="6"
+      rx="3"
+      fill="url(#blue)"/>
+
+    <!-- Handle -->
+    <rect
+      x="27"
+      y="10"
+      width="10"
+      height="4"
+      rx="2"
+      fill="url(#lime)"/>
+
+    <!-- Bin -->
+    <path
+      d="M20 20
+         H44
+         L42 48
+         C41.8 51
+         39.5 54
+         36.5 54
+         H27.5
+         C24.5 54
+         22.2 51
+         22 48
+         Z"
+      fill="url(#blue)"/>
+
+    <!-- Inner Lines -->
+    <path
+      d="M27 26V46"
+      stroke="url(#lime)"
+      stroke-width="2.5"
+      stroke-linecap="round"/>
+
+    <path
+      d="M32 26V46"
+      stroke="url(#lime)"
+      stroke-width="2.5"
+      stroke-linecap="round"/>
+
+    <path
+      d="M37 26V46"
+      stroke="url(#lime)"
+      stroke-width="2.5"
+      stroke-linecap="round"/>
+
+  </g>
+
+</svg>

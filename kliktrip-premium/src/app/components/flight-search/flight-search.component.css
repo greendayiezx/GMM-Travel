@@ -252,8 +252,9 @@
 
 .panel-search-input {
   flex: 1;
-  border: none;
-  outline: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   background: transparent;
   font-size: 0.92rem;
   color: #1a1a1a;

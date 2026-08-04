@@ -10,9 +10,34 @@ use App\Http\Controllers\FlightSearchController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\UserController;
 use App\Models\TravelSchedule;
+use App\Models\TourCatalog;
 
 // ── Health Check ──────────────────────────────────────────────
 Route::get('/health', fn() => response()->json(['status' => 'ok']));
+
+// ── Katalog paket wisata (dipindah dari asset lokal ke backend) ─
+// Mengembalikan paket dalam bentuk yang sama dengan model WisataPackage di
+// mobile, plus tanggal_keberangkatan yang di-generate future saat request.
+Route::get('/tours', function () {
+    $q = TourCatalog::where('active', true);
+
+    if ($cat = request('category')) {
+        $cat = strtoupper($cat);
+        if ($cat !== 'SEMUA') {
+            $q->where('kategori', $cat);
+        }
+    }
+
+    $items = $q->orderBy('nama_paket')->get()->map(function (TourCatalog $t) {
+        $data = $t->payload;
+        $data['id'] = $data['id'] ?? $t->external_id;
+        $data['tanggal_keberangkatan'] =
+            TourCatalog::generateDepartures($data['harga_display'] ?? '');
+        return $data;
+    });
+
+    return response()->json($items);
+});
 
 // ── Profil user (wajib login Clerk) ───────────────────────────
 // Statistik nyata untuk halaman profil app mobile (trips/points/reviews).
@@ -29,9 +54,25 @@ Route::delete('/me/passengers/{id}', [UserController::class, 'deletePassenger'])
 Route::get('/me/payment-methods', [UserController::class, 'paymentMethods'])->middleware(['clerk.auth', 'throttle:60,1']);
 // Favorit milik user (SavedPage) — data nyata dari DB.
 Route::get('/me/favorites', [UserController::class, 'favorites'])->middleware(['clerk.auth', 'throttle:60,1']);
+Route::post('/me/favorites', [UserController::class, 'storeFavorite'])->middleware(['clerk.auth', 'throttle:30,1']);
+Route::delete('/me/favorites/{id}', [UserController::class, 'destroyFavorite'])->middleware(['clerk.auth', 'throttle:30,1']);
+// Notifikasi user (dibuat otomatis dari event pembayaran, lihat PaymentController::notification()).
+Route::get('/me/notifications', [UserController::class, 'notifications'])->middleware(['clerk.auth', 'throttle:60,1']);
+Route::post('/me/notifications/{id}/read', [UserController::class, 'markNotificationRead'])->middleware(['clerk.auth', 'throttle:60,1']);
+// Kartu pembayaran tersimpan — hanya menerima token Midtrans hasil tokenisasi
+// di device, tidak pernah nomor kartu mentah (lihat SavedCard/UserController).
+Route::get('/me/saved-cards', [UserController::class, 'savedCards'])->middleware(['clerk.auth', 'throttle:60,1']);
+Route::post('/me/saved-cards', [UserController::class, 'storeSavedCard'])->middleware(['clerk.auth', 'throttle:20,1']);
+Route::delete('/me/saved-cards/{id}', [UserController::class, 'deleteSavedCard'])->middleware(['clerk.auth', 'throttle:30,1']);
+// Ekspor data pribadi (dikirim ke email) & hapus akun permanen.
+Route::post('/me/export-data', [UserController::class, 'exportData'])->middleware(['clerk.auth', 'throttle:5,60']);
+Route::delete('/me/account', [UserController::class, 'deleteAccount'])->middleware(['clerk.auth', 'throttle:5,1']);
+// Preferensi notifikasi (App Settings) — sumber kebenaran per akun.
+Route::get('/me/notification-settings', [UserController::class, 'notificationSettings'])->middleware(['clerk.auth', 'throttle:60,1']);
+Route::put('/me/notification-settings', [UserController::class, 'updateNotificationSettings'])->middleware(['clerk.auth', 'throttle:30,1']);
 
 // ── Clerk Webhooks ────────────────────────────────────────────
-Route::post('/clerk/webhook', [ClerkWebhookController::class, 'handle']);
+Route::post('/clerk-webhook', [ClerkWebhookController::class, 'handle']);
 
 // ── Order/Invoice/Payment terproteksi (anti-IDOR) ─────────────
 // clerk.auth  → identitas user diverifikasi kriptografis (token Clerk)
@@ -91,10 +132,24 @@ Route::prefix('staff')->middleware('throttle:10,1')->group(function () {
 
 // Route sementara untuk cek data jadwal
 Route::get('/schedules', function () {
-    return response()->json(
-        TravelSchedule::with(['travelRoute.departureCity', 'travelRoute.arrivalCity'])
-            ->get(['id', 'travel_route_id', 'departure_time', 'price', 'available_seats', 'status'])
-    );
+    $q = TravelSchedule::with([
+            'travelRoute.departureCity',
+            'travelRoute.arrivalCity',
+            'vehicle:id,name,type,capacity',
+        ])
+        ->select('id', 'travel_route_id', 'vehicle_id', 'departure_time', 'price', 'available_seats', 'status')
+        ->orderBy('departure_time');
+
+    // Filter per tanggal keberangkatan (mis. ?date=2026-08-02). Wajib dikirim
+    // mobile agar hasil sesuai tanggal DAN payload tetap kecil.
+    if ($date = request('date')) {
+        $q->whereDate('departure_time', $date);
+    } else {
+        // Tanpa tanggal: batasi ke jadwal mendatang saja agar tak membengkak.
+        $q->where('departure_time', '>=', now()->startOfDay())->limit(300);
+    }
+
+    return response()->json($q->get());
 });
 
 // ── Cities untuk shuttle autocomplete ─────────────────────────

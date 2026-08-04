@@ -10,6 +10,7 @@ use App\Services\PackagePricingService;
 use App\Services\OrderHashService;
 use App\Models\PackageOrder;
 use App\Models\User;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Http\Resources\PaymentResource;
 use Illuminate\Http\Request;
@@ -530,6 +531,19 @@ class PaymentController extends Controller
                     if ($passengerCount > 0) {
                         $booking->travelSchedule->increment('available_seats', $passengerCount);
                     }
+                }
+
+                // Notifikasi in-app untuk hasil pembayaran yang relevan bagi user.
+                if (in_array($paymentStatus, [self::PAYMENT_SUCCESS, self::PAYMENT_FAILED, self::PAYMENT_EXPIRED], true)) {
+                    Notification::create([
+                        'user_id' => $booking->user_id,
+                        'title'   => $paymentStatus === self::PAYMENT_SUCCESS
+                            ? 'Pembayaran Berhasil'
+                            : 'Pembayaran Gagal',
+                        'message' => $paymentStatus === self::PAYMENT_SUCCESS
+                            ? 'Pembayaran untuk booking Anda telah berhasil dikonfirmasi.'
+                            : 'Pembayaran untuk booking Anda gagal atau kedaluwarsa.',
+                    ]);
                 }
             }
 

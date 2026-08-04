@@ -1,0 +1,35 @@
+{
+    "name": "GMM Global Explore — Travel & Paket Tour",
+    "short_name": "Global Explore",
+    "description": "Tiket pesawat, travel shuttle antar kota, paket wisata & umroh dengan harga terbaik. Aman, nyaman, layanan 24/7.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#FCF9F8",
+    "theme_color": "#1E9BF0",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

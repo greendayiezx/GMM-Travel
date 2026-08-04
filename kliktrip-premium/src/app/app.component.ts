@@ -13,6 +13,7 @@ import { LoaderOneComponent } from './components/loader-one/loader-one.component
 import { InfinityLoaderComponent } from './components/infinity-loader/infinity-loader.component';
 import { FlightCardComponent } from './components/flight-card/flight-card.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { PopularAirlinesComponent } from './components/popular-airlines/popular-airlines.component';
 import { SearchFormService } from './services/search-form.service';
 import { BookingService, BookingSchedule } from './services/booking.service';
 import { TravelService } from './services/travel.service';
@@ -28,7 +29,7 @@ gsap.registerPlugin(ScrollTrigger);
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, HeroSectionComponent, DestinationsSectionComponent, UspSectionComponent, FooterSectionComponent, LoaderOneComponent, FlightCardComponent, InfinityLoaderComponent, AuthModalComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, HeroSectionComponent, DestinationsSectionComponent, PopularAirlinesComponent, UspSectionComponent, FooterSectionComponent, LoaderOneComponent, FlightCardComponent, InfinityLoaderComponent, AuthModalComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

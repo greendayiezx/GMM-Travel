@@ -8,7 +8,8 @@
         "php": "^8.2",
         "laravel/framework": "^11.0",
         "midtrans/midtrans-php": "^2.6",
-        "resend/resend-php": "^1.6"
+        "resend/resend-php": "^1.6",
+        "sendgrid/sendgrid": "^8.1"
     },
     "autoload": {
         "psr-4": {

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <!-- ====== Base ====== -->
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+  <title>GMM Global Explore — Travel, Shuttle & Paket Tour Terpercaya</title>
+
+  <!-- ====== SEO Meta ====== -->
+  <meta name="description" content="GMM Global Explore — partner perjalanan terpercaya. Pesan tiket pesawat, travel shuttle antar kota, paket wisata, tour internasional & umroh dengan harga terbaik. Aman, nyaman, layanan 24/7.">
+  <meta name="keywords" content="tiket pesawat, travel shuttle, paket tour, umroh, haji, tour internasional, tour domestik, travel Manado, sewa mobil, GMM Global Explore, globalexplore">
+  <meta name="author" content="GMM Global Explore">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#1E9BF0">
+  <link rel="canonical" href="https://globalexplore.web.id/">
+
+  <!-- ====== Open Graph / Facebook ====== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GMM Global Explore">
+  <meta property="og:title" content="GMM Global Explore — Travel, Shuttle & Paket Tour Terpercaya">
+  <meta property="og:description" content="Pesan tiket pesawat, travel shuttle antar kota, paket wisata & umroh dengan harga terbaik. Aman, nyaman, layanan 24/7.">
+  <meta property="og:url" content="https://globalexplore.web.id/">
+  <meta property="og:image" content="https://globalexplore.web.id/icons/Icon-512.png">
+  <meta property="og:locale" content="id_ID">
+
+  <!-- ====== Twitter ====== -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GMM Global Explore — Travel, Shuttle & Paket Tour Terpercaya">
+  <meta name="twitter:description" content="Pesan tiket pesawat, travel shuttle, paket wisata & umroh dengan harga terbaik. Aman, nyaman, layanan 24/7.">
+  <meta name="twitter:image" content="https://globalexplore.web.id/icons/Icon-512.png">
+
+  <!-- ====== PWA / iOS ====== -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Global Explore">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- ====== Performance ====== -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
+  <link rel="dns-prefetch" href="https://backend.globalexplore.web.id">
+
+  <!-- ====== Structured Data: TravelAgency ====== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "name": "GMM Global Explore",
+    "url": "https://globalexplore.web.id/",
+    "logo": "https://globalexplore.web.id/icons/Icon-512.png",
+    "image": "https://globalexplore.web.id/icons/Icon-512.png",
+    "description": "Tiket pesawat, travel shuttle antar kota, paket wisata domestik & internasional, serta paket umroh dan haji.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Manado",
+      "addressRegion": "Sulawesi Utara",
+      "addressCountry": "ID"
+    },
+    "priceRange": "Rp",
+    "sameAs": [
+      "https://globalexplore.web.id/"
+    ]
+  }
+  </script>
+
+  <!-- clerk-js: dipakai ClerkAuthService (web) untuk login/register/OAuth.
+       Publishable key diberikan lewat data-attribute (wajib untuk clerk-js v5). -->
+  <script
+    src="https://unpkg.com/@clerk/clerk-js@5/dist/clerk.browser.js"
+    data-clerk-publishable-key="pk_test_ZmlybS1zZWFzbmFpbC03Ny5jbGVyay5hY2NvdW50cy5kZXYk"
+    crossorigin="anonymous"></script>
+
+  <style>
+    /* Tidak ada animasi HTML/CSS. Selama engine Flutter dimuat, halaman hanya
+       menampilkan gradient yang sama dengan welcome screen Flutter — begitu
+       engine siap, animasi airplane (buatan Flutter) langsung tampil. */
+    html { margin: 0; min-height: 100vh;
+      background: linear-gradient(180deg, #012242 0%, #00558C 55%, #1E9BF0 100%); }
+    body { margin: 0; }
+  </style>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

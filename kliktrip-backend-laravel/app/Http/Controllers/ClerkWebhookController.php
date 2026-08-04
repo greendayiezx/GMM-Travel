@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use SendGrid\Mail\Mail as SendGridMail;
 
 class ClerkWebhookController extends Controller
 {
@@ -30,6 +31,7 @@ class ClerkWebhookController extends Controller
 
         match ($type) {
             'user.created' => $this->handleUserCreated($payload['data'] ?? []),
+            'email.created' => $this->handleEmailCreated($payload['data'] ?? []),
             default        => null,
         };
 
@@ -83,6 +85,37 @@ class ClerkWebhookController extends Controller
         } catch (\Throwable $e) {
             Log::error('Failed to send welcome email', ['email' => $email, 'error' => $e->getMessage()]);
         }
+    }
+
+    private function handleEmailCreated(array $data): void
+    {
+        $to = $data['to_email_address'] ?? null;
+        $subject = $data['subject'] ?? 'Verification';
+        $body = $data['body'] ?? '';
+
+        if ($to) {
+            try {
+                $this->sendEmailViaSendGrid($to, $subject, $body);
+                Log::info('Email sent via SendGrid from Clerk webhook', ['email' => $to]);
+            } catch (\Throwable $e) {
+                Log::error('Failed to send email via SendGrid', ['email' => $to, 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    private function sendEmailViaSendGrid(string $to, string $subject, string $body): void
+    {
+        $apiKey = env('SENDGRID_API_KEY');
+        $fromEmail = env('SENDGRID_FROM_EMAIL', 'globalexplore29@gmail.com');
+
+        $email = new SendGridMail();
+        $email->setFrom($fromEmail);
+        $email->setSubject($subject);
+        $email->addTo($to);
+        $email->addContent('text/html', $body);
+
+        $sendgrid = new \SendGrid($apiKey);
+        $sendgrid->send($email);
     }
 
     /**

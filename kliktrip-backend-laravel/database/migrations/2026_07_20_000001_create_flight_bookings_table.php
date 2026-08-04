@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('flight_bookings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->uuid('user_id')->nullable()->index();
             $table->string('booking_code')->unique();
             $table->json('flight_data');
             $table->decimal('total_amount', 12, 2);

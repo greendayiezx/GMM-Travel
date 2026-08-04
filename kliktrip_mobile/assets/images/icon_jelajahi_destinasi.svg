@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="128"
+     height="128"
+     viewBox="0 0 64 64"
+     fill="none">
+
+  <defs>
+
+    <linearGradient id="blue"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%">
+      <stop offset="0%" stop-color="#4CC9FF"/>
+      <stop offset="100%" stop-color="#1565D8"/>
+    </linearGradient>
+
+    <linearGradient id="lime"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%">
+      <stop offset="0%" stop-color="#F5FF6A"/>
+      <stop offset="100%" stop-color="#C8FF00"/>
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0"
+                    dy="2"
+                    stdDeviation="2"
+                    flood-opacity=".18"/>
+    </filter>
+
+  </defs>
+
+  <g filter="url(#shadow)">
+
+    <!-- Globe -->
+    <circle
+      cx="32"
+      cy="32"
+      r="18"
+      fill="url(#blue)"/>
+
+    <!-- Latitude -->
+    <path
+      d="M18 32H46"
+      stroke="#EAF8FF"
+      stroke-width="2"
+      stroke-linecap="round"/>
+
+    <path
+      d="M21 24C26 27 38 27 43 24"
+      stroke="#EAF8FF"
+      stroke-width="2"
+      stroke-linecap="round"/>
+
+    <path
+      d="M21 40C26 37 38 37 43 40"
+      stroke="#EAF8FF"
+      stroke-width="2"
+      stroke-linecap="round"/>
+
+    <!-- Longitude -->
+    <path
+      d="M32 14
+         C27 20 27 44 32 50"
+      stroke="#EAF8FF"
+      stroke-width="2"
+      stroke-linecap="round"/>
+
+    <path
+      d="M32 14
+         C37 20 37 44 32 50"
+      stroke="#EAF8FF"
+      stroke-width="2"
+      stroke-linecap="round"/>
+
+    <!-- Destination Pin -->
+    <path
+      d="M44 18
+         C40.7 18 38 20.7 38 24
+         C38 29
+         44 35
+         44 35
+         C44 35
+         50 29
+         50 24
+         C50 20.7 47.3 18 44 18Z"
+      fill="url(#lime)"/>
+
+    <circle
+      cx="44"
+      cy="24"
+      r="2"
+      fill="#1565D8"/>
+
+  </g>
+
+</svg>

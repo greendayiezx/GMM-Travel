@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="128"
+     height="128"
+     viewBox="0 0 64 64"
+     fill="none">
+
+  <defs>
+
+    <linearGradient id="blue"
+      x1="0%"
+      y1="0%"
+      x2="100%"
+      y2="100%">
+      <stop offset="0%" stop-color="#43C3FF"/>
+      <stop offset="100%" stop-color="#1565D8"/>
+    </linearGradient>
+
+    <linearGradient id="lime"
+      x1="0%"
+      y1="0%"
+      x2="100%"
+      y2="100%">
+      <stop offset="0%" stop-color="#F6FF67"/>
+      <stop offset="100%" stop-color="#C8FF00"/>
+    </linearGradient>
+
+  </defs>
+
+  <g>
+
+    <!-- Discount Badge -->
+
+    <path
+      d="M32 8
+      L39 13
+      L48 13
+      L51 21
+      L57 28
+      L51 35
+      L48 43
+      L39 43
+      L32 48
+      L25 43
+      L16 43
+      L13 35
+      L7 28
+      L13 21
+      L16 13
+      L25 13Z"
+
+      fill="url(#blue)"/>
+
+    <!-- Percent -->
+
+    <circle
+      cx="24"
+      cy="23"
+      r="3"
+      fill="url(#lime)"/>
+
+    <circle
+      cx="40"
+      cy="33"
+      r="3"
+      fill="url(#lime)"/>
+
+    <path
+      d="M25 36L39 20"
+      stroke="url(#lime)"
+      stroke-width="3"
+      stroke-linecap="round"/>
+
+    <!-- Sparkle -->
+
+    <path
+      d="M49 12
+      L50.5 16
+      L54 17.5
+      L50.5 19
+      L49 23
+      L47.5 19
+      L44 17.5
+      L47.5 16Z"
+
+      fill="url(#lime)"/>
+
+  </g>
+
+</svg>

@@ -2,12 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\DataExportMail;
+use App\Models\Favorite;
 use App\Models\FlightBooking;
+use App\Models\Notification;
+use App\Models\NotificationPreference;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
+use App\Models\SavedCard;
 use App\Models\SavedPassenger;
+use App\Models\TourCatalog;
 use App\Services\LoyaltyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -192,6 +203,95 @@ class UserController extends Controller
     }
 
     /**
+     * GET /me/saved-cards
+     * Daftar kartu pembayaran tersimpan milik user. Hanya mengembalikan
+     * field yang aman ditampilkan — saved_token_id TIDAK PERNAH dikirim
+     * balik ke client karena app tidak butuh nilai itu lagi setelah kartu
+     * berhasil didaftarkan.
+     */
+    public function savedCards(Request $request): JsonResponse
+    {
+        $cards = $request->user()->savedCards()
+            ->orderByDesc('is_default')
+            ->orderByDesc('created_at')
+            ->get(['id', 'masked_card', 'card_type', 'bank', 'is_default', 'created_at']);
+
+        return response()->json($cards);
+    }
+
+    /**
+     * POST /me/saved-cards
+     * Simpan referensi kartu yang SUDAH ditokenisasi Midtrans langsung dari
+     * device (lihat MidtransCardRegisterDataSource di app mobile). Endpoint
+     * ini hanya menerima saved_token_id + masked_card — nomor kartu mentah
+     * tidak pernah melewati backend ini sama sekali.
+     */
+    public function storeSavedCard(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'saved_token_id' => ['required', 'string', 'max:100'],
+            'masked_card'    => [
+                'required', 'string', 'max:30',
+                function ($attribute, $value, $fail) {
+                    // Pertahanan berlapis: tolak kalau nilainya menyerupai
+                    // nomor kartu mentah (13-19 digit tanpa karakter mask).
+                    if (preg_match('/^\d{13,19}$/', $value)) {
+                        $fail('Format masked_card tidak valid (menyerupai nomor kartu mentah).');
+                        return;
+                    }
+                    if (!preg_match('/[-* ]/', $value)) {
+                        $fail('masked_card wajib berupa nomor kartu yang sudah di-mask.');
+                    }
+                },
+            ],
+            'card_type'      => ['nullable', 'string', 'max:20'],
+            'bank'           => ['nullable', 'string', 'max:30'],
+            'is_default'     => ['nullable', 'boolean'],
+            // Kalau field ini terkirim (sengaja atau tidak), tolak keras —
+            // backend ini tidak boleh pernah menerima data kartu mentah.
+            'card_number'    => ['prohibited'],
+            'cvv'            => ['prohibited'],
+            'card_cvv'       => ['prohibited'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first()], 422);
+        }
+
+        $user = $request->user();
+        $data = $validator->validated();
+        unset($data['card_number'], $data['cvv'], $data['card_cvv']);
+        $data['user_id'] = $user->id;
+        $data['gateway'] = 'MIDTRANS';
+        $data['is_default'] = (bool) ($data['is_default'] ?? false);
+
+        if ($data['is_default']) {
+            $user->savedCards()->update(['is_default' => false]);
+        }
+
+        $card = SavedCard::create($data);
+
+        return response()->json([
+            'id'          => $card->id,
+            'masked_card' => $card->masked_card,
+            'card_type'   => $card->card_type,
+            'bank'        => $card->bank,
+            'is_default'  => $card->is_default,
+        ], 201);
+    }
+
+    /**
+     * DELETE /me/saved-cards/{id}
+     */
+    public function deleteSavedCard(Request $request, string $id): JsonResponse
+    {
+        $card = SavedCard::where('user_id', $request->user()->id)->findOrFail($id);
+        $card->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
      * GET /me/payment-methods
      * Channel pembayaran NYATA yang aktif (dari tabel payment_methods).
      */
@@ -251,6 +351,22 @@ class UserController extends Controller
                 ];
             }
 
+            if ($target instanceof \App\Models\TourCatalog) {
+                $data = $target->payload ?? [];
+                return [
+                    'favorite_id' => $favorite->id,
+                    'type'        => 'wisata',
+                    // Dipakai app mobile mencocokkan ke WisataPackage.id dari GET /tours.
+                    'item_id'     => $data['id'] ?? $target->external_id,
+                    'title'       => $data['nama_paket'] ?? $target->nama_paket,
+                    'subtitle'    => $data['destinasi'] ?? 'Paket Wisata',
+                    'price'       => $data['harga'] ?? null,
+                    'price_sub'   => $data['harga_display'] ?? 'Mulai dari',
+                    'rating'      => $data['rating'] ?? null,
+                    'image'       => $data['gambar'] ?? null,
+                ];
+            }
+
             $name = $target instanceof \Illuminate\Database\Eloquent\Model
                 ? ($target->getAttribute('name') ?? 'Favorit')
                 : 'Favorit';
@@ -267,5 +383,244 @@ class UserController extends Controller
         });
 
         return response()->json($items);
+    }
+
+    /**
+     * POST /me/export-data
+     * Kirim ringkasan data pribadi user ke email terdaftar (permintaan
+     * "unduh data saya" ala GDPR). Dikirim SINKRON (bukan queue) karena
+     * Railway tidak menjalankan queue worker — lihat komentar di WelcomeMail.
+     */
+    public function exportData(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        try {
+            $data = [
+                'profile' => [
+                    'name'       => $user->name,
+                    'email'      => $user->email,
+                    'phone'      => $user->phone,
+                    'joined_at'  => $user->created_at?->toIso8601String(),
+                ],
+                'travel_bookings_count'  => $user->travelBookings()->count(),
+                'tour_bookings_count'    => $user->tourBookings()->count(),
+                'favorites_count'        => $user->favorites()->count(),
+                'saved_passengers'       => $user->savedPassengers()
+                    ->get(['full_name', 'identity_number', 'passport_number']),
+                // saved_token_id sengaja TIDAK disertakan — hanya info tampilan aman.
+                'saved_cards'            => $user->savedCards()
+                    ->get(['masked_card', 'card_type', 'bank', 'created_at']),
+            ];
+
+            Mail::to($user->email)->send(new DataExportMail($user->name, $user->email, $data));
+
+            return response()->json(['success' => true]);
+        } catch (\Throwable $e) {
+            Log::error('Gagal mengirim data export', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            return response()->json(['message' => 'Gagal mengirim data. Coba lagi nanti.'], 500);
+        }
+    }
+
+    /**
+     * DELETE /me/account
+     * Hapus akun secara PERMANEN: user Clerk dihapus dulu lewat Backend API
+     * (pola sama seperti perintah `users:purge`), baru kalau itu berhasil
+     * data lokal dihapus. Urutan ini sengaja — supaya tidak pernah ada
+     * kondisi "data lokal hilang tapi akun Clerk masih bisa login".
+     */
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->clerk_id) {
+            $secret = config('services.clerk.secret_key');
+            $resp = Http::withToken($secret)->timeout(20)
+                ->delete("https://api.clerk.com/v1/users/{$user->clerk_id}");
+
+            // 404 berarti user Clerk memang sudah tidak ada — anggap sukses.
+            if (!$resp->successful() && $resp->status() !== 404) {
+                Log::error('Gagal menghapus user Clerk saat hapus akun', [
+                    'user_id' => $user->id,
+                    'clerk_id' => $user->clerk_id,
+                    'status'  => $resp->status(),
+                ]);
+                return response()->json(['message' => 'Gagal menghapus akun. Coba lagi nanti.'], 500);
+            }
+        }
+
+        DB::transaction(function () use ($user) {
+            $bookingIds = collect()
+                ->merge($user->travelBookings()->pluck('id'))
+                ->merge($user->tourBookings()->pluck('id'))
+                ->merge(FlightBooking::where('user_id', $user->id)->pluck('id'));
+
+            if ($bookingIds->isNotEmpty()) {
+                Payment::whereIn('payable_id', $bookingIds)->delete();
+            }
+
+            // flight_bookings tidak punya FK constraint ke users, jadi tidak
+            // otomatis cascade — hapus manual.
+            FlightBooking::where('user_id', $user->id)->delete();
+
+            // Sisanya (travel_bookings, tour_bookings, favorites, reviews,
+            // voucher_usages, notifications, notification_logs,
+            // notification_preferences, package_orders, saved_passengers,
+            // saved_cards) otomatis cascadeOnDelete lewat FK saat baris user
+            // dihapus di bawah ini.
+            $user->delete();
+        });
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * GET /me/notification-settings
+     * Preferensi notifikasi user (App Settings di mobile). Bila belum ada
+     * record, dibuat dengan default (sama dengan default lokal di mobile).
+     */
+    public function notificationSettings(Request $request): JsonResponse
+    {
+        $prefs = NotificationPreference::firstOrCreate(
+            ['user_id' => $request->user()->id],
+            $this->defaultNotificationPreferences(),
+        );
+
+        return response()->json($this->formatNotificationPreferences($prefs));
+    }
+
+    /**
+     * PUT /me/notification-settings
+     * Simpan preferensi notifikasi user. Mengembalikan preferensi terbaru.
+     */
+    public function updateNotificationSettings(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'push_notifications' => 'required|boolean',
+            'email_promos'       => 'required|boolean',
+            'order_updates'      => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Data preferensi tidak valid.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $prefs = NotificationPreference::updateOrCreate(
+            ['user_id' => $request->user()->id],
+            [
+                'push_notifications' => $request->boolean('push_notifications'),
+                'email_promos'       => $request->boolean('email_promos'),
+                'order_updates'      => $request->boolean('order_updates'),
+            ],
+        );
+
+        return response()->json($this->formatNotificationPreferences($prefs));
+    }
+
+    private function defaultNotificationPreferences(): array
+    {
+        return [
+            'push_notifications' => true,
+            'email_promos'       => false,
+            'order_updates'      => true,
+        ];
+    }
+
+    private function formatNotificationPreferences(NotificationPreference $prefs): array
+    {
+        return [
+            'push_notifications' => $prefs->push_notifications,
+            'email_promos'       => $prefs->email_promos,
+            'order_updates'      => $prefs->order_updates,
+        ];
+    }
+
+    /**
+     * POST /me/favorites
+     * Simpan item (paket wisata, dll) ke favorit. Idempotent — dipanggil
+     * dobel untuk item yang sama tidak membuat baris duplikat (firstOrCreate
+     * + unique index di migration).
+     */
+    public function storeFavorite(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'type'    => ['required', 'string', 'in:wisata'],
+            'item_id' => ['required', 'string', 'max:64'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first()], 422);
+        }
+
+        $data = $validator->validated();
+        $user = $request->user();
+
+        // Saat ini hanya 'wisata' (TourCatalog) yang didukung sebagai favoritable.
+        $catalog = TourCatalog::where('payload->id', $data['item_id'])
+            ->orWhere('external_id', $data['item_id'])
+            ->first();
+
+        if (!$catalog) {
+            return response()->json(['message' => 'Paket tidak ditemukan.'], 404);
+        }
+
+        $favorite = Favorite::firstOrCreate([
+            'user_id'          => $user->id,
+            'favoritable_id'   => $catalog->id,
+            'favoritable_type' => TourCatalog::class,
+        ]);
+
+        $payload = $catalog->payload ?? [];
+
+        return response()->json([
+            'favorite_id' => $favorite->id,
+            'type'        => 'wisata',
+            'item_id'     => $payload['id'] ?? $catalog->external_id,
+            'title'       => $payload['nama_paket'] ?? $catalog->nama_paket,
+            'subtitle'    => $payload['destinasi'] ?? 'Paket Wisata',
+            'price'       => $payload['harga'] ?? null,
+            'price_sub'   => $payload['harga_display'] ?? 'Mulai dari',
+            'rating'      => $payload['rating'] ?? null,
+            'image'       => $payload['gambar'] ?? null,
+        ], 201);
+    }
+
+    /**
+     * DELETE /me/favorites/{id}
+     */
+    public function destroyFavorite(Request $request, string $id): JsonResponse
+    {
+        $favorite = Favorite::where('user_id', $request->user()->id)->findOrFail($id);
+        $favorite->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * GET /me/notifications
+     */
+    public function notifications(Request $request): JsonResponse
+    {
+        $list = $request->user()->notifications()
+            ->latest()
+            ->get(['id', 'title', 'message', 'read_at', 'created_at']);
+
+        return response()->json($list);
+    }
+
+    /**
+     * POST /me/notifications/{id}/read
+     */
+    public function markNotificationRead(Request $request, string $id): JsonResponse
+    {
+        $notification = Notification::where('user_id', $request->user()->id)->findOrFail($id);
+        if (!$notification->read_at) {
+            $notification->update(['read_at' => now()]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

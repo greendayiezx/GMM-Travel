@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="128"
+     height="128"
+     viewBox="0 0 64 64"
+     fill="none">
+
+  <defs>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#42C7FF"/>
+      <stop offset="100%" stop-color="#1565D8"/>
+    </linearGradient>
+
+    <linearGradient id="lime" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F6FF6B"/>
+      <stop offset="100%" stop-color="#C8FF00"/>
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".18"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+
+    <!-- Chat Bubble -->
+    <path
+      d="M18 12
+         H46
+         C49.3 12 52 14.7 52 18
+         V34
+         C52 37.3 49.3 40 46 40
+         H32
+         L24 48
+         V40
+         H18
+         C14.7 40 12 37.3 12 34
+         V18
+         C12 14.7 14.7 12 18 12Z"
+      fill="url(#blue)"/>
+
+    <!-- Headset -->
+    <path
+      d="M24 27
+         C24 22 27.6 19 32 19
+         C36.4 19 40 22 40 27"
+      stroke="url(#lime)"
+      stroke-width="2.8"
+      stroke-linecap="round"/>
+
+    <!-- Ear Pads -->
+    <rect x="22" y="26" width="4" height="9" rx="2" fill="url(#lime)"/>
+    <rect x="38" y="26" width="4" height="9" rx="2" fill="url(#lime)"/>
+
+    <!-- Mic -->
+    <path
+      d="M40 34
+         H44
+         C45.7 34 47 35.3 47 37
+         C47 38.7 45.7 40 44 40
+         H40"
+      stroke="url(#lime)"
+      stroke-width="2.4"
+      stroke-linecap="round"/>
+
+    <!-- Live Indicator -->
+    <circle
+      cx="46"
+      cy="17"
+      r="3.5"
+      fill="url(#lime)"/>
+
+  </g>
+
+</svg>
