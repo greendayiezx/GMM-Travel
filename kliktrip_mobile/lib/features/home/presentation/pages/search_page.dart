@@ -9,7 +9,11 @@ import '../../../wisata/data/wisata_data_source.dart';
 /// supaya pemanggil (HomePage) bisa mencatatnya sebagai "Pencarian terakhir"
 /// lalu membuka halaman detailnya.
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  const SearchPage({super.key, this.recentPackages = const []});
+
+  /// Pencarian terakhir milik user (dari HomePage) — ditampilkan saat query
+  /// masih kosong, menggantikan hint generik.
+  final List<WisataPackage> recentPackages;
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -80,8 +84,6 @@ class _SearchPageState extends State<SearchPage> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.search_rounded, color: AppColors.outline, size: 20),
-              const SizedBox(width: 8),
               Expanded(
                 child: TextField(
                   controller: _controller,
@@ -114,7 +116,7 @@ class _SearchPageState extends State<SearchPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _query.trim().isEmpty
-              ? _buildHint(context)
+              ? _buildRecentOrHint(context, hPadding)
               : _results.isEmpty
                   ? _buildEmpty(context)
                   : ListView.separated(
@@ -126,26 +128,50 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget _buildHint(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.travel_explore_rounded, size: 56, color: AppColors.outlineVariant),
-            const SizedBox(height: 12),
-            Text(
-              'Ketik untuk mencari paket wisata, destinasi, atau kategori.',
-              textAlign: TextAlign.center,
+  Widget _buildRecentOrHint(BuildContext context, double hPadding) {
+    if (widget.recentPackages.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.travel_explore_rounded, size: 56, color: AppColors.outlineVariant),
+              const SizedBox(height: 12),
+              Text(
+                'Ketik untuk mencari paket wisata, destinasi, atau kategori.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: Responsive.fontSize(context, 13),
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 12),
+      itemCount: widget.recentPackages.length + 1,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (_, i) {
+        if (i == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: Text(
+              'Pencarian Terakhir',
               style: TextStyle(
                 fontSize: Responsive.fontSize(context, 13),
+                fontWeight: FontWeight.bold,
                 color: AppColors.onSurfaceVariant,
               ),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+        return _buildResultTile(context, widget.recentPackages[i - 1]);
+      },
     );
   }
 

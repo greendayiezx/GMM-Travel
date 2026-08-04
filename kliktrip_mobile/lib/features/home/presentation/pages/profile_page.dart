@@ -16,6 +16,7 @@ import 'saved_passenger_page.dart';
 import 'support_page.dart';
 import '../../../auth/data/user_remote_data_source.dart';
 import '../../../auth/presentation/pages/login_page.dart';
+import '../../../booking/data/favorite_remote_data_source.dart';
 import '../../../booking/presentation/booking_list_page.dart';
 import '../../../wisata/presentation/wisata_page.dart';
 
@@ -28,14 +29,28 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final _userSource = UserRemoteDataSource();
+  final _favoriteDataSource = FavoriteRemoteDataSource();
   UserStats? _stats;
   UserLoyalty? _loyalty;
   bool _statsLoading = true;
+  SavedItem? _latestWishlist;
 
   @override
   void initState() {
     super.initState();
     _loadProfile();
+    _loadLatestWishlist();
+  }
+
+  Future<void> _loadLatestWishlist() async {
+    try {
+      final favorites = await _favoriteDataSource.fetchFavorites();
+      if (mounted && favorites.isNotEmpty) {
+        setState(() => _latestWishlist = favorites.first);
+      }
+    } catch (_) {
+      // Biarkan null — kartu wishlist akan tersembunyi.
+    }
   }
 
   Future<void> _loadProfile() async {
@@ -536,80 +551,96 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 24),
 
                     // ── Latest Wishlist Added Card (Bento Image Card) ─────
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizations.get('profile_latest_wishlist'),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                AppNetworkImage(
-                                  src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBkKSxKndhHO5n5IHTcQIoHVaPX8F-Ltd86lV009mTlbDw6QVUysw3DTdUsxrvHttuVWOyoGc0JfVSU8Q8Iv1N_rnqD-Gcf5y9yxwkKoLDGe_YMxeopClT1jzh_AFAmJG9e19ezaJy0fC9HEYrNldG5eaUbYgeof1dL058rrt8bjE1Ke_IDnYSEKdwnxXzQDaD8o-VpXE12_ztrXs154PtE9XqgwtiwAxsznGHE2jFX1lOE1011LPRPWSqoPLmUmVWp4KhEc3k2eAp9',
-                                  fit: BoxFit.cover,
-                                  placeholderIcon: Icons.landscape_rounded,
-                                  placeholderIconColor: Colors.white54,
-                                  errorIcon: Icons.landscape_rounded,
-                                  errorIconColor: Colors.white54,
-                                  iconSize: 48,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.transparent,
-                                        Colors.black.withValues(alpha: 0.75),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const Positioned(
-                                  bottom: 14,
-                                  left: 14,
-                                  right: 14,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Santorini, Greece',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(height: 2),
-                                      Text(
-                                        'Dream Vacation • 2024',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                    if (_latestWishlist != null) ...[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.get('profile_latest_wishlist'),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
+                          const SizedBox(height: 10),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SavedPage(showBackButton: true),
+                                ),
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    AppNetworkImage(
+                                      src: _latestWishlist!.image ?? '',
+                                      fit: BoxFit.cover,
+                                      placeholderIcon: Icons.landscape_rounded,
+                                      placeholderIconColor: Colors.white54,
+                                      errorIcon: Icons.landscape_rounded,
+                                      errorIconColor: Colors.white54,
+                                      iconSize: 48,
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.black.withValues(alpha: 0.75),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 14,
+                                      left: 14,
+                                      right: 14,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            _latestWishlist!.title,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            _latestWishlist!.subtitle,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
 
                     // ── Sign Out Button ────────────────────────────────────
                     SizedBox(

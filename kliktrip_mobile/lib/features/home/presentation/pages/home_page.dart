@@ -133,9 +133,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _openSearch() async {
+    final recentPackages = _recentSearches
+        .map((item) => item.package)
+        .whereType<WisataPackage>()
+        .toList();
     final selected = await Navigator.push<WisataPackage>(
       context,
-      MaterialPageRoute(builder: (_) => const SearchPage()),
+      MaterialPageRoute(
+        builder: (_) => SearchPage(recentPackages: recentPackages),
+      ),
     );
     if (selected == null || !mounted) return;
     _openWisataResult(selected);
