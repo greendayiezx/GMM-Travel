@@ -57,7 +57,10 @@ class FavoriteRemoteDataSource {
   final Dio _dio;
 
   Future<List<SavedItem>> fetchFavorites() async {
-    final res = await _dio.get(ApiEndpoints.meFavorites);
+    // Selalu ambil data terbaru — daftar ini berubah tiap user tap tombol
+    // favorit, jadi TIDAK boleh kena cache GET 5 menit (lihat dio_client.dart)
+    // yang bisa nampilkan daftar lama sebelum item baru ditambahkan.
+    final res = await _dio.get(ApiEndpoints.meFavorites, options: noCacheOptions());
     final data = res.data;
     if (data is List) {
       return data

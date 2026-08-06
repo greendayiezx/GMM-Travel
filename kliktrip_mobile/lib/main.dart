@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import 'core/di/injection.dart';
 import 'core/settings/settings_service.dart';
 import 'core/theme/app_colors.dart';
 import 'features/splash/welcome_screen.dart';
@@ -21,6 +22,9 @@ const List<String> kFontFallback = [
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Setup service locator (get_it) — fondasi DI, dipakai bertahap oleh
+  // fitur yang sudah dimigrasi (lihat lib/core/di/injection.dart).
+  await initDependencies();
   // Muat preferensi (tema/bahasa/mata uang) sebelum UI tampil agar tidak
   // "berkedip" saat start. Inisialisasi Clerk tetap di background.
   await SettingsService.instance.init();

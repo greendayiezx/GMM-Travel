@@ -5,6 +5,7 @@ import '../../../core/widgets/app_network_image.dart';
 import '../../../core/widgets/favorite_button.dart';
 import '../../booking/data/favorite_remote_data_source.dart';
 import '../../home/data/recent_activity.dart';
+import '../data/promo_claim_data_source.dart';
 import '../data/wisata_data_source.dart';
 import 'wisata_booking_page.dart';
 
@@ -19,11 +20,28 @@ class WisataDetailPage extends StatefulWidget {
 }
 
 class _WisataDetailPageState extends State<WisataDetailPage> {
-  WisataPackage get pkg => widget.pkg;
+  /// Paket "efektif" yang dipakai di seluruh halaman ini: kalau paket ini
+  /// promo dan BELUM diklaim user, harga ditampilkan (dan ikut dibawa ke
+  /// booking/payment) sebagai harga NORMAL — diskon baru "terbuka" setelah
+  /// user tap Klaim.
+  WisataPackage get pkg {
+    if (widget.pkg.isPromo && !_isPromoClaimed) {
+      final original = widget.pkg.hargaSebelumDiskon;
+      return widget.pkg.copyWith(
+        harga: original,
+        hargaDisplay: widget.pkg.hargaAsli ?? 'Rp $original',
+      );
+    }
+    return widget.pkg;
+  }
 
   final _favoriteDataSource = FavoriteRemoteDataSource();
   bool _isFavorited = false;
   String? _favoriteId;
+
+  final _promoClaimDataSource = PromoClaimDataSource();
+  bool _isPromoClaimed = false;
+  bool _claimingPromo = false;
 
   List<WisataPackage> _all = const [];
   int _selectedDeparture = 0;
@@ -53,6 +71,35 @@ class _WisataDetailPageState extends State<WisataDetailPage> {
     _all = widget.allPackages ?? const [];
     if (_all.isEmpty) _loadAll();
     _loadFavoriteStatus();
+    if (widget.pkg.isPromo) _loadPromoClaimStatus();
+  }
+
+  Future<void> _loadPromoClaimStatus() async {
+    try {
+      final claimed = await _promoClaimDataSource.fetchClaimedItemIds();
+      if (mounted && claimed.contains(widget.pkg.id)) {
+        setState(() => _isPromoClaimed = true);
+      }
+    } catch (_) {
+      // Biarkan status default (belum diklaim) — user masih bisa coba klaim.
+    }
+  }
+
+  Future<void> _claimPromo() async {
+    if (_claimingPromo || _isPromoClaimed) return;
+    setState(() => _claimingPromo = true);
+    try {
+      await _promoClaimDataSource.claimPromo(widget.pkg.id);
+      if (mounted) setState(() => _isPromoClaimed = true);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal klaim promo. Coba lagi.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _claimingPromo = false);
+    }
   }
 
   Future<void> _loadFavoriteStatus() async {
@@ -212,6 +259,11 @@ class _WisataDetailPageState extends State<WisataDetailPage> {
                       'Sisa kuota: ${pkg.sisaKuota} dari ${pkg.kuotaTotal} kursi'),
                   if (pkg.minPeserta != null)
                     _infoRow(Icons.groups, 'Min. ${pkg.minPeserta} peserta'),
+
+                  if (widget.pkg.isPromo) ...[
+                    SizedBox(height: s * 14),
+                    _promoBanner(),
+                  ],
 
                   SizedBox(height: s * 16),
                   if (pkg.deskripsiSingkat.isNotEmpty) ...[
@@ -427,6 +479,87 @@ class _WisataDetailPageState extends State<WisataDetailPage> {
             style: TextStyle(
                 color: fg, fontSize: Responsive.fontSize(context, 11), fontWeight: FontWeight.w700)),
       );
+
+  Widget _promoBanner() {
+    final s = Responsive.scale(context);
+    final original = widget.pkg.hargaAsli ?? 'Rp ${widget.pkg.hargaSebelumDiskon}';
+    return Container(
+      padding: EdgeInsets.all(14 * s),
+      decoration: BoxDecoration(
+        color: _isPromoClaimed
+            ? const Color(0xFFEFFCE8)
+            : const Color(0xFFFFF7E6),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: _isPromoClaimed
+              ? const Color(0xFF3D6B00)
+              : const Color(0xFFFFD600),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            _isPromoClaimed ? Icons.check_circle_rounded : Icons.sell_rounded,
+            color: _isPromoClaimed ? const Color(0xFF3D6B00) : const Color(0xFFBA1A1A),
+          ),
+          SizedBox(width: 10 * s),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _isPromoClaimed
+                      ? 'Promo sudah diklaim'
+                      : (widget.pkg.promoBadge ?? 'PROMO'),
+                  style: TextStyle(
+                    fontSize: Responsive.fontSize(context, 13),
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.onSurface,
+                  ),
+                ),
+                if (!_isPromoClaimed) ...[
+                  SizedBox(height: 2 * s),
+                  Text(
+                    'Harga normal $original. Klaim untuk buka harga diskon ${widget.pkg.diskonPersen ?? ''}%.',
+                    style: TextStyle(
+                      fontSize: Responsive.fontSize(context, 12),
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          SizedBox(width: 8 * s),
+          if (!_isPromoClaimed)
+            FilledButton(
+              onPressed: _claimingPromo ? null : _claimPromo,
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFBA1A1A),
+                padding: EdgeInsets.symmetric(horizontal: 14 * s, vertical: 10 * s),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: _claimingPromo
+                  ? SizedBox(
+                      width: 16 * s,
+                      height: 16 * s,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      'Klaim',
+                      style: TextStyle(
+                        fontSize: Responsive.fontSize(context, 12.5),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+            ),
+        ],
+      ),
+    );
+  }
 
   Widget _itineraryTile(WisataItinerary it) => Container(
         margin: EdgeInsets.only(bottom: 10 * Responsive.scale(context)),

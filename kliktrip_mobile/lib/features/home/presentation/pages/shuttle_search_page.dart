@@ -9,6 +9,7 @@ import '../../../../core/widgets/bottom_nav.dart';
 import '../../../booking/presentation/booking_list_page.dart';
 import '../../../wisata/presentation/wisata_page.dart';
 import '../../data/shuttle_city_data_source.dart';
+import '../../data/shuttle_route_data_source.dart';
 import 'profile_page.dart';
 import 'saved_page.dart';
 import 'shuttle_empty_field_page.dart';
@@ -27,6 +28,7 @@ class _ShuttleSearchPageState extends State<ShuttleSearchPage> {
   final _originFocusNode = FocusNode();
   final _destinationFocusNode = FocusNode();
   final _cityDataSource = ShuttleCityDataSource();
+  final _routeDataSource = ShuttleRouteDataSource();
   DateTime _selectedDate = DateTime.now();
   int _passengers = 1;
   bool _isSearching = false;
@@ -39,11 +41,34 @@ class _ShuttleSearchPageState extends State<ShuttleSearchPage> {
   Timer? _overlayDebounce;
   List<_RecentSearch> _recentSearches = const [];
 
+  List<PopularRoute> _popularRoutes = [];
+  bool _loadingPopularRoutes = true;
+
   @override
   void initState() {
     super.initState();
     _originFocusNode.addListener(() => _onFocusChanged(isOrigin: true));
     _destinationFocusNode.addListener(() => _onFocusChanged(isOrigin: false));
+    _loadPopularRoutes();
+  }
+
+  Future<void> _loadPopularRoutes() async {
+    try {
+      final routes = await _routeDataSource.fetchPopularRoutes();
+      if (mounted) setState(() => _popularRoutes = routes);
+    } catch (_) {
+      // Biarkan kosong — section akan tampilkan empty state, bukan dummy data.
+    } finally {
+      if (mounted) setState(() => _loadingPopularRoutes = false);
+    }
+  }
+
+  String _formatPrice(int price) {
+    final numStr = price.toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]}.',
+        );
+    return 'Rp$numStr';
   }
 
   void _onFocusChanged({required bool isOrigin}) {
@@ -387,31 +412,37 @@ class _ShuttleSearchPageState extends State<ShuttleSearchPage> {
                       const SizedBox(height: 14),
                       SizedBox(
                         height: (252 * Responsive.scale(context)).clamp(200, 360),
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            _PopularRouteCard(
-                              route: 'Manado - Kotamobagu',
-                              fare: 'Mulai dari Rp200 ribu',
-                              rating: '4.9 (1,2k)',
-                              onBook: () => _applyRoute('Manado', 'Kotamobagu'),
-                            ),
-                            const SizedBox(width: 14),
-                            _PopularRouteCard(
-                              route: 'Manado - Gorontalo',
-                              fare: 'Mulai dari Rp450 ribu',
-                              rating: '4.8 (850)',
-                              onBook: () => _applyRoute('Manado', 'Gorontalo'),
-                            ),
-                            const SizedBox(width: 14),
-                            _PopularRouteCard(
-                              route: 'Makassar - Kendari',
-                              fare: 'Mulai dari Rp600 ribu',
-                              rating: '4.7 (520)',
-                              onBook: () => _applyRoute('Makassar', 'Kendari'),
-                            ),
-                          ],
-                        ),
+                        child: _loadingPopularRoutes
+                            ? const Center(child: CircularProgressIndicator())
+                            : _popularRoutes.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      'Belum ada rute populer saat ini.',
+                                      style: TextStyle(
+                                        fontSize: Responsive.fontSize(context, 13),
+                                        color: AppColors.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  )
+                                : ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: _popularRoutes.length,
+                                    separatorBuilder: (_, __) => const SizedBox(width: 14),
+                                    itemBuilder: (context, index) {
+                                      final route = _popularRoutes[index];
+                                      return _PopularRouteCard(
+                                        route: route.routeLabel,
+                                        fare: route.minPrice != null
+                                            ? 'Mulai dari ${_formatPrice(route.minPrice!)}'
+                                            : 'Hubungi kami untuk harga',
+                                        badge: '${route.scheduleCount} jadwal/minggu',
+                                        onBook: () => _applyRoute(
+                                          route.departureCity,
+                                          route.arrivalCity,
+                                        ),
+                                      );
+                                    },
+                                  ),
                       ),
                     ],
                   ),
@@ -972,13 +1003,13 @@ class _PopularRouteCard extends StatelessWidget {
   const _PopularRouteCard({
     required this.route,
     required this.fare,
-    required this.rating,
+    required this.badge,
     required this.onBook,
   });
 
   final String route;
   final String fare;
-  final String rating;
+  final String badge;
   final VoidCallback onBook;
 
   @override
@@ -1028,13 +1059,13 @@ class _PopularRouteCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.star,
+                          Icons.directions_bus_rounded,
                           size: Responsive.iconSize(context, 14),
                           color: AppColors.solarFlare,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          rating,
+                          badge,
                           style: TextStyle(
                             fontSize: Responsive.fontSize(context, 12),
                             color: Colors.white,

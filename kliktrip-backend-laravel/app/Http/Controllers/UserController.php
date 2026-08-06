@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Models\NotificationPreference;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
+use App\Models\PromoClaim;
 use App\Models\SavedCard;
 use App\Models\SavedPassenger;
 use App\Models\TourCatalog;
@@ -360,8 +361,11 @@ class UserController extends Controller
                     'item_id'     => $data['id'] ?? $target->external_id,
                     'title'       => $data['nama_paket'] ?? $target->nama_paket,
                     'subtitle'    => $data['destinasi'] ?? 'Paket Wisata',
-                    'price'       => $data['harga'] ?? null,
-                    'price_sub'   => $data['harga_display'] ?? 'Mulai dari',
+                    // 'price' harus sudah dalam bentuk siap-tampil (mis.
+                    // "Rp 7.899.000"), BUKAN angka mentah — Flutter menampilkan
+                    // nilai ini apa adanya tanpa format ulang.
+                    'price'       => $data['harga_display'] ?? null,
+                    'price_sub'   => 'Mulai dari',
                     'rating'      => $data['rating'] ?? null,
                     'image'       => $data['gambar'] ?? null,
                 ];
@@ -581,8 +585,8 @@ class UserController extends Controller
             'item_id'     => $payload['id'] ?? $catalog->external_id,
             'title'       => $payload['nama_paket'] ?? $catalog->nama_paket,
             'subtitle'    => $payload['destinasi'] ?? 'Paket Wisata',
-            'price'       => $payload['harga'] ?? null,
-            'price_sub'   => $payload['harga_display'] ?? 'Mulai dari',
+            'price'       => $payload['harga_display'] ?? null,
+            'price_sub'   => 'Mulai dari',
             'rating'      => $payload['rating'] ?? null,
             'image'       => $payload['gambar'] ?? null,
         ], 201);
@@ -597,6 +601,65 @@ class UserController extends Controller
         $favorite->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * GET /me/promo-claims
+     * Daftar item_id paket promo yang sudah diklaim user — dipakai mobile
+     * menentukan paket promo mana yang harganya sudah "terbuka" (diskon)
+     * untuk user ini.
+     */
+    public function promoClaims(Request $request): JsonResponse
+    {
+        $itemIds = PromoClaim::where('user_id', $request->user()->id)
+            ->with('tourCatalog:id,payload,external_id')
+            ->get()
+            ->map(fn ($claim) => $claim->tourCatalog?->payload['id']
+                ?? $claim->tourCatalog?->external_id)
+            ->filter()
+            ->values();
+
+        return response()->json($itemIds);
+    }
+
+    /**
+     * POST /me/promo-claims
+     * Klaim satu paket promo. Cuma paket dengan is_promo=true di payload-nya
+     * yang bisa diklaim — mencegah user "klaim" paket biasa buat cari diskon
+     * yang tidak seharusnya ada.
+     */
+    public function storePromoClaim(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'item_id' => ['required', 'string', 'max:64'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first()], 422);
+        }
+
+        $itemId = $validator->validated()['item_id'];
+        $catalog = TourCatalog::where('payload->id', $itemId)
+            ->orWhere('external_id', $itemId)
+            ->first();
+
+        if (!$catalog) {
+            return response()->json(['message' => 'Paket tidak ditemukan.'], 404);
+        }
+
+        if (($catalog->payload['is_promo'] ?? false) !== true) {
+            return response()->json(['message' => 'Paket ini bukan promo.'], 422);
+        }
+
+        $claim = PromoClaim::firstOrCreate(
+            ['user_id' => $request->user()->id, 'tour_catalog_id' => $catalog->id],
+            ['claimed_at' => now()],
+        );
+
+        return response()->json([
+            'item_id'    => $itemId,
+            'claimed_at' => $claim->claimed_at,
+        ], 201);
     }
 
     /**

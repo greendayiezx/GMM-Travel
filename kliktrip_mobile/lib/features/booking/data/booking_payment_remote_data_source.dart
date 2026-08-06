@@ -78,7 +78,9 @@ class BookingPaymentRemoteDataSourceImpl implements BookingPaymentRemoteDataSour
   Future<Map<String, dynamic>> checkPaymentStatus(String paymentId) async {
     try {
       final url = ApiEndpoints.paymentStatus.replaceAll('{id}', paymentId);
-      final response = await _client.dio.get(url);
+      // Status pembayaran TIDAK BOLEH basi — selalu ambil dari network,
+      // lewati cache GET default (lihat noCacheOptions() di dio_client.dart).
+      final response = await _client.dio.get(url, options: noCacheOptions());
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw ServerFailure(

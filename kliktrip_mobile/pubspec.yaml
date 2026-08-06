@@ -17,6 +17,7 @@ dependencies:
 
   # Networking & Serialization
   dio: ^5.4.0
+  dio_cache_interceptor: ^4.0.7
   json_annotation: ^4.8.1
 
   # Local Storage & Utilities

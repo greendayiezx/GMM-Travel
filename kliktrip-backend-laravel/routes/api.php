@@ -56,6 +56,9 @@ Route::get('/me/payment-methods', [UserController::class, 'paymentMethods'])->mi
 Route::get('/me/favorites', [UserController::class, 'favorites'])->middleware(['clerk.auth', 'throttle:60,1']);
 Route::post('/me/favorites', [UserController::class, 'storeFavorite'])->middleware(['clerk.auth', 'throttle:30,1']);
 Route::delete('/me/favorites/{id}', [UserController::class, 'destroyFavorite'])->middleware(['clerk.auth', 'throttle:30,1']);
+
+Route::get('/me/promo-claims', [UserController::class, 'promoClaims'])->middleware(['clerk.auth', 'throttle:60,1']);
+Route::post('/me/promo-claims', [UserController::class, 'storePromoClaim'])->middleware(['clerk.auth', 'throttle:30,1']);
 // Notifikasi user (dibuat otomatis dari event pembayaran, lihat PaymentController::notification()).
 Route::get('/me/notifications', [UserController::class, 'notifications'])->middleware(['clerk.auth', 'throttle:60,1']);
 Route::post('/me/notifications/{id}/read', [UserController::class, 'markNotificationRead'])->middleware(['clerk.auth', 'throttle:60,1']);
@@ -150,6 +153,40 @@ Route::get('/schedules', function () {
     }
 
     return response()->json($q->get());
+});
+
+// ── Rute shuttle "populer" untuk halaman pencarian shuttle ─────
+// Belum ada data booking/review asli (TravelBooking & Review masih kosong),
+// jadi popularitas dihitung dari jumlah jadwal tersedia per rute (proxy
+// paling jujur yang bisa dihitung dari data yang benar-benar ada), dan harga
+// dari harga jadwal termurah — bukan angka rating/harga fiktif.
+Route::get('/shuttle/popular-routes', function () {
+    // Filter ">0 jadwal" dilakukan di PHP (bukan SQL having()) karena Postgres
+    // tidak mengizinkan alias hasil withCount() dipakai di HAVING tanpa
+    // GROUP BY. Tabel travel_routes cuma puluhan baris jadi ini tetap murah.
+    $routes = \App\Models\TravelRoute::query()
+        ->with(['departureCity:id,name', 'arrivalCity:id,name'])
+        ->withCount(['travelSchedules as schedule_count' => function ($q) {
+            $q->where('status', 'SCHEDULED')->where('departure_time', '>=', now());
+        }])
+        ->withMin(['travelSchedules as min_price' => function ($q) {
+            $q->where('status', 'SCHEDULED')->where('departure_time', '>=', now());
+        }], 'price')
+        ->orderByDesc('schedule_count')
+        ->get()
+        ->filter(fn ($route) => $route->schedule_count > 0)
+        ->take(6)
+        ->values()
+        ->map(fn ($route) => [
+            'id' => $route->id,
+            'departure_city' => $route->departureCity?->name ?? '',
+            'arrival_city' => $route->arrivalCity?->name ?? '',
+            'min_price' => $route->min_price !== null ? (int) round($route->min_price) : null,
+            'schedule_count' => $route->schedule_count,
+        ])
+        ->values();
+
+    return response()->json($routes);
 });
 
 // ── Cities untuk shuttle autocomplete ─────────────────────────

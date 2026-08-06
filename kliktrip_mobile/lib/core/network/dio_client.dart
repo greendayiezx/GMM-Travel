@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import '../auth/clerk_auth_service.dart';
 
@@ -31,12 +33,14 @@ class ApiEndpoints {
   static const String paymentNotification = '/payments/notification';
   static const String cities = '/cities';
   static const String tours = '/tours';
+  static const String shuttlePopularRoutes = '/shuttle/popular-routes';
   static const String meStats = '/me/stats';
   static const String meLoyalty = '/me/loyalty';
   static const String meBookings = '/me/bookings';
   static const String mePassengers = '/me/passengers';
   static const String mePaymentMethods = '/me/payment-methods';
   static const String meFavorites = '/me/favorites';
+  static const String mePromoClaims = '/me/promo-claims';
   static const String meSavedCards = '/me/saved-cards';
   static const String meExportData = '/me/export-data';
   static const String meAccount = '/me/account';
@@ -74,10 +78,32 @@ class AuthInterceptor extends Interceptor {
   }
 }
 
+/// Cache policy default untuk semua request GET (listing wisata/flight/
+/// cities/dll) — TTL 5 menit, in-memory (LRU, hilang saat app restart).
+/// POST/PUT/DELETE TIDAK PERNAH di-cache (bawaan package: `allowPostMethod`
+/// default false), jadi booking/payment yang selalu POST otomatis aman.
+/// Untuk endpoint GET yang harus selalu fresh (status pembayaran/booking),
+/// pakai [noCacheOptions] di call site-nya sebagai `options:` override.
+final CacheOptions dioCacheOptions = CacheOptions(
+  store: MemCacheStore(),
+  policy: CachePolicy.request,
+  maxStale: const Duration(minutes: 5),
+  priority: CachePriority.normal,
+);
+
+/// Override per-request: lewati cache, selalu ambil data terbaru dari
+/// network. Pakai untuk polling status pembayaran/booking, atau endpoint
+/// GET lain yang datanya tidak boleh basi.
+Options noCacheOptions() =>
+    dioCacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
+
 class SslPinningInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (options.baseUrl.startsWith('http://')) {
+    // HTTP polos ditolak di release build (proteksi produksi dari koneksi
+    // tidak terenkripsi). Di debug build (flutter run) HTTP diizinkan supaya
+    // testing ke backend lokal (mis. http://127.0.0.1:8000) tetap bisa jalan.
+    if (!kDebugMode && options.baseUrl.startsWith('http://')) {
       handler.reject(
         DioException(
           requestOptions: options,
@@ -97,8 +123,13 @@ class DioClient {
   DioClient._(this.dio);
 
   static DioClient create({
-    Duration connectTimeout = const Duration(seconds: 15),
-    Duration receiveTimeout = const Duration(seconds: 15),
+    // Debug build (flutter run) dikasih timeout lebih longgar — server dev
+    // lokal (mis. `php artisan serve`, single-threaded) + DB cloud jarak jauh
+    // bisa jauh lebih lambat daripada server production yang sudah di-scale.
+    Duration connectTimeout =
+        kDebugMode ? const Duration(seconds: 30) : const Duration(seconds: 15),
+    Duration receiveTimeout =
+        kDebugMode ? const Duration(seconds: 30) : const Duration(seconds: 15),
   }) {
     final dio = Dio(BaseOptions(
       baseUrl: ApiEndpoints.baseUrl,
@@ -110,6 +141,7 @@ class DioClient {
     dio.interceptors.addAll([
       SslPinningInterceptor(),
       AuthInterceptor(),
+      DioCacheInterceptor(options: dioCacheOptions),
     ]);
 
     return DioClient._(dio);

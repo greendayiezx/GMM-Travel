@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/di/injection.dart';
 import '../../../core/responsive/responsive.dart';
 import '../../../core/widgets/app_network_image.dart';
 import '../../../core/widgets/favorite_button.dart';
@@ -6,12 +8,17 @@ import '../../../core/widgets/website_loader.dart';
 import '../../booking/data/favorite_remote_data_source.dart';
 import '../../home/presentation/pages/home_page.dart';
 import '../data/wisata_data_source.dart';
+import 'bloc/wisata_bloc.dart';
+import 'bloc/wisata_event.dart';
+import 'bloc/wisata_state.dart';
 import 'wisata_detail_page.dart';
 
 import '../../../core/settings/settings_service.dart';
 
 class WisataListingPage extends StatefulWidget {
-  const WisataListingPage({super.key});
+  const WisataListingPage({this.initialCategory = 'SEMUA', super.key});
+
+  final String initialCategory;
 
   @override
   State<WisataListingPage> createState() => _WisataListingPageState();
@@ -19,14 +26,12 @@ class WisataListingPage extends StatefulWidget {
 
 class _WisataListingPageState extends State<WisataListingPage> {
   final _searchController = TextEditingController();
-  final _wisataSource = WisataDataSource();
   final _favoriteDataSource = FavoriteRemoteDataSource();
+  late final WisataBloc _wisataBloc;
 
   String _category = 'SEMUA';
   String _query = '';
-  List<WisataPackage> _all = const [];
   Map<String, String> _favoriteIdByItemId = {};
-  bool _loading = true;
 
   static const _categories = <String, String>{
     'SEMUA': 'Semua',
@@ -39,7 +44,8 @@ class _WisataListingPageState extends State<WisataListingPage> {
   @override
   void initState() {
     super.initState();
-    _loadPackages();
+    _category = widget.initialCategory;
+    _wisataBloc = sl<WisataBloc>()..add(const WisataListRequested());
     _loadFavorites();
   }
 
@@ -61,24 +67,13 @@ class _WisataListingPageState extends State<WisataListingPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _wisataBloc.close();
     super.dispose();
   }
 
-  Future<void> _loadPackages() async {
-    setState(() => _loading = true);
-    try {
-      final data = await _wisataSource.fetchAll();
-      if (mounted) setState(() => _all = data);
-    } catch (_) {
-      // Backend & asset gagal → biarkan kosong.
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  List<WisataPackage> get _filtered {
+  List<WisataPackage> _filterPackages(List<WisataPackage> all) {
     final q = _query.trim().toLowerCase();
-    return _all.where((p) {
+    return all.where((p) {
       final matchCategory = _category == 'SEMUA' || p.kategori == _category;
       final matchQuery = q.isEmpty ||
           p.namaPaket.toLowerCase().contains(q) ||
@@ -269,9 +264,11 @@ class _WisataListingPageState extends State<WisataListingPage> {
                     const SizedBox(height: 12),
                     SizedBox(
                       height: 40 * s,
-                      child: ListView(
+                      child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        children: _categories.entries.map((e) {
+                        itemCount: _categories.length,
+                        itemBuilder: (context, index) {
+                          final e = _categories.entries.elementAt(index);
                           final selected = _category == e.key;
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
@@ -292,7 +289,7 @@ class _WisataListingPageState extends State<WisataListingPage> {
                               ),
                             ),
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                   ],
@@ -304,17 +301,28 @@ class _WisataListingPageState extends State<WisataListingPage> {
             SliverPadding(
               padding: EdgeInsets.fromLTRB(hPadding, 12, hPadding, 24),
               sliver: SliverToBoxAdapter(
-                child: _loading
-                    ? const ShimmerLoader(
-                        child: Column(
-                          children: [
-                            WisataItemSkeleton(),
-                            WisataItemSkeleton(),
-                            WisataItemSkeleton(),
-                          ],
-                        ),
-                      )
-                    : _buildPackageList(context),
+                child: BlocBuilder<WisataBloc, WisataState>(
+                  bloc: _wisataBloc,
+                  builder: (context, state) {
+                    if (state is WisataListLoaded) {
+                      final all =
+                          state.packages.map(WisataPackage.fromEntity).toList();
+                      return _buildPackageList(context, all);
+                    }
+                    if (state is WisataError) {
+                      return _buildPackageList(context, const []);
+                    }
+                    return const ShimmerLoader(
+                      child: Column(
+                        children: [
+                          WisataItemSkeleton(),
+                          WisataItemSkeleton(),
+                          WisataItemSkeleton(),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -325,9 +333,9 @@ class _WisataListingPageState extends State<WisataListingPage> {
 );
 }
 
-  Widget _buildPackageList(BuildContext context) {
+  Widget _buildPackageList(BuildContext context, List<WisataPackage> allPackages) {
     final s = Responsive.scale(context);
-    final packages = _filtered;
+    final packages = _filterPackages(allPackages);
 
     if (packages.isEmpty) {
       return Padding(
@@ -369,8 +377,13 @@ class _WisataListingPageState extends State<WisataListingPage> {
           ),
         ),
         const SizedBox(height: 10),
-        ...packages.map((pkg) {
-          return Card(
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: packages.length,
+          itemBuilder: (context, index) {
+            final pkg = packages[index];
+            return Card(
             margin: const EdgeInsets.only(bottom: 12),
             color: Colors.white,
             shape: RoundedRectangleBorder(
@@ -386,7 +399,7 @@ class _WisataListingPageState extends State<WisataListingPage> {
                   MaterialPageRoute(
                     builder: (_) => WisataDetailPage(
                       pkg: pkg,
-                      allPackages: _all,
+                      allPackages: allPackages,
                     ),
                   ),
                 );
@@ -488,8 +501,9 @@ class _WisataListingPageState extends State<WisataListingPage> {
                 ],
               ),
             ),
-          );
-        }),
+            );
+          },
+        ),
       ],
     );
   }

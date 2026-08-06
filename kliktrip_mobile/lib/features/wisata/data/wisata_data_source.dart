@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 import '../../../core/network/dio_client.dart';
+import '../domain/entities/wisata_entity.dart';
 
 /// Satu item paket wisata (sama persis dengan data di website).
 class WisataPackage {
@@ -64,6 +65,49 @@ class WisataPackage {
 
   int get sisaKuota => (kuotaTotal - kuotaSaatIni).clamp(0, kuotaTotal);
 
+  /// Harga SEBELUM diskon, dihitung balik dari [harga] (yang sudah diskon)
+  /// dan [diskonPersen] — dipakai menampilkan harga normal untuk paket promo
+  /// yang belum diklaim user. Kalau bukan promo (atau tanpa diskonPersen),
+  /// sama saja dengan [harga].
+  int get hargaSebelumDiskon {
+    if (!isPromo || diskonPersen == null || diskonPersen! <= 0 || diskonPersen! >= 100) {
+      return harga;
+    }
+    return (harga / (1 - diskonPersen! / 100)).round();
+  }
+
+  /// Salinan dengan sebagian field ditimpa — dipakai [WisataDetailPage] untuk
+  /// "mengunci" tampilan & jumlah bayar ke harga normal selama promo belum
+  /// diklaim user, tanpa mengubah field lain (itinerary, gambar, dst).
+  WisataPackage copyWith({int? harga, String? hargaDisplay}) => WisataPackage(
+        id: id,
+        namaPaket: namaPaket,
+        kategori: kategori,
+        destinasi: destinasi,
+        harga: harga ?? this.harga,
+        hargaDisplay: hargaDisplay ?? this.hargaDisplay,
+        durasiDisplay: durasiDisplay,
+        durasiHari: durasiHari,
+        durasiMalam: durasiMalam,
+        kuotaSaatIni: kuotaSaatIni,
+        kuotaTotal: kuotaTotal,
+        deskripsiSingkat: deskripsiSingkat,
+        gambar: gambar,
+        rating: rating,
+        status: status,
+        maskapai: maskapai,
+        minPeserta: minPeserta,
+        tanggalKeberangkatan: tanggalKeberangkatan,
+        termasuk: termasuk,
+        tidakTermasuk: tidakTermasuk,
+        itinerary: itinerary,
+        syaratKetentuan: syaratKetentuan,
+        isPromo: isPromo,
+        diskonPersen: diskonPersen,
+        hargaAsli: hargaAsli,
+        promoBadge: promoBadge,
+      );
+
   factory WisataPackage.fromJson(Map<String, dynamic> j) {
     List<String> strList(dynamic v) =>
         (v as List?)?.map((e) => e.toString()).toList() ?? const [];
@@ -105,6 +149,76 @@ class WisataPackage {
       promoBadge: j['promo_badge']?.toString(),
     );
   }
+
+  /// Konversi ke representasi domain (pure Dart, tanpa dependency JSON).
+  WisataEntity toEntity() => WisataEntity(
+        id: id,
+        namaPaket: namaPaket,
+        kategori: kategori,
+        destinasi: destinasi,
+        harga: harga,
+        hargaDisplay: hargaDisplay,
+        durasiDisplay: durasiDisplay,
+        durasiHari: durasiHari,
+        durasiMalam: durasiMalam,
+        kuotaSaatIni: kuotaSaatIni,
+        kuotaTotal: kuotaTotal,
+        deskripsiSingkat: deskripsiSingkat,
+        gambar: gambar,
+        rating: rating,
+        status: status,
+        maskapai: maskapai,
+        minPeserta: minPeserta,
+        tanggalKeberangkatan: tanggalKeberangkatan,
+        termasuk: termasuk,
+        tidakTermasuk: tidakTermasuk,
+        itinerary: itinerary
+            .map((i) => WisataItineraryEntity(
+                  day: i.day,
+                  title: i.title,
+                  desc: i.desc,
+                ))
+            .toList(),
+        syaratKetentuan: syaratKetentuan,
+        isPromo: isPromo,
+        diskonPersen: diskonPersen,
+        hargaAsli: hargaAsli,
+        promoBadge: promoBadge,
+      );
+
+  /// Kebalikan dari [toEntity] — dipakai widget presentation yang masih
+  /// mengharapkan `WisataPackage` (mis. `WisataDetailPage`) saat datanya
+  /// bersumber dari `WisataBloc` (yang bekerja dengan `WisataEntity`).
+  factory WisataPackage.fromEntity(WisataEntity e) => WisataPackage(
+        id: e.id,
+        namaPaket: e.namaPaket,
+        kategori: e.kategori,
+        destinasi: e.destinasi,
+        harga: e.harga,
+        hargaDisplay: e.hargaDisplay,
+        durasiDisplay: e.durasiDisplay,
+        durasiHari: e.durasiHari,
+        durasiMalam: e.durasiMalam,
+        kuotaSaatIni: e.kuotaSaatIni,
+        kuotaTotal: e.kuotaTotal,
+        deskripsiSingkat: e.deskripsiSingkat,
+        gambar: e.gambar,
+        rating: e.rating,
+        status: e.status,
+        maskapai: e.maskapai,
+        minPeserta: e.minPeserta,
+        tanggalKeberangkatan: e.tanggalKeberangkatan,
+        termasuk: e.termasuk,
+        tidakTermasuk: e.tidakTermasuk,
+        itinerary: e.itinerary
+            .map((i) => WisataItinerary(day: i.day, title: i.title, desc: i.desc))
+            .toList(),
+        syaratKetentuan: e.syaratKetentuan,
+        isPromo: e.isPromo,
+        diskonPersen: e.diskonPersen,
+        hargaAsli: e.hargaAsli,
+        promoBadge: e.promoBadge,
+      );
 }
 
 class WisataItinerary {

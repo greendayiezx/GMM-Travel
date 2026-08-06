@@ -4,6 +4,7 @@ import '../../../../core/responsive/responsive.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/airline_logo.dart';
 import '../../../../core/widgets/bottom_nav.dart';
+import '../../../../core/widgets/website_loader.dart';
 import '../../../booking/presentation/booking_list_page.dart';
 import '../../../wisata/presentation/wisata_page.dart';
 import '../../data/flight_remote_data_source.dart';
@@ -115,9 +116,7 @@ class _FlightResultsPageState extends State<FlightResultsPage> {
         ],
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.azureSky),
-            )
+          ? _buildLoadingSkeleton()
           : _errorMessage != null
               ? _buildError()
               : _results.isEmpty
@@ -166,6 +165,25 @@ class _FlightResultsPageState extends State<FlightResultsPage> {
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildLoadingSkeleton() {
+    return ShimmerLoader(
+      child: ListView(
+        padding: EdgeInsets.fromLTRB(
+          Responsive.horizontalPadding(context), 8,
+          Responsive.horizontalPadding(context), Responsive.verticalPadding(context) + 12,
+        ),
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          for (var i = 0; i < 5; i++)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 14),
+              child: _FlightCardSkeleton(),
+            ),
+        ],
       ),
     );
   }
@@ -431,6 +449,112 @@ class _FlightCard extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FlightCardSkeleton extends StatelessWidget {
+  const _FlightCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Responsive.scale(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.25),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Baris header: logo maskapai + nama + nomor + badge
+          Padding(
+            padding: EdgeInsets.all(s * 14),
+            child: const Row(
+              children: [
+                SkeletonBox(width: 44, height: 44, borderRadius: 10),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SkeletonBox(width: 120, height: 14, borderRadius: 4),
+                      SizedBox(height: 6),
+                      SkeletonBox(width: 90, height: 11, borderRadius: 4),
+                    ],
+                  ),
+                ),
+                SkeletonBox(width: 52, height: 14, borderRadius: 4),
+              ],
+            ),
+          ),
+          // Baris waktu: berangkat - durasi - tiba
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: s * 14),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SkeletonBox(width: 60, height: 20, borderRadius: 4),
+                    SizedBox(height: 6),
+                    SkeletonBox(width: 48, height: 12, borderRadius: 4),
+                  ],
+                ),
+                Column(
+                  children: [
+                    SkeletonBox(width: 42, height: 10, borderRadius: 4),
+                    SizedBox(height: 6),
+                    SkeletonBox(width: 16, height: 16, borderRadius: 8),
+                    SizedBox(height: 6),
+                    SkeletonBox(width: 48, height: 10, borderRadius: 4),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SkeletonBox(width: 60, height: 20, borderRadius: 4),
+                    SizedBox(height: 6),
+                    SkeletonBox(width: 48, height: 12, borderRadius: 4),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: s * 12),
+          const SkeletonBox(height: 1, width: double.infinity, borderRadius: 0),
+          // Baris bawah: harga + tombol Pilih
+          Padding(
+            padding: EdgeInsets.all(s * 14),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SkeletonBox(width: 48, height: 10, borderRadius: 4),
+                    SizedBox(height: 6),
+                    SkeletonBox(width: 92, height: 18, borderRadius: 4),
+                  ],
+                ),
+                SkeletonBox(width: 64, height: 40, borderRadius: 8),
               ],
             ),
           ),

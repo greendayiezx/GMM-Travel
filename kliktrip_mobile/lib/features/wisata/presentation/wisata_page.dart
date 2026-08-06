@@ -7,6 +7,9 @@ import '../../booking/presentation/booking_list_page.dart';
 import '../../home/presentation/pages/home_page.dart';
 import '../../home/presentation/pages/profile_page.dart';
 import '../../home/presentation/pages/saved_page.dart';
+import '../../home/presentation/pages/shuttle_search_page.dart';
+import 'ibadah_listing_page.dart';
+import 'wisata_listing_page.dart';
 
 class WisataPage extends StatefulWidget {
   const WisataPage({super.key});
@@ -16,29 +19,19 @@ class WisataPage extends StatefulWidget {
 }
 
 class _WisataPageState extends State<WisataPage> {
-  String _category = 'SEMUA';
-
-  static const _categories = <String, String>{
-    'SEMUA': 'Semua',
-    'IBADAH': 'Paket Umroh & Haji',
-    'INTERNASIONAL': 'Tour Internasional',
-    'DOMESTIK': 'Tour Domestik',
-    'EVENT': 'Open & Private Trip',
-  };
-
   static const _exploreCategories = [
-    {'label': 'Paket Umroh', 'icon': Icons.mosque_rounded, 'color': Color(0xFF00629D), 'catKey': 'IBADAH'},
-    {'label': 'Paket Haji', 'icon': Icons.stars_rounded, 'color': Color(0xFF00629D), 'catKey': 'IBADAH'},
-    {'label': 'Tour Internasional', 'icon': Icons.public_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'INTERNASIONAL'},
-    {'label': 'Tour Domestik', 'icon': Icons.map_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'DOMESTIK'},
-    {'label': 'Open Trip', 'icon': Icons.group_rounded, 'color': Color(0xFF486800), 'catKey': 'EVENT'},
-    {'label': 'Private Trip', 'icon': Icons.person_pin_circle_rounded, 'color': Color(0xFF486800), 'catKey': 'EVENT'},
-    {'label': 'Whoosh Experience', 'icon': Icons.train_rounded, 'color': Color(0xFFBA1A1A), 'catKey': 'DOMESTIK'},
-    {'label': 'Villa & Staycation', 'icon': Icons.home_work_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'DOMESTIK'},
-    {'label': 'Sewa Mobil', 'icon': Icons.directions_car_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'DOMESTIK'},
-    {'label': 'Shuttle', 'icon': Icons.airport_shuttle_rounded, 'color': Color(0xFF3F4851), 'catKey': 'DOMESTIK'},
-    {'label': 'Wisata Populer', 'icon': Icons.landscape_rounded, 'color': Color(0xFF705D00), 'catKey': 'SEMUA'},
-    {'label': 'Promo & Flash Sale', 'icon': Icons.sell_rounded, 'color': Color(0xFFBA1A1A), 'catKey': 'SEMUA'},
+    {'label': 'Paket Umroh', 'icon': Icons.mosque_rounded, 'color': Color(0xFF00629D), 'catKey': 'IBADAH', 'target': 'umroh'},
+    {'label': 'Paket Haji', 'icon': Icons.stars_rounded, 'color': Color(0xFF00629D), 'catKey': 'IBADAH', 'target': 'haji'},
+    {'label': 'Tour Internasional', 'icon': Icons.public_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'INTERNASIONAL', 'target': 'INTERNASIONAL'},
+    {'label': 'Tour Domestik', 'icon': Icons.map_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'DOMESTIK', 'target': 'DOMESTIK'},
+    {'label': 'Open Trip', 'icon': Icons.group_rounded, 'color': Color(0xFF486800), 'catKey': 'EVENT', 'target': 'EVENT'},
+    {'label': 'Private Trip', 'icon': Icons.person_pin_circle_rounded, 'color': Color(0xFF486800), 'catKey': 'EVENT', 'target': 'EVENT'},
+    {'label': 'Whoosh Experience', 'icon': Icons.train_rounded, 'color': Color(0xFFBA1A1A), 'catKey': 'DOMESTIK', 'target': 'whoosh'},
+    {'label': 'Villa & Staycation', 'icon': Icons.home_work_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'DOMESTIK', 'target': 'villa'},
+    {'label': 'Sewa Mobil', 'icon': Icons.directions_car_rounded, 'color': Color(0xFF1E9BF0), 'catKey': 'DOMESTIK', 'target': 'mobil'},
+    {'label': 'Shuttle', 'icon': Icons.airport_shuttle_rounded, 'color': Color(0xFF3F4851), 'catKey': 'DOMESTIK', 'target': 'shuttle'},
+    {'label': 'Wisata Populer', 'icon': Icons.landscape_rounded, 'color': Color(0xFF705D00), 'catKey': 'SEMUA', 'target': 'SEMUA'},
+    {'label': 'Promo & Flash Sale', 'icon': Icons.sell_rounded, 'color': Color(0xFFBA1A1A), 'catKey': 'SEMUA', 'target': 'SEMUA'},
   ];
 
   @override
@@ -195,74 +188,41 @@ class _WisataPageState extends State<WisataPage> {
               ),
             ),
 
-            // Sticky Search & Filter Section
+            // Sticky Search Section
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 8),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1B1E22) : Colors.white,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1B1E22) : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: isDark ? Border.all(color: const Color(0xFF2E333B)) : null,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    style: TextStyle(color: isDark ? Colors.white : const Color(0xFF1C1B1B)),
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.get('explore_search_hint'),
+                      hintStyle: TextStyle(
+                        fontSize: Responsive.fontSize(context, 13),
+                        color: isDark ? const Color(0xFF9FB3C8) : const Color(0xFF6F7883),
+                      ),
+                      prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E9BF0)),
+                      filled: true,
+                      fillColor: isDark ? const Color(0xFF1B1E22) : Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        border: isDark ? Border.all(color: const Color(0xFF2E333B)) : null,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: TextField(
-                        style: TextStyle(color: isDark ? Colors.white : const Color(0xFF1C1B1B)),
-                        decoration: InputDecoration(
-                          hintText: AppLocalizations.get('explore_search_hint'),
-                          hintStyle: TextStyle(
-                            fontSize: Responsive.fontSize(context, 13),
-                            color: isDark ? const Color(0xFF9FB3C8) : const Color(0xFF6F7883),
-                          ),
-                          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1E9BF0)),
-                          filled: true,
-                          fillColor: isDark ? const Color(0xFF1B1E22) : Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
+                        borderSide: BorderSide.none,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 40 * s,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: _categories.entries.map((e) {
-                          final selected = _category == e.key;
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: ChoiceChip(
-                              label: Text(e.value),
-                              selected: selected,
-                              onSelected: (_) => setState(() => _category = e.key),
-                              selectedColor: const Color(0xFF1E9BF0),
-                              backgroundColor: isDark ? const Color(0xFF1B1E22) : const Color(0xFFF0EDED),
-                              elevation: 0,
-                              labelStyle: TextStyle(
-                                color: selected ? Colors.white : (isDark ? const Color(0xFF9FB3C8) : const Color(0xFF3F4851)),
-                                fontWeight: selected ? FontWeight.bold : FontWeight.w500,
-                                fontSize: Responsive.fontSize(context, 12),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -296,12 +256,36 @@ class _WisataPageState extends State<WisataPage> {
                       itemCount: _exploreCategories.length,
                       itemBuilder: (context, index) {
                         final item = _exploreCategories[index];
-                        final catKey = item['catKey'] as String;
                         return InkWell(
                           onTap: () {
-                            setState(() {
-                              _category = catKey;
-                            });
+                            final target = item['target'] as String? ?? 'SEMUA';
+                            final Widget page;
+                            switch (target) {
+                              case 'haji':
+                                page = const IbadahListingPage(jenis: IbadahJenis.haji);
+                                break;
+                              case 'umroh':
+                                page = const IbadahListingPage(jenis: IbadahJenis.umroh);
+                                break;
+                              case 'whoosh':
+                                page = const ServicePage(title: 'Whoosh');
+                                break;
+                              case 'villa':
+                                page = const ServicePage(title: 'Villa & Staycation');
+                                break;
+                              case 'mobil':
+                                page = const ServicePage(title: 'Sewa Mobil');
+                                break;
+                              case 'shuttle':
+                                page = const ShuttleSearchPage();
+                                break;
+                              default:
+                                page = WisataListingPage(initialCategory: target);
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => page),
+                            );
                           },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
